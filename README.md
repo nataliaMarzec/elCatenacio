@@ -1,15 +1,17 @@
 # elCatenacio
 
+![97525835_3045352695510788_1700172253049651200_n](https://user-images.githubusercontent.com/43456410/112547977-43636700-8d9a-11eb-8173-729f68d16d8f.jpg)
+
 EL CATENACIO es una parrilla ubicada en la localidad de Capitan Sarmiento.
-La idea es poder implementar las modalidades "take away" y "delivery" para poder acceder a una mayor cantidad de personas de manera accesible y directa.
-Take away:
+La idea es poder implementar las modalidades "take away" y "delivery" para poder acceder a una mayor cantidad de personas de manera accesible.
 Sirve para aumentar los servicios de comida.
 Es una potente herramienta de marketing para conseguir clientes nuevos a restaurantes.
 Dados que los pedidos pueden llegar en cualquier momento, es necesario tener previstos los pedidos con anticipacion.
 El take away a diferencia del delivery pueden ir a buscar los mismos clientes el pedido.
 El delivery la parrilla es la encargada de llevar el producto al domicilio del cliente.
 
-Casos de uso:
+## Casos de uso:
+
 1-Registrar menues(abm)
 
 2-Registrar clientes(abm)
@@ -37,5 +39,7 @@ Casos de uso:
 13-Registros de ventas por mesa
 
 14-Registrar eventos especiales(fiestas tradicionales,musicos)
+
+15-Integrar Response para poder acceder desde el movil
 
 -Integracion de mercado pago
