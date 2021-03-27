@@ -4,7 +4,10 @@
   "description": "TTIP",
   "main": "server.js",
   "scripts": {
-    "test": "Selenium"
+    "test": "Selenium",
+    "local:migrate": "node_modules/.bin/sequelize db:migrate",
+    "local:migrate:undo": "node_modules/sequelize-cli/lib/sequelize db:migrate:undo",
+    "local:seeds": "node_modules/.bin/sequelize db:seed:all"
   },
   "repository": {
     "type": "git",
@@ -32,5 +35,26 @@
   },
   "devDependencies": {
     "sequelize-cli": "^6.2.0"
+  },
+  "development": {
+    "username": "cat",
+    "password": "Catenacio_21",
+    "database": "catenacio",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "cat",
+    "password": "Catenacio_21",
+    "database": "catenacio",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
   }
 }
