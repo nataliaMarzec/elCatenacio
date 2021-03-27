@@ -4,7 +4,7 @@ require('dotenv').config();
 
 
 const Sequelize = require('sequelize');
-const MenuModel=require('./menu');
+const MenuModel=require('./HomePedidosCliente/Menu');
 
 
 const sequelize = process.env.DB_URL
