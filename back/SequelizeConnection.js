@@ -4,7 +4,7 @@ require('dotenv').config();
 
 
 const Sequelize = require('sequelize');
-const MenuModel=require('./HomePedidosCliente/Menu');
+const PedidoModel=require('./HomePedidosCliente/Pedido');
 
 
 const sequelize = process.env.DB_URL
@@ -32,7 +32,7 @@ var models={}
 models=sequelize
 models=Sequelize
 
-const Menu= MenuModel(sequelize,Sequelize)
+const Pedido= PedidoModel(sequelize,Sequelize)
 
 
 sequelize.authenticate()
@@ -54,6 +54,6 @@ sequelize.sync({force:false})
 
 module.exports = {
   sequelize,
-  Menu,
+  Pedido,
   
 };
