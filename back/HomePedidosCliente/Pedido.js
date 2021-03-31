@@ -1,6 +1,6 @@
 "use strict";
 module.exports = function (sequelize, DataTypes) {
-  const Menus = sequelize.define(
+  const Pedidos = sequelize.define(
     "Menu",
     {
       id: {
@@ -16,13 +16,13 @@ module.exports = function (sequelize, DataTypes) {
     },
 
     {
-      tableName: "Menus",
-      modelName: "Menu",
+      tableName: "Pedidos",
+      modelName: "Pedido",
       
     }
   );
 
 
 
-  return Menus;
+  return Pedidos;
 };

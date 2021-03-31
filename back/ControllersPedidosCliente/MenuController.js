@@ -1,11 +1,11 @@
 var { Op } = require("sequelize");
-const { Menu } = require("../SequelizeConnection");
+const { Pedido } = require("../SequelizeConnection");
 
 module.exports = {
   create: async (req, res) => {
-    const menu = req.body;
+    const pedido = req.body;
 
-    const { id, codigo, descripcion, precio } = await Menu.create(menu);
+    const { id, codigo, descripcion, precio } = await Pedido.create(pedido);
 
     return res.json({
       id,
@@ -16,32 +16,32 @@ module.exports = {
   },
 
   getMenus: async (req, res, next) => {
-    const menus = await Menu.findAll();
+    const pedidos = await Pedido.findAll();
     if (![req.body.values]) {
-      res.status(400).json({ err: "no obtiene lista de menus" });
+      res.status(400).json({ err: "no obtiene lista de pedidos" });
     } else {
-      return res.status(200).json(menus);
+      return res.status(200).json(pedidos);
     }
   },
 
   getMenuId: async (req, res) => {
-    var menu = await Menu.findByPk(req.params.id);
+    var pedido = await Pedido.findByPk(req.params.id);
     if (![req.body.values]) {
-      res.status(400).json({ err: "No hay menu con ID" });
+      res.status(400).json({ err: "No hay pedido con ID" });
     } else {
-      return res.status(200).json(menu);
+      return res.status(200).json(pedido);
     }
   },
 
   deleteMenuById: async (req, res) => {
-    const menu = await Menu.findByPk(req.params.id);
-    await menu.destroy();
-    return res.json({ delete: "Menu eliminado" });
+    const pedido = await Pedido.findByPk(req.params.id);
+    await pedido.destroy();
+    return res.json({ delete: "Pedido eliminado" });
   },
 
   update: async (req, res) => {
-    const menu = await Menu.findByPk(req.params.id);
-    const { id, codigo, descripcion, precio } = await menu.update(req.body);
+    const pedido = await Pedido.findByPk(req.params.id);
+    const { id, codigo, descripcion, precio } = await pedido.update(req.body);
 
     return res
       .json({
@@ -50,6 +50,6 @@ module.exports = {
         descripcion,
         precio,
       })
-      .res.send(200, "menu editado");
+      .res.send(200, "pedido editado");
   },
 };

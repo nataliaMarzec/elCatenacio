@@ -1,9 +1,11 @@
 "use strict";
 
+const { Pedido } = require("../SequelizeConnection");
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert(
-      "Menus",
+      "Pedidos",
       [
         {
           codigo: 123,
@@ -14,14 +16,14 @@ module.exports = {
         },
         {
           codigo: 124,
-          descripcion: "helado",
+          descripcion: "postre",
           precio: 220,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
           codigo: 125,
-          descripcion: "gasiosa",
+          descripcion: "gaseosas",
           precio: 215,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -32,6 +34,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete("Menus", null, {});
+    await queryInterface.bulkDelete("Pedidos", null, {});
   },
 };
