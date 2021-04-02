@@ -17,6 +17,9 @@ module.exports = {
       precio: {
         type: Sequelize.INTEGER,
       },
+      habilitado: {
+        type: Sequelize.STRING,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {

@@ -9,8 +9,9 @@ module.exports = {
       [
         {
           codigo: 123,
-          descripcion: "achuras",
+          descripcion: "asado",
           precio: 300,
+          habilitado:true,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -18,6 +19,7 @@ module.exports = {
           codigo: 124,
           descripcion: "postre",
           precio: 220,
+          habilitado:true,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -25,6 +27,7 @@ module.exports = {
           codigo: 125,
           descripcion: "gaseosas",
           precio: 215,
+          habilitado:false,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
