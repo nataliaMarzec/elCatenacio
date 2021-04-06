@@ -8,7 +8,8 @@ router.post("/pedidos/nuevo", controllerPedido.create);
 router.get("/pedidos", controllerPedido.getPedidos);
 router.delete("/pedidos/:id", controllerPedido.deletePedidoById);
 router.put("/pedidos/:id", controllerPedido.update);
-router.get("/pedidos/busqueda/:id", controllerPedido.encontrarPedidoPorCodigo);
+router.get("/pedidos/busqueda/:codigo", controllerPedido.encontrarPedidoPorCodigo);
+
 
 
 

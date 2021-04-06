@@ -27,12 +27,12 @@ class CargarPedido extends React.Component {
       pedidos: props.pedidos || [],
       modal: false,
       codigo: "",
+      onClick: false,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.getCodigo = this.getCodigo.bind(this);
-    this.getDescripcion = this.getDescripcion.bind(this);
-    this.getPrecio = this.getPrecio.bind(this);
+    this.listadoBusqueda = this.listadoBusqueda.bind(this);
+    this.getPrecio=this.getPrecio.bind(this)
   }
 
   estadoInicial = () => {
@@ -55,29 +55,41 @@ class CargarPedido extends React.Component {
     this.props.listadoPedidos();
     console.log("didMount-cargarCliente");
   }
-  verDetallesPedido(id) {
-    var listaActualizada = this.state.pedidos.filter((item) => id == item.id);
+  verDetallesPedido(codigo) {
+    var listaActualizada = this.state.pedidos.filter((item) => codigo == item.codigo);
     this.setState({ pedidos: listaActualizada });
+    console.log(listaActualizada,"listaActualiazada------",this.state.pedidos,{pedidos:listaActualizada})
+  }
+  getPrecio=()=>{
+    var precio=this.state.pedido.precio;
+    return precio;
   }
 
   handleSubmit(event) {
     event.preventDefault(event);
     const id = this.state.pedido.id;
-    // const codigo=this.state.pedido.codigo,
-    // const descripcion=this.state.pedido.descripcion,
-    // const precio=this.state.pedido.precio,
+    // var busqueda='?busqueda=codigo=="' + this.state.codigo + '"'
     if (id) {
       this.editarPedido(id);
     } else {
-      this.crearPedido();
-      this.getCodigo();
-      this.getDescripcion();
-      this.getPrecio();
-      // this.verDetallesPedido();
-      // console.log(this.verDetallesPedido(),"detallaes pedido")
-      // this.agregarCard(codigo,descripcion,precio);
+     this.crearPedido();
+    //  this.listadoBusqueda(busqueda);
     }
-  }
+    };
+  
+
+  listadoBusqueda = (busqueda) => {
+    if (busqueda != null) {
+      fetch(`http://localhost:8383/pedidos` + busqueda)
+        .then((res) => res.json())
+        .then((pdds) => this.setState({ pedidos: pdds }));
+    }
+    if (busqueda == null) {
+      fetch(`http://localhost:8383/pedidos`)
+        .then((res) => res.json())
+        .then((pdds) => this.setState({ pedidos: pdds }));
+    }
+  };
 
   crearPedido = () => {
     fetch("http://localhost:8383/pedidos/nuevo", {
@@ -90,7 +102,6 @@ class CargarPedido extends React.Component {
     })
       .then((res) => this.props.listadoPedidos())
       .then((res) => this.estadoInicial());
-
   };
 
   editarPedido = (id) => {
@@ -106,32 +117,22 @@ class CargarPedido extends React.Component {
       .then(this.estadoInicial());
   };
 
-   getCodigo (){
-    var codigo = this.state.pedido.codigo;
-    return codigo;
-  }
-  getDescripcion() {
-    var descripcion = this.state.pedido.descripcion;
-    return descripcion;
-  }
-  getPrecio=() =>{
-    var precio = this.state.pedido.precio;
-    return precio;
-  }
+ 
 
 
-  agregarCard = (codigo, descripcion, precio) => {
-    const nuevaCard = {
-      pedido: {
-        codigo: codigo,
-        descripcion: descripcion,
-        precio: precio,
-      },
-    };
-    this.setState({ pedidos: [...this.state.pedidos, nuevaCard] });
-  };
+  // onClick = ()=>{
+  //   this.setState({
+  //     onClick: !this.state.onClick,
+  //   });
+  //   if(this.state.onClick){
+  //     this.handleSubmit();
+  //     this.verDetallesPedido();
+  //   }
+  // }
+  
 
   render() {
+    const codigo = this.state.codigo;
     return (
       <Col xs="12" md="12">
         <ModalBody>
@@ -222,15 +223,15 @@ class CargarPedido extends React.Component {
                     </div>
                   </FormGroup>
                   <FormGroup>
-                  <tbody>
-            <tr className="#1b5e20 green darken-4">
-                  <th>Deuda</th>
-                  <th>&nbsp;</th>
-                  <th>&nbsp;</th>
-                  <th>{this.getPrecio() || 0}</th>
-                  <th> </th>
-                </tr>
-            </tbody>
+                    <tbody>
+                      <tr className="#1b5e20 green darken-4">
+                        <th>Deuda</th>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th>{this.getPrecio() || 0}</th>
+                        <th> </th>
+                      </tr>
+                    </tbody>
                   </FormGroup>
                 </CardBody>
               </Card>
@@ -240,6 +241,7 @@ class CargarPedido extends React.Component {
               size="lg"
               className="btn-pill"
               type="submit"
+              onChange={this.verDetallesPedido}
               onClick={this.handleSubmit}
             >
               Guardar pedido
@@ -260,6 +262,7 @@ class CargarPedido extends React.Component {
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
     this.setState({ pedido: nuevoPedido });
     this.setState({ codigo: nuevoPedido.codigo });
+    this.verDetallesPedido(nuevoPedido.codigo)
     console.log(
       "evenEditar",
       nuevoPedido.codigo,
@@ -272,4 +275,3 @@ class CargarPedido extends React.Component {
 }
 
 export default CargarPedido;
-// module.exports = {getCodigo,getDescripcion,getPrecio}

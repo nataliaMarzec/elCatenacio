@@ -1,27 +1,13 @@
 import React from "react";
-import Pedido from "./Pedido";
-import CargarPedido from "./CargarPedido";
 import {
   Button,
-  Card,
   CardBody,
   CardImg,
-  CardFooter,
   CardSubtitle,
   CardText,
-  Form,
-  FormGroup,
-  Label,
-  Input,
   Col,
   Row,
-  Modal,
-  ModalHeader,
-  Container,
-  CardHeader,
-  Table,
 } from "reactstrap";
-import {getCodigo,getDescripcion,getPrecio} from "./CargarPedido"
 import logo from "../assets/img/brand/logo.svg";
 
 

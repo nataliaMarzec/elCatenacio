@@ -1,30 +1,21 @@
 import React from "react";
 import Pedido from "./Pedido";
-import CargarPedido from "./CargarPedido";
 import {
   Button,
   Card,
   CardBody,
   CardImg,
-  CardFooter,
   CardSubtitle,
   CardText,
-  Form,
   FormGroup,
   Label,
-  Input,
   Col,
   Row,
-  Modal,
   ModalHeader,
-  Container,
-  CardHeader,
   Table,
 } from "reactstrap";
 import { AppSwitch } from "@coreui/react";
 import logo from "../assets/img/brand/logo.svg";
-import data from "./data";
-const {getCodigo,getPrecio} = require("./CargarPedido");
 
 
 class VistaDePedidosParaClientes extends React.Component {
@@ -47,7 +38,7 @@ class VistaDePedidosParaClientes extends React.Component {
     this.toggle = this.toggle.bind(this);
     this.listadoPedidos = this.listadoPedidos.bind(this);
     this.estadoInicial = this.estadoInicial.bind(this);
-    this.generarFila = this.generarFila.bind(this);
+    this.unPedido=this.unPedido.bind(this)
     
   }
 
@@ -67,36 +58,21 @@ class VistaDePedidosParaClientes extends React.Component {
       .then((res) => res.json())
       .then((pds) => this.setState({ pedidos: pds, pedido: {} }));
   };
-  verDetallesPedido(id) {
-    var listaActualizada = this.state.pedidos.filter(
-      (item) => id == item.id
-    );
-    this.setState({ pedidos: listaActualizada });
-  }
 
-  listadoBusqueda = (busqueda) => {
-    if (busqueda != null) {
-      fetch(`http://localhost:8383/pedidos` + busqueda)
-        .then((res) => res.json())
-        .then((pdds) => this.setState({ pedidos: pdds }));
-    }
-    if (busqueda == null) {
-      fetch(`http://localhost:8282/pedidos`)
-        .then((res) => res.json())
-        .then((pdds) => this.setState({ pedidos: pdds }));
-    }
-  };
+
   estadoInicial = () => {
     this.setState({
+      cliente:{
       codigo: "",
       descripcion: "",
       precio: "",
       habilitado: "",
+      }
     });
   };
 
   verDetallesPedido(codigo) {
-    var listaActualizada = this.state.pedidos.find(
+    var listaActualizada = this.state.pedidos.filter(
       (item) => codigo == item.codigo
     );
     console.log("listaActualizada", listaActualizada);
@@ -107,27 +83,7 @@ class VistaDePedidosParaClientes extends React.Component {
     return listaActualizada;
   }
 
-  handleSubmitPedido = (event) => {
-    console.log("submit",event)
-    var busqueda;
-    if (this.state.codigo === "") {
-      this.listadoBusqueda(busqueda);
-    }
-    if (this.state.codigo !== "") {
-      busqueda = '?busqueda=codigo=="' + this.state.codigo + '"';
-      this.listadoBusqueda(busqueda);
-    }
-    event.preventDefault(event);
-  };
 
-  generarFila(unPedido) {
-    var pedido = this.state.pedido;
-    this.setState({ pedido: unPedido });
-    var myArray = this.state.pedidos.slice();
-    myArray.push({ ...this.state.pedido });
-    this.setState({ pedidos: myArray });
-    console.log(myArray, " --array handler  ", this.state.pedidos.values());
-  }
 
   actualizarAlEliminar = (unPedido) => {
     var listaActualizada = this.state.pedidos.filter(
@@ -160,34 +116,57 @@ class VistaDePedidosParaClientes extends React.Component {
     );
   };
 
-  render(props) {
+  // render(props) {
+  //   var listaPedidos = this.state.pedidos;
+  //   console.log(listaPedidos,"listapEDIDOS RENDER")
+  //   return listaPedidos.map((pedido,index) => (
+  //     <div className="container">
+  //     <this.cardPedido
+  //       key={index}
+  //       pedido={pedido}
+  //       pedidos={this.state.pedidos}
+  //       listadoPedidos={this.listadoPedidos}
+  //       unPedido={this.unPedido(pedido)}
+  //       // onSubmit={this.pedidoSeleccionado(pedido)}
+  //     ></this.cardPedido>
+  //     </div>
+  //   ));
+    
+  // }
+
+  render(){
     var listaPedidos = this.state.pedidos;
-   
-    return listaPedidos.map((card, pedido, index) => (
+    console.log(listaPedidos,"listapEDIDOS RENDER")
+    return listaPedidos.map((pedido,index) => (
       <div className="container">
-      <this.cardPedido
-        key={index}
-        value={pedido}
-        codigo={pedido.precio}
-        descripcion={pedido.descripcion}
-        precio={pedido.precio}
-        pedido={this.state.pedido}
-        pedidos={this.state.pedidos}
-        listadoPedidos={this.listadoPedidos}
-      ></this.cardPedido>
-      </div>
+    <CardBody>
+    <Table responsive bordered size="sm">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Descripción</th>
+          <th>Precio</th>
+          <th>Habilitado</th>
+         
+
+        </tr>
+      </thead>
+      <tbody>{this.renderRows(pedido,index)}</tbody>
+    </Table>
+  </CardBody>
+  </div>
     ));
   }
 
   pedidoSeleccionado = (unPedido) => {};
-  cardPedido = () => {
-    var pedido=this.state.pedido;
+  cardPedido=(pedido)=>{
     return (
-      <div className="container">
-        <Col xs="12" md="12">
-          <Row></Row>
-          <Col xs="12" sm="6" md="4">
-            <Card className="border-warning">
+      <Row>
+      <div key={pedido.id}>
+        {/* <Col xs="12" md="12"> */}
+          <Row className="col-md-4">
+          <Col >
+            <Card className="border-warning" >
               <Card style={{ border: "1px solid red" }}>
                 <CardImg top src={logo} />
                 <CardBody>
@@ -199,9 +178,6 @@ class VistaDePedidosParaClientes extends React.Component {
               <FormGroup>
                 <Label>
                   Codigo
-                </Label>
-                <Label>
-                  {this.state.pedido.codigo}
                 </Label>
               </FormGroup>
               <FormGroup>
@@ -219,8 +195,7 @@ class VistaDePedidosParaClientes extends React.Component {
                   Habilitado
                 </Label>
               </FormGroup>
-               <tbody>{this.unPedido}</tbody>
-
+               <tbody>{this.unPedido(pedido)}</tbody>
             <Button
               type="submit"
               color="success"
@@ -229,26 +204,27 @@ class VistaDePedidosParaClientes extends React.Component {
               <i className="fa fa-dot-circle-o"></i> Comprar
             </Button>
               </CardBody>
-            </Card>
-
-           
+            </Card>   
           </Col>
-        </Col>
+          </Row>
+        {/* </Col> */}
+       
       </div>
+      </Row>
     );
   };
-  unPedido = () => {
-    // var codigo = this.state.codigo;
-    var unPedido = this.state.pedido;
+  unPedido(unPedido){
+    // var unPedido = this.state.pedido;
     if (unPedido) {
+
+      console.log("un pedido row________",unPedido.codigo)
       return (
         <Pedido
-          // codigo={codigo}
-          unPedido={unPedido}
-          pedidoSeleccionado={this.pedidoSeleccionado(unPedido)}
-          seleccionado={this.state.seleccionado}
+          key={unPedido.id}
+          pedido={unPedido}
+          // pedidoSeleccionado={this.pedidoSeleccionado(unPedido)}
+          // seleccionado={this.state.seleccionado}
           pedidos={this.state.pedidos}
-          idPedido={(unPedido) => unPedido.id}
         />
       );
     }
@@ -257,25 +233,21 @@ class VistaDePedidosParaClientes extends React.Component {
     }
   };
 
-  renderRows() {
-    let pedidos = this.state.pedidos;
-    return !pedidos
-      ? console.log("NULL", null)
-      : pedidos.map((unPedido, index) => {
+  renderRows(pedido,index) {
+    var pedidosLista=this.state.pedidos;
+    var listaActualizada = pedidosLista.filter(
+      (item) => pedido == item
+    );
+    console.log("renderRows",listaActualizada)
           return (
             <Pedido
               key={index}
-              pedido={unPedido}
-              pedidos={this.state.pedidos}
-              selector={this.seleccionar}
-              actualizarAlEliminar={this.actualizarAlEliminar}
-              eliminarPedido={this.eliminarPedido.bind(this)}
-              editarPedido={this.editarPedido}
-              toggle={this.toggle}
-              editarPedidoFetch={this.editarPedidoFetch.bind(this)}
+              pedido={pedido}
+              pedidos={listaActualizada}
             />
-          );
-        });
+          
+        )
+        
   }
 }
 
