@@ -13,6 +13,7 @@ module.exports = function (sequelize, DataTypes) {
       codigo: DataTypes.INTEGER,
       descripcion: DataTypes.STRING,
       precio: DataTypes.INTEGER,
+      habilitado:DataTypes.STRING,
     },
 
     {

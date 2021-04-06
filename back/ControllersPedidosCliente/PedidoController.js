@@ -5,17 +5,18 @@ module.exports = {
   create: async (req, res) => {
     const pedido = req.body;
 
-    const { id, codigo, descripcion, precio } = await Pedido.create(pedido);
+    const { id, codigo, descripcion, precio,habilitado } = await Pedido.create(pedido);
 
     return res.json({
       id,
       codigo,
       descripcion,
       precio,
+      habilitado,
     });
   },
 
-  getMenus: async (req, res, next) => {
+  getPedidos: async (req, res, next) => {
     const pedidos = await Pedido.findAll();
     if (![req.body.values]) {
       res.status(400).json({ err: "no obtiene lista de pedidos" });
@@ -24,7 +25,7 @@ module.exports = {
     }
   },
 
-  getMenuId: async (req, res) => {
+  getPedidoId: async (req, res) => {
     var pedido = await Pedido.findByPk(req.params.id);
     if (![req.body.values]) {
       res.status(400).json({ err: "No hay pedido con ID" });
@@ -33,7 +34,7 @@ module.exports = {
     }
   },
 
-  deleteMenuById: async (req, res) => {
+  deletePedidoById: async (req, res) => {
     const pedido = await Pedido.findByPk(req.params.id);
     await pedido.destroy();
     return res.json({ delete: "Pedido eliminado" });
@@ -41,7 +42,7 @@ module.exports = {
 
   update: async (req, res) => {
     const pedido = await Pedido.findByPk(req.params.id);
-    const { id, codigo, descripcion, precio } = await pedido.update(req.body);
+    const { id, codigo, descripcion, precio,habilitado } = await pedido.update(req.body);
 
     return res
       .json({
@@ -49,7 +50,22 @@ module.exports = {
         codigo,
         descripcion,
         precio,
+        habilitado,
       })
       .res.send(200, "pedido editado");
   },
+
+  encontrarPedidoPorCodigo: async (req, res) => {
+    var pedido = await Pedido.findOne({where:{codigo:req.params.codigo}});
+    if (![req.body.values]) {
+      res.status(400).json({ err: "No hay pedido con codigo" });
+    } else {
+      return res.status(200).json(pedido)
+    }
+  },
+  
+  
+  
+  
+    
 };
