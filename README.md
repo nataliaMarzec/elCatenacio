@@ -277,8 +277,46 @@ En caso de querer entender el proceso inicial de instalación leer lo siguiente:
 
 ***
 ***
+Empezando:
 
- * Ver documentación.
+Documentacion: 
+
+https://www.selenium.dev/documentation/es/getting_started/quick/
+
+https://www.npmjs.com/package/chromedriver
+
+https://sites.google.com/a/chromium.org/chromedriver/
+
+1-
+
+ `whereis google-chrome`
+
+google-chrome: /usr/bin/google-chrome /usr/share/man/man1/google-chrome.1.gz
+
+2- `google-chrome --version`
+
+    Google Chrome 83.0.4103.116 
+
+
+3- Crear path:
+
+ ´export PATH=$PATH:/opt/WebDriver/bin >> ~/.profile´
+
+4- `$ wget -P ~/ http://chromedriver.storage.googleapis.com/83.0.4103.14/chromedriver_linux64.zip`
+
+5- `$ unzip ~/chromedriver_linux64.zip`
+
+6- `$ chmod -x ~/chromedriver`
+
+7- `$ sudo mv ~/chromedriver    /urs/local/share/chromedriver`
+
+8- `$ sudo ln -s /usr/local/share/chromedriver /usr/bin/chromedriver`
+
+9- `chromedriver --version`
+
+
+
+***
 
  1- Crear carpeta ´Selenium´ fuera del proyecto.
 
@@ -299,6 +337,6 @@ En caso de querer entender el proceso inicial de instalación leer lo siguiente:
 
  6- Hacer test de pruebas
  
- * Otra opcion:
 
-https://github.com/nataliaMarzec/elCatenacio/wiki/SELENIUM
+
+
