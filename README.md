@@ -298,3 +298,7 @@ En caso de querer entender el proceso inicial de instalación leer lo siguiente:
  5- Para probar la url ejecutar `/Selenium/$ npm start`
 
  6- Hacer test de pruebas
+ 
+ * Otra opcion:
+
+https://github.com/nataliaMarzec/elCatenacio/wiki/SELENIUM
