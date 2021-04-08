@@ -1,8 +1,6 @@
 # EL CATENACIO
 
 ***
-***
-
 # INSTALACIONES NECESARIAS:
 
 ***
@@ -10,11 +8,7 @@
 
  Tener instalados en el sistema :
 
- * Mysql:
-
- ~~~
- sudo apt install mysql-server
- ~~~
+ * Mysql: https://www.mysql.com/ según sistema operativo lo requiera
 
  * Nodejs , Curl y Yarn: 
 
@@ -29,6 +23,31 @@ sudo apt-get install -y nodejs
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 sudo apt-get update && sudo apt-get install yarn 
 ~~~
+
+# NOTA:
+
+Una vez clonado el proyecto:
+
+1-Otorgar privilegios a db:
+
+~~~
+   mysql> create user 'cat' identified by 'miPassword';
+
+   mysql> grant all privileges on catenacio.* to cat;
+~~~       
+         
+
+2-Ir a folder back y ejecutar:
+
+`elCatenacio/back$ npm install`
+
+`npm start`
+
+3-Ir a folder front y ejecutar:
+
+`elCatenacio/front$ npm install`
+
+`npm start`
 
 ***
 # BACK #
