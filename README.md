@@ -55,7 +55,7 @@ Una vez clonado el proyecto:
 ***
 ***
 
-* Aclaración: En la terminal,al clonar el proyecto, desde la carpeta back ejecutando `npm install` y luego `npm start` se levanta la app. De querer entender el proceso de instalaciones seguir los siguientes pasos:
+* Aclaración: En la terminal,al clonar el proyecto, desde la carpeta back ejecutando `npm install` y luego `npm start` se levanta la app(como se explica en *NOTA*). De querer entender el proceso de instalaciones seguir los siguientes pasos:
 
  1- Crear folder back `mkdir back`
 
@@ -245,7 +245,7 @@ Luego comprometer el archivo a la base de datos:
 
 * Aclaración dado que el template ya está actualizado en la versión actual no es 
 recomendable para este proyecto clonarlo como se muestra en el paso 1, sino que al clonar
- el proyecto ElCatenacio es preferible ir a la carpeta ´front´ y ejecutar en la terminal `npm install` directamente. :exclamation: :grey_exclamation: :+1: 
+ el proyecto ElCatenacio es preferible ir a la carpeta ´front´ y ejecutar en la terminal `npm install` directamente(como se explica en *NOTA*). :exclamation: :grey_exclamation: :+1: 
 
 Al finalizar las instalaciones en el front ejecutar `npm start` en la terminal para levantar la app.
 
