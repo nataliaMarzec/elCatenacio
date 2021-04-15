@@ -295,9 +295,6 @@ google-chrome: /usr/bin/google-chrome /usr/share/man/man1/google-chrome.1.gz
 
 2- `google-chrome --version`
 
-    Google Chrome 83.0.4103.116 
-
-
 3- Crear path:
 
  ´export PATH=$PATH:/opt/WebDriver/bin >> ~/.profile´
@@ -306,7 +303,7 @@ google-chrome: /usr/bin/google-chrome /usr/share/man/man1/google-chrome.1.gz
 
 5- `$ unzip ~/chromedriver_linux64.zip`
 
-6- `$ chmod +x ~/chromedriver`
+6- `$ chmod -x ~/chromedriver`
 
 7- `$ sudo mv ~/chromedriver    /urs/local/share/chromedriver`
 
@@ -336,5 +333,4 @@ google-chrome: /usr/bin/google-chrome /usr/share/man/man1/google-chrome.1.gz
  5- Para probar la url ejecutar `/Selenium/$ node index.js`
 
  6- Hacer test de pruebas
- 
 
