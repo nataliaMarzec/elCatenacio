@@ -1,14 +1,11 @@
 import React from "react";
-import ClientesLista from "../Clientes/ClientesLista";
-import Cliente from "../Clientes/Cliente";
+import Cliente from "../../ComponentesClientes/Clientes/Cliente";
 import {
   Button,
   Form,
   FormGroup,
   Label,
   Input,
-  Card,
-  CardHeader,
   Col,
   ModalBody,
   ModalFooter,

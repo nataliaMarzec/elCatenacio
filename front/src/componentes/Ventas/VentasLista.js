@@ -1,7 +1,5 @@
 import React from "react";
 import Venta from "./Venta";
-import CargarVenta from "./CargarVenta";
-import Cliente from "../Clientes/Cliente"
 
 
 
@@ -30,7 +28,6 @@ class VentasLista extends React.Component {
       seleccionado: {},
       venta: {},
       ventas: [],
-      clientes: props.clientes,
       articulos: props.articulos,
       pagosCliente: [],
       modal: false,

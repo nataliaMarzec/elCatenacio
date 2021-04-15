@@ -29,18 +29,33 @@ const Colors = React.lazy(() => import("./views/Theme/Colors"));
 const Usuarios = React.lazy(() => import("./views/Usuarios/Usuarios"));
 const NuevoUsuario = React.lazy(() => import("./views/Usuarios/NuevoUsuario"));
 
-const Pedidos = React.lazy(() => import("./componentesPedidosCliente/Pedidos"));
-const Pedido = React.lazy(() => import("./componentesPedidosCliente/Pedido"));
+const Pedidos = React.lazy(() => import("./ComponentesPedidosCliente/Pedidos/Pedidos"));
+const Pedido = React.lazy(() => import("./ComponentesPedidosCliente/Pedidos/Pedido"));
 const CargarPedido = React.lazy(() =>
-  import("./componentesPedidosCliente/CargarPedido")
+  import("./ComponentesPedidosCliente/Pedidos/CargarPedido")
 );
 
 const Clientes = React.lazy(() =>
-  import("./componentes/Clientes/ClientesLista")
+  import("./ComponentesClientes/Clientes/Clientes")
 );
-const Cliente = React.lazy(() => import("./componentes/Clientes/Cliente"));
+const Cliente = React.lazy(() =>
+  import("./ComponentesClientes/Clientes/Cliente")
+);
 const CargarCliente = React.lazy(() =>
-  import("./componentes/Clientes/CargarCliente")
+  import("./ComponentesClientes/Clientes/CargarCliente")
+);
+
+const VistaDeProductosParaClientes = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Productos/VistaDeProductosParaClientes")
+);
+const Productos = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Productos/Productos")
+);
+const CargarProducto = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Productos/CargarProducto")
+);
+const Producto = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Productos/Producto")
 );
 
 const Pago = React.lazy(() => import("./componentes/Pago"));
@@ -73,13 +88,6 @@ const Register = React.lazy(() =>
   import("./componentes/LoginYSesionDeUsuarios/Register.js")
 );
 
-const CardPedido = React.lazy(() =>
-  import("./componentesPedidosCliente/CardPedido")
-);
-
-const VistaDePedidosParaClientes = React.lazy(() =>
-  import("./componentesPedidosCliente/VistaDePedidosParaClientes")
-);
 
 const routes = [
   { path: "/", exact: true, name: "Home" },
@@ -160,18 +168,8 @@ const routes = [
     component: CargarPedido,
   },
   { path: "./pedido", exact: false, name: "Pedido", component: Pedido },
-  {
-    path: "/cardPedido",
-    exact: true,
-    name: "CardPedido",
-    component: CardPedido,
-  },
-  {
-    path: "/vistaDePedidosParaClientes",
-    exact: true,
-    name: "VistaDePedidosParaClientes",
-    component: VistaDePedidosParaClientes,
-  },
+
+
   {
     path: "/clientes",
     exact: true,
@@ -186,6 +184,28 @@ const routes = [
     name: "CargarCliente",
     component: CargarCliente,
   },
+
+  {
+    path: "/vistaDeProductosParaClientes",
+    exact: true,
+    name: "VistaDeProductosParaClientes",
+    component: VistaDeProductosParaClientes,
+  },
+  {
+    path: "/productos",
+    exact: true,
+    key: "#productos",
+    name: "Productos",
+    component: Productos,
+  },
+  {
+    path: "/cargarProducto",
+    exact: false,
+    name: "CargarProducto",
+    component: CargarProducto,
+  },
+  { path: "./producto", exact: false, name: "Producto", component: Producto },
+
 
   { path: "/pago", exact: true, name: "Pago", component: Pago },
 

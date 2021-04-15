@@ -1,12 +1,9 @@
 import React, { useState, useMemo, useCallback } from "react";
-import Cliente from "../Clientes/Cliente";
+import Cliente from "../../ComponentesClientes/Clientes/Cliente";
 import {
   Table,
-  Container,
   Row,
   Button,
-  Modal,
-  ModalHeader,
   Col,
   Card,
   CardHeader,
@@ -15,13 +12,10 @@ import {
   Form,
   FormGroup,
   Input,
-  Label,
 } from "reactstrap";
 
 import VentasAUnClienteRows from "./VentasAUnClienteRows";
 import CargarVenta from "./CargarVenta";
-import Venta from "./Venta";
-import Pago from "../Pago";
 class VentasAUnCliente extends React.Component {
   constructor(props) {
     super(props);

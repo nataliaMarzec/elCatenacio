@@ -6,8 +6,9 @@ import PropTypes from 'prop-types';
 import { AppAsideToggler, AppNavbarBrand, AppSidebarToggler } from '@coreui/react';
 import routes from '../../views/Contactos/routes';
 
-import Clientes from '../../componentes/Clientes/ClientesLista'
+import Clientes from '../../ComponentesClientes/Clientes/Clientes'
 import ArticulosLista from '../../componentes/Articulos/ArticulosLista'
+
 
 const propTypes = {
   children: PropTypes.node,

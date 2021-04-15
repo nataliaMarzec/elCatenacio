@@ -1,9 +1,4 @@
 import React from "react";
-import Ventas from "./VentasLista";
-import Venta from "./Venta";
-import CargarVenta from "./CargarVenta";
-import Clientes from "../Clientes/ClientesLista";
-import Articulos from "../Articulos/ArticulosLista";
 
 class Cuentas extends React.Component {
   constructor(props) {

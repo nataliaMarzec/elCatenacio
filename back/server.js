@@ -11,7 +11,7 @@ const server= express();
 server.use(cors());
 server.use(bodyParser.json());
 server.use(require ('./RoutesPedidosCliente/routes.js'));
-// server.use(require ('./RoutesClientes/routes.js'));
+server.use(require ('./RoutesClientes/routes.js'));
 
 
 

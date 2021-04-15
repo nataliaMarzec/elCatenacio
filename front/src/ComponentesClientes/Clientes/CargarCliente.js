@@ -17,16 +17,9 @@ class CargarCliente extends React.Component {
       cliente: props.cliente || {},
       clientes: props.clientes || [],
       modal: false,
-      // clienteVentas: props.clientes,
-      unCuit:{},
-      inputs: { ...props.cliente },
-      working: null,
-      clientesCantidad: 0,
+      unCuit: {},
       cuitCreado: {},
     };
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.encontrarCliente = this.encontrarCliente.bind(this);
   }
 
   estadoInicial = () => {
@@ -42,47 +35,27 @@ class CargarCliente extends React.Component {
     });
   };
 
-  toggle() {
-    this.setState({
-      modal: !this.state.modal,
-    });
-  }
-
-  componentDidMount() {
-    this.props.listadoClientes();
-    console.log("didMount-cargarCliente");
-  }
-
-
-  handleSubmit(event) {
+  handleSubmit = (event) => {
     const id = this.state.cliente.id;
     if (id) {
       this.editarcliente(id);
     } else {
+      // if(!id){
       this.crearCliente();
       //  this.encontrarCliente(this.state.cliente);
-       console.log("submit-cliente",{...this.state.cliente})
+      // }
     }
     event.preventDefault(event);
-    
-  }
-
-  buscarElCliente = (elCliente) => {
-    fetch(`http://localhost:8282/clientes/buscar/` + elCliente)
-      .then((res) => res.json())
-      .then((clts) =>
-        this.setState({ elCliente: clts }, this.agregarCliente(clts))
-      );
   };
 
-
   encontrarCliente = (cliente) => {
-    console.log("cuitEncontrar",cliente.cuit,cliente)
-    fetch("http://localhost:8282/clientes/busqueda/:" + cliente.cuit)
-    .then((res) => res.json())
+    console.log("cuitEncontrar", cliente.nombre, cliente);
+    fetch("http://localhost:8383/clientes/busqueda/:" + cliente.nombre)
+      .then((res) => res.json())
       .then((unCliente) =>
-        this.setState({cliente:unCliente},
-          console.log("encontrar:",cliente.cuit,{cliente:unCliente})
+        this.setState(
+          { cliente: unCliente },
+          console.log("encontrar:", cliente.nombre, { cliente: unCliente })
           // this.crearCliente(cliente, false)
         )
       );
@@ -95,7 +68,7 @@ class CargarCliente extends React.Component {
   };
 
   crearCliente = () => {
-    fetch("http://localhost:8282/clientes/nuevo", {
+    fetch("http://localhost:8383/clientes/nuevo", {
       method: "post",
       headers: {
         Accept: "application/json",
@@ -103,33 +76,21 @@ class CargarCliente extends React.Component {
       },
       body: JSON.stringify(this.state.cliente),
     })
-      .then((res) => this.props.listadoClientes())
-      .then((res) => this.estadoInicial());
+      .then(this.props.listadoClientes)
+      .then(this.estadoInicial());
   };
-
 
   editarcliente = (id) => {
-    console.log("idEditar", id);
-    fetch(
-      "http://localhost:8282/clientes/" + id,
-      {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(this.state.cliente),
+    fetch("http://localhost:8383/clientes/" + id, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-      console.log("ClienteEditado", this.state.cliente)
-    )
+      body: JSON.stringify(this.state.cliente),
+    })
       .then(this.props.listadoClientes)
-      .then(this.estadoInicial())
-      .then(console.log("EDITAR"));
-  };
-
-  limpiarTabla = () => {
-    document.getElementById("cuit").value = "";
-    this.listadoClientes();
+      .then(this.estadoInicial());
   };
 
   render() {
@@ -251,17 +212,13 @@ class CargarCliente extends React.Component {
     );
   }
 
-  handleChange(e) {
+  handleChange = (e) => {
     var nuevoCliente = Object.assign({}, this.state.cliente);
     nuevoCliente[e.target.name] = e.target.value;
     this.setState({ cliente: nuevoCliente });
-    console.log(
-      "evenEditar",
-      nuevoCliente,
-      this.state.cliente.id,
-      this.state.cliente.nombre
-    );
-  }
+  };
+
+  
 }
 
 export default CargarCliente;

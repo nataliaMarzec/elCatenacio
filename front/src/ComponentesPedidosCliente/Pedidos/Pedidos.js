@@ -1,7 +1,6 @@
 import React from "react";
 import Pedido from "./Pedido";
 import CargarPedido from "./CargarPedido";
-import CardPedido from "./CardPedido";
 import {
   Table,
   Container,
@@ -20,24 +19,31 @@ class Pedidos extends React.Component {
     this.state = {
       pedido: {},
       pedidos: [],
+      producto:{},
+      productos:[],
       modal: false,
       editable: false,
     };
-    this.seleccionar = this.seleccionar.bind(this);
-    this.actualizarAlEliminar = this.actualizarAlEliminar.bind(this);
-    this.toggle = this.toggle.bind(this);
-    this.listadoPedidos = this.listadoPedidos.bind(this);
-    this.estadoInicial = this.estadoInicial.bind(this);
   }
 
-  toggle() {
+  toggle = () => {
     this.setState({
       modal: !this.state.modal,
     });
+  };
+
+  componentWillReceiveProps(props) {
+    this.setState({ producto: props.producto });
+    this.setState({ productos: props.productos });
+    console.log("reciveV", props.producto);
   }
 
   componentDidMount() {
     this.listadoPedidos();
+  }
+
+  componentWillMount() {
+    this.listadoProductos();
   }
 
   listadoPedidos = () => {
@@ -46,15 +52,10 @@ class Pedidos extends React.Component {
       .then((pds) => this.setState({ pedidos: pds, pedido: {} }));
   };
 
-  estadoInicial = () => {
-    this.setState({
-      pedido: {
-        codigo: "",
-        descripcion: "",
-        precio: "",
-        habilitado:"",
-      },
-    });
+  listadoProductos = () => {
+    fetch(`http://localhost:8383/productos`)
+      .then((res) => res.json())
+      .then((prods) => this.setState({ productos: prods, producto: {} }));
   };
 
   actualizarAlEliminar = (unPedido) => {
@@ -72,20 +73,9 @@ class Pedidos extends React.Component {
     this.setState({ pedido: unPedido });
   };
 
-  editarPedidoFetch(id) {
-    this.props.editarPedido(id);
-    this.toogle();
-  }
-  editarPedido = (unPedido) => {
-    this.setState({ pedido: unPedido });
-  };
-
   ModalHeaderStrong = () => {
     return (
-      <ModalHeader
-        editable={this.state.editable}
-        toggle={this.toggle}
-      >
+      <ModalHeader editable={this.state.editable} toggle={this.toggle}>
         <strong>Nuevo</strong>Pedido
       </ModalHeader>
     );
@@ -110,10 +100,12 @@ class Pedidos extends React.Component {
               listadoPedidos={this.listadoPedidos}
               pedido={this.state.pedido}
               pedidos={this.state.pedidos}
-              estadoInicial={this.estadoInicial}
+              listadoClientes={this.listadoProductos}
+              producto={this.state.producto}
+              productos={this.state.productos}
             />
           </Modal>
-         
+
           <Row>&nbsp;</Row>
         </Container>
         <div className="animated fadeIn">
@@ -124,10 +116,15 @@ class Pedidos extends React.Component {
                   <Table responsive bordered size="sm">
                     <thead>
                       <tr>
-                        <th>codigo</th>
-                        <th>descripcion</th>
-                        <th>precio</th>
-                        <th>habilitado</th>
+                        <th>Código</th>
+                        <th>Mesero</th>
+                        <th>Sección</th>
+                        <th>Menú/codigo</th>
+                        <th>Cantidad</th>
+                        <th>Precio p/un.</th>
+                        <th>Importe</th>
+                        <th>Pagado</th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>{this.renderRows()}</tbody>
@@ -143,20 +140,22 @@ class Pedidos extends React.Component {
 
   renderRows() {
     let pedidos = this.state.pedidos;
+    let productos = this.state.productos;
+   
     return !pedidos
-      ? console.log("NULL", null)
+      ? console.log("NULL", null,productos)
       : pedidos.map((unPedido, index) => {
           return (
             <Pedido
               key={index}
               pedido={unPedido}
               pedidos={this.state.pedidos}
+              productos={this.state.productos}
+              producto={this.state.producto}
               selector={this.seleccionar}
               actualizarAlEliminar={this.actualizarAlEliminar}
               eliminarPedido={this.eliminarPedido.bind(this)}
-              editarPedido={this.editarPedido}
               toggle={this.toggle}
-              editarPedidoFetch={this.editarPedidoFetch.bind(this)}
             />
           );
         });

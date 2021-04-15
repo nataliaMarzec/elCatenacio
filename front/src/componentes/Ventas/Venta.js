@@ -1,6 +1,5 @@
 import React from "react";
 import { Button, Col } from "reactstrap";
-import VentasLista from "./VentasLista";
 class Cliente extends React.Component {
   constructor(props) {
     super(props);
@@ -10,7 +9,7 @@ class Cliente extends React.Component {
   }
 
   eliminarVenta = (id) => {
-    fetch("http://localhost:8282/ventas/" + id, {
+    fetch("http://localhost:8383/ventas/" + id, {
       method: "DELETE",
       headers: {
         Accept: "application/json",
