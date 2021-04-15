@@ -15,11 +15,9 @@ import {
   Form,
   FormGroup,
   Input,
-  Label,
 } from "reactstrap";
 
-
-class ClientesLista extends React.Component {
+class Clientes extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -30,31 +28,15 @@ class ClientesLista extends React.Component {
       pagosDeCliente: [],
       modal: false,
       editable: false,
-      data: [],
       cuit: "",
     };
-    this.seleccionar = this.seleccionar.bind(this);
-    this.actualizarAlEliminar = this.actualizarAlEliminar.bind(this);
-    this.toggle = this.toggle.bind(this);
-    this.generarFila = this.generarFila.bind(this);
-    this.listadoClientes = this.listadoClientes.bind(this);
-    this.estadoInicial = this.estadoInicial.bind(this);
-    this.clienteSeleccionado=this.clienteSeleccionado.bind(this)
   }
 
-  toggle() {
+  toggle = () => {
     this.setState({
       modal: !this.state.modal,
     });
-  }
-
-  generarFila(unCliente) {
-    this.setState({ cliente: unCliente });
-    var myArray = this.state.clientes.slice();
-    myArray.push({ ...this.state.cliente });
-    this.setState({ clientes: myArray });
-    console.log(myArray, " --array handler  ", this.state.clientes.values());
-  }
+  };
 
   verDetallesCliente(cuit) {
     var listaActualizada = this.state.clientes.filter(
@@ -68,30 +50,28 @@ class ClientesLista extends React.Component {
     const value = target.value;
     const name = target.name;
     this.setState({ [name]: value });
-  
-    
   };
 
   componentDidMount() {
     this.listadoClientes();
-    console.log("listadoClientes",this.listadoClientes())
+    console.log("listadoClientes", this.listadoClientes());
   }
 
   listadoBusqueda = (busqueda) => {
     if (busqueda != null) {
-      fetch(`http://localhost:8282/clientes` + busqueda)
+      fetch(`http://localhost:8383/clientes` + busqueda)
         .then((res) => res.json())
         .then((clts) => this.setState({ clientes: clts }));
     }
     if (busqueda == null) {
-      fetch(`http://localhost:8282/clientes`)
+      fetch(`http://localhost:8383/clientes`)
         .then((res) => res.json())
         .then((clts) => this.setState({ clientes: clts }));
     }
   };
 
   listadoClientes = () => {
-    fetch(`http://localhost:8282/clientes`)
+    fetch(`http://localhost:8383/clientes`)
       .then((res) => res.json())
       .then(
         (cltes) => this.setState({ clientes: cltes, cliente: {} }),
@@ -99,39 +79,21 @@ class ClientesLista extends React.Component {
       );
   };
 
-  estadoInicial = () => {
-    this.setState({
-      cliente: {
-        cuit: "",
-        nombre: "",
-        apellido: "",
-        razonSocial: "",
-        telefono: "",
-        email: "",
-      },
-    });
-  };
-
   limpiarTabla = () => {
     document.getElementById("cuit").value = "";
     this.listadoClientes();
   };
 
-
-
-  handleSubmit = (event) => {
-    console.log("submit",event)
+  handleSubmit = (e) => {
     var busqueda;
     if (this.state.cuit === "") {
       this.listadoBusqueda(busqueda);
-      console.log("1-submit-busqueda", busqueda);
     }
     if (this.state.cuit !== "") {
       busqueda = '?busqueda=cuit=="' + this.state.cuit + '"';
       this.listadoBusqueda(busqueda);
-      console.log("2-submit-busqueda", busqueda);
     }
-    event.preventDefault(event);
+    e.preventDefault(e);
   };
 
   actualizarAlEliminar = (unCliente) => {
@@ -149,14 +111,7 @@ class ClientesLista extends React.Component {
     this.setState({ cliente: unCliente });
   };
 
-  editarClienteFetch(id) {
-    this.props.editarCliente(id);
-    this.toogle();
-  }
-  editarCliente = (unCliente) => {
-    this.setState({ cliente: unCliente });
-  };
-  clienteSeleccionado = unCliente => {};
+  clienteSeleccionado = (unCliente) => {};
 
   ModalHeaderStrong = (editable) => {
     if (editable) {
@@ -181,6 +136,7 @@ class ClientesLista extends React.Component {
         </div>
       );
     });
+   
     return (
       <div className="container">
         <div></div>
@@ -199,9 +155,6 @@ class ClientesLista extends React.Component {
               listadoClientes={this.listadoClientes}
               cliente={this.state.cliente}
               clientes={this.state.clientes}
-              editable={this.state.editable}
-              editarClienteFetch={this.props.editarClienteFetch}
-              estadoInicial={this.estadoInicial}
             />
           </Modal>
           <Row>&nbsp;</Row>
@@ -212,10 +165,6 @@ class ClientesLista extends React.Component {
               <Card>
                 <CardHeader>
                   <i className="fa fa-align-justify"></i> Clientes Lista
-                  <div>
-                    <button onClick={this.generarFila}>SET STATE</button>
-                    <h4>State Array: {this.state.data}</h4>
-                  </div>
                 </CardHeader>
                 <CardHeader>
                   <Form onSubmit={this.handleSubmit} id="formulario">
@@ -270,7 +219,6 @@ class ClientesLista extends React.Component {
                         <th>razonSocial</th>
                         <th>telefono</th>
                         <th>email</th>
-
                       </tr>
                     </thead>
                     <tbody>{this.renderRows()}</tbody>
@@ -299,13 +247,11 @@ class ClientesLista extends React.Component {
               clienteSeleccionado={this.clienteSeleccionado}
               actualizarAlEliminar={this.actualizarAlEliminar}
               eliminarCliente={this.eliminarCliente.bind(this)}
-              editarCliente={this.editarCliente}
               toggle={this.toggle}
-              editarClienteFetch={this.editarClienteFetch.bind(this)}
             />
           );
         });
   }
 }
 
-export default ClientesLista;
+export default Clientes;

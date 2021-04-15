@@ -1,6 +1,6 @@
 import React from "react";
-import { Button, Col } from "reactstrap";
-import {} from "./ClientesLista";
+import { Button } from "reactstrap";
+
 class Cliente extends React.Component {
   constructor(props) {
     super(props);
@@ -19,7 +19,7 @@ class Cliente extends React.Component {
     //   "¿ELIMINAR  " + this.props.cliente.nombre + " ?"
     // );
     // if (answer) {
-      fetch("http://localhost:8282/clientes/" + id, {
+      fetch("http://localhost:8383/clientes/" + id, {
         method: "DELETE",
         headers: {
           Accept: "application/json",
@@ -29,10 +29,10 @@ class Cliente extends React.Component {
     // }
   };
 
-  editar() {
-    this.props.editarClienteFetch(this.props.cliente);
-    this.props.toggle();
-  }
+  // editar() {
+  //   this.props.editarClienteFetch(this.props.cliente);
+  //   this.props.toggle();
+  // }
 
   seleccionarCliente() {
     this.props.selector(this.props.cliente);
@@ -45,10 +45,10 @@ class Cliente extends React.Component {
   };
 
  
-  editCliente = () => {
-    this.props.editarCliente(this.props.cliente);
-    this.props.toogle();
-  };
+  // editCliente = () => {
+  //   this.props.editarCliente(this.props.cliente);
+  //   this.props.toogle();
+  // };
 
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -62,7 +62,6 @@ class Cliente extends React.Component {
   }
 
   render = () => {
-    const {index} = this.props;
     return (
       <tr>
         <td>{this.props.cliente.id}</td>

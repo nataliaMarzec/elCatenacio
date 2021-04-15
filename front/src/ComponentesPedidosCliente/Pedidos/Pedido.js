@@ -1,5 +1,5 @@
 import React from "react";
-import { Button} from "reactstrap";
+import { Button } from "reactstrap";
 
 class Pedido extends React.Component {
   constructor(props) {
@@ -30,6 +30,7 @@ class Pedido extends React.Component {
   seleccionarPedido() {
     this.props.selector(this.props.pedido);
     console.log("seleccionar___", this.props.pedido);
+    console.log("productoS____",this.props.producto)
     this.props.toggle();
   }
 
@@ -45,10 +46,29 @@ class Pedido extends React.Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.pedidos !== this.props.pedidos) {
       this.setState({ pedidos: this.props.pedidos });
-      console.log("pedidos props", this.props.pedidos, nextProps.pedidos.values());
+      console.log(
+        "pedidos props",
+        this.props.pedidos,
+        nextProps.pedidos.values()
+      );
     }
     if (nextProps.pedido !== this.props.pedido) {
       this.setState({ pedido: nextProps.pedido });
+    }
+    if (nextProps.productos !== this.props.productos) {
+      this.setState({ productos: this.props.productos });
+      console.log(
+        "productos props",
+        this.props.productos,
+        nextProps.productos.values()
+      );
+    }
+    if (nextProps.producto !== this.props.producto) {
+      this.setState({ producto: nextProps.producto });
+      console.log(
+        "producto prop",
+        this.props.producto
+      );
     }
   }
 
@@ -56,10 +76,14 @@ class Pedido extends React.Component {
     return (
       <tr>
         <td>{this.props.pedido.codigo}</td>
-        <td>{this.props.pedido.descripcion}</td>
-        <td>{this.props.pedido.precio}</td>
-        <td>{this.props.pedido.habilitado? "si":"no"}</td>
-
+        <td>{this.props.pedido.mesero}</td>
+        <td>{this.props.pedido.seccion}</td>
+        <td>{console.log(this.props.producto.codigo,"codigo")}</td>
+        <td>{this.props.pedido.cantidad}</td>
+        <td>{console.log(this.props.producto.precio,"precio")}</td>
+        <td>{this.props.pedido.importeTotal}</td>
+        <td>{this.props.pedido.pagado}</td>
+        {/* <td>{this.props.pedido.habilitado? "si":"no"}</td> */}
         <td>
           <Button
             color="danger"

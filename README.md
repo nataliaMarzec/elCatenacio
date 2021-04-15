@@ -1,52 +1,6 @@
 # EL CATENACIO
 
 ***
-***
-
-
-EL CATENACIO es una parrilla ubicada en la localidad de Capitan Sarmiento.
-La idea es poder implementar las modalidades "take away" y "delivery" para poder acceder a una mayor cantidad de personas de manera accesible.
-Sirve para aumentar los servicios de comida.
-Es una potente herramienta de marketing para conseguir clientes nuevos a restaurantes.
-Dados que los pedidos pueden llegar en cualquier momento, es necesario tener previstos los pedidos con anticipacion.
-El take away a diferencia del delivery pueden ir a buscar los mismos clientes el pedido.
-El delivery la parrilla es la encargada de llevar el producto al domicilio del cliente.
-
-## Casos de uso:
-
-1-Registrar menues(abm)
-
-2-Registrar clientes(abm)
-
-3-Registrar los pedidos del cliente(abm)
-
-4-Integrar una caja, a modo de caja registradora en la app
-
-5-Registrar reservas de la mesa(diferencias entre carpa y no carpa)
-
-6-Registrar menues del dia y publicarlos en la app
-
-7-Que el cliente registre su pedido desde la mesa
-
-8-Que el encargado de la parrilla pueda responder al cliente de mesa(avisando cuando el pedido este listo)
-
-9-Se registran todos los datos del pedido de mesa(menu,precioUnitario,importeTotal)
-
-10-Integrar una camara a los menues(para que pueda sacar fotos del producto al instante)
-
-11-Integrar map para que el cliente pueda ubicar el lugar
-
-12-Detallar los pedidos de cada mesa incluyendo quien es el empleado responsable en ese momento
-
-13-Registros de ventas por mesa
-
-14-Registrar eventos especiales(fiestas tradicionales,musicos)
-
-15-Integrar Response para poder acceder desde el movil
-
--Integracion de mercado pago
-
-
 # INSTALACIONES NECESARIAS:
 
 ***
@@ -54,11 +8,7 @@ El delivery la parrilla es la encargada de llevar el producto al domicilio del c
 
  Tener instalados en el sistema :
 
- * Mysql:
-
- ~~~
- sudo apt install mysql-server
- ~~~
+ * Mysql: https://www.mysql.com/ según sistema operativo lo requiera
 
  * Nodejs , Curl y Yarn: 
 
@@ -74,13 +24,38 @@ echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/source
 sudo apt-get update && sudo apt-get install yarn 
 ~~~
 
+# NOTA:
+
+Una vez clonado el proyecto:
+
+1-Otorgar privilegios a db:
+
+~~~
+   mysql> create user 'cat' identified by 'miPassword';
+
+   mysql> grant all privileges on catenacio.* to cat;
+~~~       
+         
+
+2-Ir a folder back y ejecutar:
+
+`elCatenacio/back$ npm install`
+
+`npm start`
+
+3-Ir a folder front y ejecutar:
+
+`elCatenacio/front$ npm install`
+
+`npm start`
+
 ***
 # BACK #
 
 ***
 ***
 
-* Aclaración: En la terminal,al clonar el proyecto, desde la carpeta back ejecutando `npm install` y luego `npm start` se levanta la app. De querer entender el proceso de instalaciones seguir los siguientes pasos:
+* Aclaración: En la terminal,al clonar el proyecto, desde la carpeta back ejecutando `npm install` y luego `npm start` se levanta la app(como se explica en *NOTA*). De querer entender el proceso de instalaciones seguir los siguientes pasos:
 
  1- Crear folder back `mkdir back`
 
@@ -270,7 +245,7 @@ Luego comprometer el archivo a la base de datos:
 
 * Aclaración dado que el template ya está actualizado en la versión actual no es 
 recomendable para este proyecto clonarlo como se muestra en el paso 1, sino que al clonar
- el proyecto ElCatenacio es preferible ir a la carpeta ´front´ y ejecutar en la terminal `npm install` directamente. :exclamation: :grey_exclamation: :+1: 
+ el proyecto ElCatenacio es preferible ir a la carpeta ´front´ y ejecutar en la terminal `npm install` directamente(como se explica en *NOTA*). :exclamation: :grey_exclamation: :+1: 
 
 Al finalizar las instalaciones en el front ejecutar `npm start` en la terminal para levantar la app.
 
@@ -302,8 +277,46 @@ En caso de querer entender el proceso inicial de instalación leer lo siguiente:
 
 ***
 ***
+Empezando:
 
- * Ver documentación.
+Documentacion: 
+
+https://www.selenium.dev/documentation/es/getting_started/quick/
+
+https://www.npmjs.com/package/chromedriver
+
+https://sites.google.com/a/chromium.org/chromedriver/
+
+1-
+
+ `whereis google-chrome`
+
+google-chrome: /usr/bin/google-chrome /usr/share/man/man1/google-chrome.1.gz
+
+2- `google-chrome --version`
+
+    Google Chrome 83.0.4103.116 
+
+
+3- Crear path:
+
+ ´export PATH=$PATH:/opt/WebDriver/bin >> ~/.profile´
+
+4- `$ wget -P ~/ http://chromedriver.storage.googleapis.com/83.0.4103.14/chromedriver_linux64.zip`
+
+5- `$ unzip ~/chromedriver_linux64.zip`
+
+6- `$ chmod +x ~/chromedriver`
+
+7- `$ sudo mv ~/chromedriver    /urs/local/share/chromedriver`
+
+8- `$ sudo ln -s /usr/local/share/chromedriver /usr/bin/chromedriver`
+
+9- `chromedriver --version`
+
+
+
+***
 
  1- Crear carpeta ´Selenium´ fuera del proyecto.
 
@@ -320,6 +333,8 @@ En caso de querer entender el proceso inicial de instalación leer lo siguiente:
 
  4- Agregar la extensión IDE para chrome 
 
- 5- Para probar la url ejecutar `/Selenium/$ npm start`
+ 5- Para probar la url ejecutar `/Selenium/$ node index.js`
 
  6- Hacer test de pruebas
+ 
+

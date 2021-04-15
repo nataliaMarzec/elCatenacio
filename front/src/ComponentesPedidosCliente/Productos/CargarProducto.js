@@ -1,11 +1,10 @@
 import React from "react";
-import Pedido from "./Pedido";
+
 import {
   Button,
   Card,
   CardBody,
   CardImg,
-  CardFooter,
   CardSubtitle,
   CardText,
   Form,
@@ -18,121 +17,80 @@ import {
   Row,
 } from "reactstrap";
 import { AppSwitch } from "@coreui/react";
-import logo from "../assets/img/brand/logo.svg";
-class CargarPedido extends React.Component {
+
+class CargarProducto extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      pedido: props.pedido || {},
-      pedidos: props.pedidos || [],
+      producto: props.producto || {},
+      productos: props.productos || [],
       modal: false,
       codigo: "",
       onClick: false,
     };
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.listadoBusqueda = this.listadoBusqueda.bind(this);
-    this.getPrecio=this.getPrecio.bind(this)
   }
 
   estadoInicial = () => {
     this.setState({
-      pedido: {
+      producto: {
         codigo: "",
         descripcion: "",
         precio: "",
+        habilitado: "",
       },
     });
   };
 
-  toggle() {
-    this.setState({
-      modal: !this.state.modal,
-    });
-  }
-
-  componentDidMount() {
-    this.props.listadoPedidos();
-    console.log("didMount-cargarCliente");
-  }
-  verDetallesPedido(codigo) {
-    var listaActualizada = this.state.pedidos.filter((item) => codigo == item.codigo);
-    this.setState({ pedidos: listaActualizada });
-    console.log(listaActualizada,"listaActualiazada------",this.state.pedidos,{pedidos:listaActualizada})
-  }
-  getPrecio=()=>{
-    var precio=this.state.pedido.precio;
-    return precio;
-  }
-
-  handleSubmit(event) {
-    event.preventDefault(event);
-    const id = this.state.pedido.id;
-    // var busqueda='?busqueda=codigo=="' + this.state.codigo + '"'
+  handleSubmit = (event) => {
+    const id = this.state.producto.id;
     if (id) {
-      this.editarPedido(id);
+      this.editarProducto(id);
     } else {
-     this.crearPedido();
-    //  this.listadoBusqueda(busqueda);
+      this.crearProducto();
     }
-    };
-  
+    event.preventDefault(event);
+  };
 
   listadoBusqueda = (busqueda) => {
     if (busqueda != null) {
-      fetch(`http://localhost:8383/pedidos` + busqueda)
+      fetch(`http://localhost:8383/productos` + busqueda)
         .then((res) => res.json())
-        .then((pdds) => this.setState({ pedidos: pdds }));
+        .then((pdds) => this.setState({ productos: pdds }));
     }
     if (busqueda == null) {
-      fetch(`http://localhost:8383/pedidos`)
+      fetch(`http://localhost:8383/productos`)
         .then((res) => res.json())
-        .then((pdds) => this.setState({ pedidos: pdds }));
+        .then((pdds) => this.setState({ productos: pdds }));
     }
   };
 
-  crearPedido = () => {
-    fetch("http://localhost:8383/pedidos/nuevo", {
+  crearProducto = () => {
+    fetch("http://localhost:8383/productos/nuevo", {
       method: "post",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.state.pedido),
+      body: JSON.stringify(this.state.producto),
     })
-      .then((res) => this.props.listadoPedidos())
-      .then((res) => this.estadoInicial());
+      .then(this.props.listadoProductos)
+      .then(this.estadoInicial());
   };
 
-  editarPedido = (id) => {
-    fetch("http://localhost:8383/pedidos/" + id, {
+  editarProducto = (id) => {
+    fetch("http://localhost:8383/productos/" + id, {
       method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.state.pedido),
+      body: JSON.stringify(this.state.producto),
     })
-      .then(this.props.listadoPedidos())
+      .then(this.props.listadoProductos)
       .then(this.estadoInicial());
   };
 
- 
-
-
-  // onClick = ()=>{
-  //   this.setState({
-  //     onClick: !this.state.onClick,
-  //   });
-  //   if(this.state.onClick){
-  //     this.handleSubmit();
-  //     this.verDetallesPedido();
-  //   }
-  // }
-  
-
   render() {
-    const codigo = this.state.codigo;
     return (
       <Col xs="12" md="12">
         <ModalBody>
@@ -150,7 +108,7 @@ class CargarPedido extends React.Component {
                     name="img"
                     placeholder="Agrega una imagen..."
                     required={false}
-                    value={this.state.pedido.img}
+                    value={this.state.producto.img}
                     onChange={this.handleChange}
                   />
                   <CardBody>
@@ -171,7 +129,7 @@ class CargarPedido extends React.Component {
                         name="codigo"
                         placeholder="Completa Código..."
                         required={true}
-                        value={this.state.pedido.codigo}
+                        value={this.state.producto.codigo}
                         onChange={this.handleChange}
                       />
                     </Col>
@@ -186,7 +144,7 @@ class CargarPedido extends React.Component {
                         id="descripcion"
                         name="descripcion"
                         placeholder="Completa Descripción..."
-                        value={this.state.pedido.descripcion}
+                        value={this.state.producto.descripcion}
                         onChange={this.handleChange}
                       />
                     </Col>
@@ -202,7 +160,7 @@ class CargarPedido extends React.Component {
                         name="precio"
                         placeholder="Completa precio..."
                         // required
-                        value={this.state.pedido.precio}
+                        value={this.state.producto.precio}
                         onChange={this.handleChange}
                       />
                     </Col>
@@ -211,27 +169,16 @@ class CargarPedido extends React.Component {
                     <div className="card-header-actions">
                       <AppSwitch
                         type="checkbox"
-                        className={"float-right mb-0"}
+                        className={"float-left mb-0"}
                         label
                         color={"info"}
                         // defaultChecked
                         size={"sm"}
                         name="habilitado"
-                        checked={this.state.pedido.habilitado}
+                        checked={this.state.producto.habilitado}
                         onChange={this.handleChange}
                       />
                     </div>
-                  </FormGroup>
-                  <FormGroup>
-                    <tbody>
-                      <tr className="#1b5e20 green darken-4">
-                        <th>Deuda</th>
-                        <th>&nbsp;</th>
-                        <th>&nbsp;</th>
-                        <th>{this.getPrecio() || 0}</th>
-                        <th> </th>
-                      </tr>
-                    </tbody>
                   </FormGroup>
                 </CardBody>
               </Card>
@@ -241,10 +188,9 @@ class CargarPedido extends React.Component {
               size="lg"
               className="btn-pill"
               type="submit"
-              onChange={this.verDetallesPedido}
               onClick={this.handleSubmit}
             >
-              Guardar pedido
+              Guardar producto
             </Button>
 
             {/* </Form> */}
@@ -256,22 +202,12 @@ class CargarPedido extends React.Component {
     );
   }
 
-  handleChange(e) {
-    var nuevoPedido = Object.assign({}, this.state.pedido);
-    nuevoPedido[e.target.name] =
+  handleChange = (e) => {
+    var nuevoProducto = Object.assign({}, this.state.producto);
+    nuevoProducto[e.target.name] =
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
-    this.setState({ pedido: nuevoPedido });
-    this.setState({ codigo: nuevoPedido.codigo });
-    this.verDetallesPedido(nuevoPedido.codigo)
-    console.log(
-      "evenEditar",
-      nuevoPedido.codigo,
-      this.state.pedido.id,
-      this.state.pedido.codigo,
-      this.state.pedido.precio,
-      this.state.pedido.descripcion
-    );
-  }
+    this.setState({ producto: nuevoProducto });
+  };
 }
 
-export default CargarPedido;
+export default CargarProducto;
