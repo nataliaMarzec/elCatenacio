@@ -43,6 +43,7 @@
     "react-transition-group": "2.2.1",
     "reactstrap": "^8.4.1",
     "simple-line-icons": "^2.4.1",
+    "styled-components": "^5.2.3",
     "sweetalert": "^2.1.2",
     "toastr": "^2.1.2"
   },

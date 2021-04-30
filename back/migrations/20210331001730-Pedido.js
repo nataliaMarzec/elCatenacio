@@ -1,4 +1,7 @@
 "use strict";
+
+const { Pedido } = require("../SequelizeConnection");
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable("Pedidos", {
@@ -8,11 +11,17 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      // pedidoId: {
+      //   allowNull: true,
+      //   foreignKey: true,
+      //   unique:true,
+      //   type: DataTypes.UUID,
+      // },
       clienteId_pedido: {
         foreignKey: true,
         type: DataTypes.INTEGER,
       },
-      codigo: {
+      codigoPedido: {
         type: Sequelize.INTEGER,
       },
       mesero: {
@@ -21,12 +30,7 @@ module.exports = {
       seccion: {
         type: Sequelize.STRING,
       },
-      cantidad: {
-        type: Sequelize.INTEGER,
-      },
-      precioUnitario: {
-        type: Sequelize.INTEGER,
-      },
+      cantidad:Sequelize.INTEGER,
       importeTotal: {
         type: Sequelize.INTEGER,
       },

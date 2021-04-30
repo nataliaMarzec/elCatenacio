@@ -1,5 +1,4 @@
 import React from "react";
-import Pedido from "./Pedido";
 import {
   Button,
   Card,
@@ -19,7 +18,7 @@ import {
 } from "reactstrap";
 import { AppSwitch } from "@coreui/react";
 // import logo from "../assets/img/brand/logo.svg";
-class CargarPedido extends React.Component {
+class CargarUnPedido extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -30,7 +29,8 @@ class CargarPedido extends React.Component {
       producto: props.producto || {},
       cliente: props.cliente || {},
       modal: false,
-      codigo: "",
+      mesero: "",
+      verTabla:props.verTabla
     };
   }
 
@@ -49,43 +49,59 @@ class CargarPedido extends React.Component {
     });
   };
 
-  estadoInicialProducto = () => {
-    this.setState({
-      producto: {
-        codigo:"",
-        descripcion: "",
-        precio: 0,
-      },
-    });
-  };
 
   componentDidMount() {
-    this.listadoProductos();
+    this.unPedido();
   }
 
-  listadoProductos = () => {
-    fetch(`http://localhost:8383/productos`)
+  unPedido = () => {
+    fetch(`http://localhost:8383/unPedido`)
       .then((res) => res.json())
       .then(
-        (prods) => this.setState({ productos: prods,producto: {} }),
+        (prods) => this.setState({ nuevaListaPedido: prods,pedido: {} }),
         console.log("productoEnviado", this.state.productos)
       );
   };
 
+  pedidoMesero(mesero) {
+    var listaActualizada = this.state.pedidos.filter(
+      (item) => mesero == item.mesero
+    );
+    this.setState({pedidos: listaActualizada });
+  }
   getPrecio = () => {
     var precio = this.state.pedido.precioUnitario;
     return precio;
   };
 
   handleSubmit = (e) => {
+      var busqueda;
     const id = this.state.pedido.id;
     if (id) {
       this.editarPedido(id);
     } else {
       this.crearPedido();
+    
+      if (this.state.mesero !== "") {
+        busqueda = '?busqueda=codigo=="' + this.state.mesero + '"';
+        this.listadoBusqueda(busqueda);
+        
+      }
     }
     e.preventDefault(e);
+    this.setState({verTabla:true });
   };
+  pedidoMeseros = mesero => {
+      fetch(`http://localhost:8888/clientes/busqueda` + mesero)
+        .then(res => res.json())
+        .then(pedido =>
+          this.setState({
+            seleccionado: pedido,
+            verTabla: true,
+          }))    
+  };
+
+  
 
   handleSubmitProducto = (e) => {
     var busqueda;
@@ -93,7 +109,7 @@ class CargarPedido extends React.Component {
       this.listadoBusqueda(busqueda);
     }
     if (this.state.codigoPedido !== "") {
-      busqueda = '?busqueda=codigo=="' + this.state.codigoPedido + '"';
+      busqueda = '?busqueda=mesero=="' + this.state.mesero + '"';
       this.listadoBusqueda(busqueda);
     }
     e.preventDefault(e);
@@ -101,9 +117,9 @@ class CargarPedido extends React.Component {
 
   listadoBusqueda = (busqueda) => {
     if (busqueda) {
-      fetch(`http://localhost:8383/productos` + busqueda)
+      fetch(`http://localhost:8383/pedidos` + busqueda)
         .then((res) => res.json())
-        .then((prods) => this.setState({ productos: prods }));
+        .then((pdds) => this.setState({ unPedido: pdds }));
     }
   };
 
@@ -117,7 +133,7 @@ class CargarPedido extends React.Component {
       body: JSON.stringify(this.state.pedido),
     })
       .then((res) => this.props.listadoPedidos())
-      .then((res) => this.estadoInicial());
+      .then((res) => this.estadoInicial())
   };
 
   // agregarProductoAPedidos = (id) =>{
@@ -390,7 +406,7 @@ class CargarPedido extends React.Component {
     var nuevoPedido = Object.assign({}, this.state.pedido);
     nuevoPedido[e.target.name] =
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
-    this.setState({ pedido: nuevoPedido });
+    this.setState({ pedido: nuevoPedido});
   };
 
   handleChangeProducto = (e) => {
@@ -401,4 +417,4 @@ class CargarPedido extends React.Component {
   };
 }
 
-export default CargarPedido;
+export default CargarUnPedido;

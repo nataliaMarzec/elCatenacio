@@ -119,7 +119,7 @@ class Pedidos extends React.Component {
                         <th>Código</th>
                         <th>Mesero</th>
                         <th>Sección</th>
-                        <th>Menú/codigo</th>
+                        {/* <th>Menú/codigo</th> */}
                         <th>Cantidad</th>
                         <th>Precio p/un.</th>
                         <th>Importe</th>

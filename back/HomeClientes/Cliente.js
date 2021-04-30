@@ -33,7 +33,7 @@ module.exports = function (sequelize, DataTypes) {
         },
       },
       apellido: DataTypes.STRING,
-      razonSocial: DataTypes.STRING,
+      direccion: DataTypes.STRING,
       telefono: DataTypes.STRING,
       email: {
         type: DataTypes.STRING,

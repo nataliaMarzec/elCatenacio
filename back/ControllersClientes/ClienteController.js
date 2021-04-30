@@ -10,7 +10,7 @@ module.exports = {
       nombre,
       apellido,
       cuit,
-      razonSocial,
+      direccion,
       telefono,
       email,
     } = await Cliente.create(cliente);
@@ -20,7 +20,7 @@ module.exports = {
       nombre,
       apellido,
       cuit,
-      razonSocial,
+      direccion,
       telefono,
       email,
     }))
@@ -60,7 +60,7 @@ module.exports = {
       nombre,
       apellido,
       cuit,
-      razonSocial,
+      direccion,
       telefono,
       email,
     } = await cliente.update(req.body);
@@ -70,7 +70,7 @@ module.exports = {
       nombre,
       apellido,
       cuit,
-      razonSocial,
+      direccion,
       telefono,
       email,
     }).res.send(200,"cliente editado");
@@ -89,10 +89,10 @@ if (cliente === null) {
 }
 },
 
-encontrarClientePorDni: async (req, res) => {
-  var cliente = await Cliente.findOne({where:{dni:req.params.dni}});
+encontrarClientePorCuit: async (req, res) => {
+  var cliente = await Cliente.findOne({where:{cuit:req.params.cuit}});
   if (![req.body.values]) {
-    res.status(400).json({ err: "No hay cliente con dni" });
+    res.status(400).json({ err: "No hay cliente con cuit" });
   } else {
     return res.status(200).json(cliente)
   }

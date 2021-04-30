@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import './App.scss'
 import {BrowserRouter as Router, Route, Switch, Redirect, NavLink as Link} from "react-router-dom"
 import {UsuarioProvider,useUsuario} from './componentes/Context/usuario-context'
+import VistaDeProductosParaClientes from './ComponentesPedidosCliente/Productos/VistaDeProductosParaClientes'
 
 const loading = () => <div className="animated fadeIn pt-3 text-center">Loading...</div>
 const DefaultLayout = React.lazy(() => import('./containers/DefaultLayout'))
@@ -31,6 +32,7 @@ function App() {
         <Route exact path="/500" name="Page 500" render={props => <Page500 {...props}/>} />
         <Route path="/" name="DefaultLayout" render={props => <DefaultLayout {...props}/>} />
         <Route exact path="/home" name="Home" render={props => <Home {...props}/>} />
+        <Route exact path="/vistaDeProductosParaClientes" name="VistaDeProductosParaClientes" render={props => <VistaDeProductosParaClientes {...props}/>} />
         </Switch>
       </React.Suspense>
       <Switch>

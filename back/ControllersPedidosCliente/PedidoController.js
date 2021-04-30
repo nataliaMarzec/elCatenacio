@@ -1,5 +1,5 @@
 var { Op } = require("sequelize");
-const { Pedido,Producto } = require("../SequelizeConnection");
+const { Pedido, Producto } = require("../SequelizeConnection");
 
 module.exports = {
   create: async (req, res) => {
@@ -7,8 +7,7 @@ module.exports = {
 
     const {
       id,
-      productoId_pedido,
-      codigo,
+      codigoPedido,
       mesero,
       seccion,
       cantidad,
@@ -16,12 +15,11 @@ module.exports = {
       importeTotal,
       montoCobrado,
       pagado,
-      
     } = await Pedido.create(pedido);
 
     return res.json({
       id,
-      codigo,
+      codigoPedido,
       mesero,
       seccion,
       cantidad,
@@ -38,6 +36,15 @@ module.exports = {
       res.status(400).json({ err: "no obtiene lista de pedidos" });
     } else {
       return res.status(200).json(pedidos);
+    }
+  },
+
+  getUnPedido: async (req, res, next) => {
+    const pedido = await Pedido.findAll();
+    if (![req.body.values]) {
+      res.status(400).json({ err: "no obtiene unPedido" });
+    } else {
+      return res.status(200).json(pedido);
     }
   },
 
@@ -60,7 +67,7 @@ module.exports = {
     const pedido = await Pedido.findByPk(req.params.id);
     const {
       id,
-      codigo,
+      codigoPedido,
       mesero,
       seccion,
       cantidad,
@@ -73,7 +80,7 @@ module.exports = {
     return res
       .json({
         id,
-        codigo,
+        codigoPedido,
         mesero,
         seccion,
         cantidad,
@@ -81,7 +88,6 @@ module.exports = {
         importeTotal,
         montoCobrado,
         pagado,
-
       })
       .res.send(200, "pedido editado");
   },
@@ -103,70 +109,56 @@ module.exports = {
       return res.status(200).json(pedido);
     }
   },
-  encontrarPedidoConProductos:async(req,res)=>{
-    var pedido = await Pedido.findOne({ 
-      include:[
-    {association:Producto.Pedido}
-    ]
-   }).each(pedido=>{
-     console.log("pedido",pedido)
-   });
+  encontrarPedidoConProductos: async (req, res) => {
+    var pedido = await Pedido.findOne({
+      include: [{ association: Producto.Pedido }],
+    }).each((pedido) => {
+      console.log("pedido", pedido);
+    });
     if (![req.body.values]) {
       res.status(400).json({ err: "No hay pedido con mesero" });
     } else {
       return res.status(200).json(pedido);
     }
-  }
+  },
 
-  
+  // actualizarVentaConProductoId(req,res){
+  //  const id_venta = req.params.venta.id;
+  //  const productoId_pedido=req.body.productoId_pedido;
+  //  const query = "UPDATE pedido SET productoId_pedido = "+productoId_pedido+ "WHERE id"+id_venta;
+  //  if (![req.body.values]) {
+  //   res.status(400).json({ err: "No hay pedido con productoId_pedido" });
+  // } else {
+  //   return res.status(200).json(query);
+  // }
+  // },
 
+  // encontrarPedidoConProductoId(req,res){
+  //  const {id}=req.params;
+  //  if(id){
+  //  const pedido=await Pedido.findOne({
+  //    where:{id},
+  //    attributes:[
+  //     id,
+  //     codigo,
+  //     mesero,
+  //     seccion,
+  //     cantidad,
+  //     precioUnitario,
+  //     importeTotal,
+  //     montoCobrado,
+  //     pagado,
+  //    ],
+  //    include:[
+  //      {
+  //       model:Producto,
+  //       as: 'Producto',
+  //       attributes: ['productoId_pedido'],
 
-
-// actualizarVentaConProductoId(req,res){
-//  const id_venta = req.params.venta.id;
-//  const productoId_pedido=req.body.productoId_pedido;
-//  const query = "UPDATE pedido SET productoId_pedido = "+productoId_pedido+ "WHERE id"+id_venta;
-//  if (![req.body.values]) {
-//   res.status(400).json({ err: "No hay pedido con productoId_pedido" });
-// } else {
-//   return res.status(200).json(query);
-// }
-// },
-
-// encontrarPedidoConProductoId(req,res){
-//  const {id}=req.params;
-//  if(id){
-//  const pedido=await Pedido.findOne({
-//    where:{id},
-//    attributes:[
-//     id,
-//     codigo,
-//     mesero,
-//     seccion,
-//     cantidad,
-//     precioUnitario,
-//     importeTotal,
-//     montoCobrado,
-//     pagado,
-//    ],
-//    include:[
-//      {
-//       model:Producto,
-//       as: 'Producto',
-//       attributes: ['productoId_pedido'],
-              
-//      }
-//     ]
-//  });
-//  return res.json(pedido)
-//  }
-// },
- 
-
-
-
-
-
-
-
+  //      }
+  //     ]
+  //  });
+  //  return res.json(pedido)
+  //  }
+  // },
 };
