@@ -1,10 +1,16 @@
 var { Op, Sequelize } = require("sequelize");
-const { Producto, Pedido } = require("../SequelizeConnection");
-
+const {models} = require("../SequelizeConnection");
+const Producto=models.Producto
 module.exports = {
+  // create:async (req, resp)=>{
+	// 	const pedido= req.body;
+	// 	pedido.pedidoId = req.params.pedidoId;
+	// 	console.log('info pedido ', pedido);
+  //   const pedidoCompleto=await Pedido.create(pedidoId);
+	// 	return res.status(200).json({pedido})
+	// },
   create: async (req, res) => {
     const producto = req.body;
-    // const pedidoID=Producto.find({where:Producto.Pedido.pedidoId})
     const {
       id,
       pedidoId,
@@ -19,6 +25,7 @@ module.exports = {
       habilitado,
     });
   },
+
   // createProductoConPedido: async (req, res) => {
   //     var pedido = await Pedido.findOne({
   //       where: { pedidoId: req.params.pedidoId },
@@ -124,6 +131,23 @@ module.exports = {
     return res.status(200).json(productos);
   },
 
+  getProductosDescripciones: async (req, res, next) => {
+    const productos = await Producto.findAll();
+    const descripciones = await productos.map((producto) => producto.descripcion);
+    // const productosFks = await Producto.findAll({
+    //   where: {
+    //     productoId: {
+    //       $in: fk,
+    //     },
+    //   },
+    // });
+    if (![req.body.values]) {
+      res.status(400).json({ err: "no obtiene lista de productos" });
+    } else {
+      return res.status(200).json(descripciones);
+    }
+  },
+
   //funciona para pedidoid y menus
   getProductosTodos: async (req, res, next) => {
     const productos = await Producto.findAll();
@@ -141,6 +165,7 @@ module.exports = {
       return res.status(200).json(fk);
     }
   },
+
 
   getProductosTodos2: async (req, res, next) => {
     const productos = await Producto.findAll();
@@ -296,13 +321,7 @@ module.exports = {
     return res.status(200).json(productos);
   },
 
-  //   const project = await Project.findByPk(123);
-  // if (project === null) {
-  //   console.log('Not found!');
-  // } else {
-  //   console.log(project instanceof Project); // true
-  //   // Its primary key is 123
-  // }
+ 
 
   // getFkey:async(req,res)=>{
   //   Project.findAll({ group: 'name' });

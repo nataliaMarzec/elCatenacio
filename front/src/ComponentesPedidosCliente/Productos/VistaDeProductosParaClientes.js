@@ -51,29 +51,10 @@ class VistaDeProductosParaClientes extends React.Component {
     this.setState({ producto: unProducto });
   };
 
-  // render() {
-  //   var listaPedidos = this.state.productos;
-  //   return listaPedidos.map((producto, index) => (
-  //     <div className="container">
-  //       <CardBody>
-  //         <Table responsive bordered size="sm">
-  //           <thead>
-  //             <tr>
-  //               <th>Codigo</th>
-  //               <th>Descripción</th>
-  //               <th>Precio</th>
-  //               <th>Habilitado</th>
-  //             </tr>
-  //           </thead>
-  //           <tbody>{this.renderRows(producto, index)}</tbody>
-  //         </Table>
-  //       </CardBody>
-  //     </div>
-  //   ));
-  // }
 
   render() {
     var listaProductos = this.state.productos;
+    if(listaProductos.length){
     return listaProductos.map((producto, index) => (
       <div>
      
@@ -85,6 +66,17 @@ class VistaDeProductosParaClientes extends React.Component {
             */}
      </div>
     ));
+          }else{
+            return(
+            <div className="container">
+            <div className="jumbotron mt-5">
+              <div className="col-sm-8 mx-auto">
+                <h1 className="text-center">No hay productos para mostrar</h1>
+              </div>
+            </div>
+          </div>
+            )
+          }
   }
 
   renderRows(producto, index) {

@@ -1,5 +1,4 @@
 "use strict";
-const { Pedido, Producto } = require("../SequelizeConnection");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -9,53 +8,27 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
+        unique: true,
       },
       pedidoId: {
         allowNull: true,
-        // foreignKey: true,
-        type: DataTypes.INTEGER,
-        // constraints: false,
-        onDelete: "SET NULL",
-        onUpdate: "CASCADE",
-        references: {
-          // unique: true,
-          model: "Pedidos",
-          key: "id",
-          // constraints: false,
-        },
+        foreignKey: true,
+        type: Sequelize.INTEGER,
       },
       productoId: {
         allowNull: true,
-        // foreignKey: true,
-        type: DataTypes.INTEGER,
-        // constraints: false,
-        onDelete: "SET NULL",
-        onUpdate: "CASCADE",
-        references: {
-          // unique: true,
-          model: "Productos",
-          key: "id",
-          // constraints: false,
-        },
-      },
-      descripcion: {
-        allowNull: true,
-        type: Sequelize.STRING,
-        // references: {
-        //   model: "Productos",
-        //   // name: "descripcion",
-        // },
-      },
-      cantidad: Sequelize.INTEGER,
-      precioUnitario: {
-        allowNull: true,
-        type: Sequelize.STRING,
-        // references: {
-        //   model: "Productos",
-        //   // name: "precioUnitario",
-        // },
+        foreignKey: true,
+        type: Sequelize.INTEGER,
       },
       estado: Sequelize.STRING,
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {

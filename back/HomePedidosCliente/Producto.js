@@ -3,37 +3,13 @@ const { models } = require("../SequelizeConnection");
 
 module.exports = function (sequelize, DataTypes) {
   const Producto = sequelize.define(
-    "Producto",
+    "Productos",
     {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
-      },
-      // productoId: {
-      //   allowNull: true,
-      //   foreignKey: true,
-      //   type: DataTypes.UUID,
-      //   constraints:false,
-      //   unique:true,
-      //   onDelete:"SET NULL",
-      //   onUpdate:"CASCADE",
-      // },
-      pedidoId: {
-        allowNull: true,
-        // foreignKey: true,
-        // unique:true,
-        type: DataTypes.INTEGER,
-        constraints: false,
-        onDelete: "SET NULL",
-        onUpdate: "CASCADE",
-        references: {
-          // unique: true,
-          model: "Pedidos",
-          key: "id",
-          // constraints:false,
-        },
       },
       descripcion: {
         allowNull: true,
@@ -45,29 +21,25 @@ module.exports = function (sequelize, DataTypes) {
       },
       codigo: DataTypes.INTEGER,
       habilitado: DataTypes.STRING,
+    
     },
 
     {
       tableName: "Productos",
-      modelName: "Producto",
-      //   indexes: [
-      //     {
-      //       unique: false,
-      //       fields: ['productoId']
-      //     }
-      // ]
+      modelName: "Productos",
+     
     }
   );
 
-  Producto.associate = () => {
-    Producto.belongTo(models.Pedido, {
-      as: "Pedidos",
-      foreignKey: "pedidoId",
-      // unique: true,
-      constraints: false,
-      through: "ItemsPedido",
-      targetKey: ["descripcion","precioUnitario"],
-    });
+  // Producto.associate = () => {
+  //   Producto.belongTo(models.Pedido, {
+  //     as: "Pedidos",
+  //     foreignKey: "pedidoId_producto",
+  //     // unique: true,
+  //     constraints: false,
+  //     // through: "ItemsPedido",
+  //     targetKey: ["descripcion","precioUnitario"],
+  //   });
 
     //   Producto.belongsTo(models.Pedido, {
     //     through: "ItemsPedido",
@@ -93,6 +65,6 @@ module.exports = function (sequelize, DataTypes) {
     //   as: "pedidos",
     //   foreignKey: "pedidoFk"
     // });
-  };
+  // };
   return Producto;
 };

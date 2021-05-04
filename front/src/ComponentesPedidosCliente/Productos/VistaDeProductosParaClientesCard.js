@@ -172,7 +172,7 @@ class VistaDeProductosParaClientesRow extends React.Component {
             {/* <CardBody> */}
               <CardTitle>{this.props.producto.descripcion}</CardTitle>
               <Label>&nbsp;Código n° &nbsp;{this.props.producto.codigo}</Label>
-              <Label>&nbsp;Precio $&nbsp;&nbsp;{this.props.producto.precio}</Label><ul></ul>
+              <Label>&nbsp;Precio $&nbsp;&nbsp;{this.props.producto.precioUnitario}</Label><ul></ul>
             {/* </CardBody> */}
             <CardFooter>
             <Button>Comprar</Button>

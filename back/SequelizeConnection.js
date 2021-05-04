@@ -1,14 +1,11 @@
 "use strict";
 
 require("dotenv").config();
-// const { applyExtraSetup } = require('./HomePedidosCliente/Asociaciones');
-
 const Sequelize = require("sequelize");
 const PedidoModel = require("./HomePedidosCliente/Pedido");
 const ProductoModel = require("./HomePedidosCliente/Producto");
 const ItemsPedidoModel = require("./HomePedidosCliente/ItemsPedido");
 const ClienteModel = require("./HomeClientes/Cliente");
-
 
 const sequelize = process.env.DB_URL
   ? new Sequelize(process.env.DB_URL)
@@ -25,28 +22,35 @@ const sequelize = process.env.DB_URL
     });
 
 const models = {};
-
-
-
-// models = sequelize;
-// models = Sequelize;
-
-
-
-const Pedido = PedidoModel(sequelize, Sequelize);
-const Producto = ProductoModel(sequelize, Sequelize);
-const Cliente = ClienteModel(sequelize, Sequelize);
-const ItemsPedido = ItemsPedidoModel(sequelize, Sequelize);
-
-
-Object.keys(models).forEach(modelName => {
-  if (models[modelName].associate) {
-    models[modelName].associate(models);
-  }
-});
-
-models.sequelize = sequelize;
 models.Sequelize = Sequelize;
+models.sequelize = sequelize;
+
+models.ItemsPedido = ItemsPedidoModel(sequelize, Sequelize);
+models.Producto = ProductoModel(sequelize, Sequelize);
+models.Pedido = PedidoModel(sequelize, Sequelize);
+models.Cliente = ClienteModel(sequelize, Sequelize);
+
+models.Pedido.hasMany(models.ItemsPedido, {
+  as: "ItemsPedido",
+  foreignKey: "pedidoId",
+});
+models.ItemsPedido.belongsTo(models.Pedido, {
+  as: "Pedidos",
+  onDelete: "SET NULL",
+  foreignKey: "pedidoId",
+  targetKeys: "id",
+  constraints: false,
+});
+// models.ItemsPedido.hasOne(models.Producto, {
+//   as:"Productos",
+//   foreignKey: "productoId",
+// });
+// models.Producto.belongsTo(models.ItemsPedido, {
+//   as: "ItemsPedido",
+//   foreignKey: "productoId",
+//   targetKey: "id",
+// });
+
 
 sequelize
   .authenticate()
@@ -57,20 +61,14 @@ sequelize
     console.error("ERROR,_BD_NO_CONECTADA:", err);
   });
 
-sequelize.sync({ force: false })
-// sequelize.sync({ force: true })
+sequelize
+  .sync()
+  // sequelize.sync({ force: true })
   .then(() => {
     console.log(`Base de datos y tablas creadas, modelos sincronizados!`);
   });
 
-// applyExtraSetup(sequelize);
-
 module.exports = {
   models,
   sequelize,
-  Pedido,
-  Cliente,
-  Producto,
-  ItemsPedido,
-  
 };

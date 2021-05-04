@@ -68,7 +68,7 @@ class Cliente extends React.Component {
         <td>{this.props.cliente.cuit}</td>
         <td>{this.props.cliente.nombre}</td>
         <td>{this.props.cliente.apellido}</td>
-        <td>{this.props.cliente.razonSocial}</td>
+        <td>{this.props.cliente.direccion}</td>
         <td>{this.props.cliente.telefono}</td>
         <td>{this.props.cliente.email}</td>
         

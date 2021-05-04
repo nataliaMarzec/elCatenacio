@@ -19,10 +19,11 @@ class Pedidos extends React.Component {
     this.state = {
       pedido: {},
       pedidos: [],
-      producto:{},
-      productos:[],
+      producto: {},
+      productos: [],
       modal: false,
       editable: false,
+      menus: [],
     };
   }
 
@@ -35,6 +36,7 @@ class Pedidos extends React.Component {
   componentWillReceiveProps(props) {
     this.setState({ producto: props.producto });
     this.setState({ productos: props.productos });
+    // this.setState({menus:props.menus})
     console.log("reciveV", props.producto);
   }
 
@@ -55,8 +57,9 @@ class Pedidos extends React.Component {
   listadoProductos = () => {
     fetch(`http://localhost:8383/productos`)
       .then((res) => res.json())
-      .then((prods) => this.setState({ productos: prods, producto: {} }));
+      .then((prods) => this.setState({ productos: prods, producto: {},menus:prods.descripcion,descripcion:"" }));
   };
+
 
   actualizarAlEliminar = (unPedido) => {
     var listaActualizada = this.state.pedidos.filter(
@@ -103,6 +106,7 @@ class Pedidos extends React.Component {
               listadoClientes={this.listadoProductos}
               producto={this.state.producto}
               productos={this.state.productos}
+              menus={this.state.menus}
             />
           </Modal>
 
@@ -141,9 +145,9 @@ class Pedidos extends React.Component {
   renderRows() {
     let pedidos = this.state.pedidos;
     let productos = this.state.productos;
-   
+    let menus = this.state.menus;
     return !pedidos
-      ? console.log("NULL", null,productos)
+      ? console.log("NULL", null, productos, menus)
       : pedidos.map((unPedido, index) => {
           return (
             <Pedido
@@ -152,6 +156,7 @@ class Pedidos extends React.Component {
               pedidos={this.state.pedidos}
               productos={this.state.productos}
               producto={this.state.producto}
+              menus={this.state.menus}
               selector={this.seleccionar}
               actualizarAlEliminar={this.actualizarAlEliminar}
               eliminarPedido={this.eliminarPedido.bind(this)}

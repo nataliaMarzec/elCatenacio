@@ -32,9 +32,16 @@ router.get("/productos/ver/:id", controllerProducto.getForeingKeys);
 // funciona:
 router.get("/productosFks", controllerProducto.getProductosTodos);
 router.get("/productos/pedido/:id", controllerProducto.getInfoProducto);
+router.get("/productosDescripciones", controllerProducto.getProductosDescripciones);
 
 
-router.post("/itemsPedido/nuevo", controllerItemsPedido.create);
+router.post("/itemsPedido/nuevo",controllerItemsPedido.create);
+// router.get("/itemsPedido", controllerItemsPedido.getItems);
+// router.get("/pedidos", controllerItemsPedido.findAll);
+router.get("/itemsPedido/:id", controllerItemsPedido.encontrarItemPorId);
+router.get("/pedidosTodos", controllerPedido.encontrarPedidoConItems);
+
+
 
 
 

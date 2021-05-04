@@ -10,16 +10,11 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
+        unique: true,
       },
-      // pedidoId: {
-      //   allowNull: true,
-      //   foreignKey: true,
-      //   unique:true,
-      //   type: DataTypes.UUID,
-      // },
       clienteId_pedido: {
         foreignKey: true,
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
       },
       codigoPedido: {
         type: Sequelize.INTEGER,
@@ -30,7 +25,7 @@ module.exports = {
       seccion: {
         type: Sequelize.STRING,
       },
-      cantidad:Sequelize.INTEGER,
+      cantidad: Sequelize.INTEGER,
       importeTotal: {
         type: Sequelize.INTEGER,
       },
@@ -40,7 +35,6 @@ module.exports = {
       pagado: {
         type: Sequelize.STRING,
       },
-    
     });
   },
   down: async (queryInterface, Sequelize) => {

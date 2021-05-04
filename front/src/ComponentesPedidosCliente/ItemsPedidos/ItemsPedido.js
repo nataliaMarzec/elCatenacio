@@ -1,6 +1,6 @@
 import React from "react";
-import Producto from "./Producto";
-import CargarProducto from "./CargarProducto";
+import Pedido from "./Pedido";
+import CargarPedido from "./CargarPedido";
 import {
   Table,
   Container,
@@ -13,15 +13,18 @@ import {
   CardBody,
 } from "reactstrap";
 
-class Productos extends React.Component {
+class Pedidos extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      pedido: {},
+      pedidos: [],
       producto: {},
       productos: [],
+      itemsPedido:[],
       modal: false,
       editable: false,
-      titulo: "Nuevo",
+      menus: [],
     };
   }
 
@@ -31,56 +34,50 @@ class Productos extends React.Component {
     });
   };
 
+
   componentDidMount() {
+    this.listadoPedidos();
+  }
+
+  componentWillMount() {
     this.listadoProductos();
   }
+
+  listadoPedidos = () => {
+    fetch(`http://localhost:8383/pedidos`)
+      .then((res) => res.json())
+      .then((pds) => this.setState({ pedidos: pds, pedido: {} }));
+  };
 
   listadoProductos = () => {
     fetch(`http://localhost:8383/productos`)
       .then((res) => res.json())
-      .then((pds) => this.setState({ productos: pds, producto: {} }));
+      .then((prods) => this.setState({ productos: prods, producto: {},menus:prods.descripcion,descripcion:"" }));
   };
 
-  actualizarAlEliminar = (unProducto) => {
-    var listaActualizada = this.state.productos.filter(
-      (item) => unProducto !== item
+
+  actualizarAlEliminar = (unPedido) => {
+    var listaActualizada = this.state.pedidos.filter(
+      (item) => unPedido !== item
     );
-    this.setState({ productos: listaActualizada, producto: {} });
+    this.setState({ pedidos: listaActualizada, pedido: {} });
   };
 
-  eliminarProducto(id) {
-    this.props.eliminarProducto(id);
+  eliminarPedido(id) {
+    this.props.eliminarPedido(id);
   }
 
-  seleccionar = (unProducto) => {
-    this.setState({ producto: unProducto });
+  seleccionar = (unPedido) => {
+    this.setState({ pedido: unPedido });
   };
 
   ModalHeaderStrong = () => {
     return (
       <ModalHeader editable={this.state.editable} toggle={this.toggle}>
-        <strong>Nuevo</strong>Producto
+        <strong>Nuevo</strong>Pedido
       </ModalHeader>
     );
   };
-
-  //   onEditable() {
-  //     this.setState({
-  //       editable: !this.state.editable,
-  //     });
-  //     this.setState({titulo:"Modificar"})
-  //   }
-
-  //     ModalHeaderStrong = () => {
-  //     var titulo = this.state.titulo;
-  //       return (
-  //         <ModalHeader onEditable={this.onEditable} toggle={this.toggle}>
-  //           <strong>{titulo}</strong>Producto
-  //         </ModalHeader>
-  //       );
-  //   };
-
- 
 
   render(props) {
     return (
@@ -89,7 +86,7 @@ class Productos extends React.Component {
         <Row>&nbsp;</Row>
         <Container fluid>
           <Button color="success" onClick={this.toggle}>
-            Nuevo producto
+            Nuevo pedido
           </Button>
           <Modal
             isOpen={this.state.modal}
@@ -97,11 +94,14 @@ class Productos extends React.Component {
             className={this.props.className}
           >
             <this.ModalHeaderStrong></this.ModalHeaderStrong>
-            <CargarProducto
-              listadoProductos={this.listadoProductos}
+            <CargarPedido
+              listadoPedidos={this.listadoPedidos}
+              pedido={this.state.pedido}
+              pedidos={this.state.pedidos}
+              listadoClientes={this.listadoProductos}
               producto={this.state.producto}
               productos={this.state.productos}
-              toggle={this.toogle}
+              menus={this.state.menus}
             />
           </Modal>
 
@@ -115,10 +115,15 @@ class Productos extends React.Component {
                   <Table responsive bordered size="sm">
                     <thead>
                       <tr>
-                        <th>codigo</th>
-                        <th>descripcion</th>
-                        <th>precio</th>
-                        <th>habilitado</th>
+                        <th>Código</th>
+                        <th>Mesero</th>
+                        <th>Sección</th>
+                        {/* <th>Menú/codigo</th> */}
+                        <th>Cantidad</th>
+                        <th>Precio p/un.</th>
+                        <th>Importe</th>
+                        <th>Pagado</th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>{this.renderRows()}</tbody>
@@ -133,18 +138,23 @@ class Productos extends React.Component {
   }
 
   renderRows() {
+    let pedidos = this.state.pedidos;
     let productos = this.state.productos;
-    return !productos
-      ? console.log("NULL", null)
-      : productos.map((unProducto, index) => {
+    let menus = this.state.menus;
+    return !pedidos
+      ? console.log("NULL", null, productos, menus)
+      : pedidos.map((unPedido, index) => {
           return (
-            <Producto
+            <Pedido
               key={index}
-              producto={unProducto}
+              pedido={unPedido}
+              pedidos={this.state.pedidos}
               productos={this.state.productos}
+              producto={this.state.producto}
+              menus={this.state.menus}
               selector={this.seleccionar}
               actualizarAlEliminar={this.actualizarAlEliminar}
-              eliminarProducto={this.eliminarProducto.bind(this)}
+              eliminarPedido={this.eliminarPedido.bind(this)}
               toggle={this.toggle}
             />
           );
@@ -152,4 +162,4 @@ class Productos extends React.Component {
   }
 }
 
-export default Productos;
+export default Pedidos;

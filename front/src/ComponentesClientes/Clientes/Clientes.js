@@ -216,7 +216,7 @@ class Clientes extends React.Component {
                         <th>cuit</th>
                         <th>nombre</th>
                         <th>apellido</th>
-                        <th>razonSocial</th>
+                        <th>dirección</th>
                         <th>telefono</th>
                         <th>email</th>
                       </tr>

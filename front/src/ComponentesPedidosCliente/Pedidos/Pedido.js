@@ -63,6 +63,14 @@ class Pedido extends React.Component {
         nextProps.nuevaListaPedido.values()
       );
     }
+    // if (nextProps.menus !== this.props.menus) {
+    //   this.setState({ menus: this.props.menus });
+    //   console.log(
+    //     "Menus props",
+    //     this.props.menus,
+    //     nextProps.menus.values()
+    //   );
+    // }
     // if (nextProps.producto !== this.props.producto) {
     //   this.setState({ producto: nextProps.producto });
     //   console.log(

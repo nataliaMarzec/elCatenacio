@@ -28,7 +28,7 @@ class CargarCliente extends React.Component {
         cuit: "",
         nombre: "",
         apellido: "",
-        razonSocial: "",
+        direccion: "",
         telefono: "",
         email: "",
       },
@@ -149,16 +149,16 @@ class CargarCliente extends React.Component {
 
             <FormGroup row>
               <Col md="3">
-                <Label for="razonSocial">razon social</Label>
+                <Label for="direccion">direccion</Label>
               </Col>
               <Col xs="12" md="9">
                 <Input
                   type="text"
-                  id="razonSocial"
-                  name="razonSocial"
+                  id="direccion"
+                  name="direccion"
                   placeholder="Completa razon social..."
                   // required
-                  value={this.state.cliente.razonSocial}
+                  value={this.state.cliente.direccion}
                   onChange={this.handleChange}
                 />
               </Col>

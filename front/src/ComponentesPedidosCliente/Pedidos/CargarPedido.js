@@ -25,13 +25,15 @@ class CargarPedido extends React.Component {
     this.state = {
       pedido: props.pedido || {},
       pedidos: props.pedidos || [],
-      descripcion: props.descripcion || {},
       productos: props.productos || [],
       producto: props.producto || {},
       cliente: props.cliente || {},
       modal: false,
       codigo: "",
+      menus:props.menus || [],
+      descripcion:"",
     };
+    this.onSeleccion = this.onSeleccion.bind(this);
   }
 
   estadoInicial = () => {
@@ -52,7 +54,7 @@ class CargarPedido extends React.Component {
   estadoInicialProducto = () => {
     this.setState({
       producto: {
-        codigo:"",
+        codigo: "",
         descripcion: "",
         precio: 0,
       },
@@ -63,14 +65,30 @@ class CargarPedido extends React.Component {
     this.listadoProductos();
   }
 
+  // componentWillMount() {
+  //   this.props.getDescripciones();
+  //   console.log("descripciones",this.state.menus)
+  // }
+
   listadoProductos = () => {
     fetch(`http://localhost:8383/productos`)
       .then((res) => res.json())
       .then(
-        (prods) => this.setState({ productos: prods,producto: {} }),
-        console.log("productoEnviado", this.state.productos)
+        (prods) => this.setState({ productos: prods, producto: {},menus:[] }),
+        console.log("productoEnviado", this.state.productos,this.state.menus)
       );
   };
+
+
+  onSeleccion(e) {
+    let { name, value } = e.target;
+    let productos = [...this.state.productos];
+    let indice = productos.findIndex((el) => el.descripcion == name);
+    productos[indice].check = !productos[indice].check;
+    this.setState({
+      productos: [...productos],
+    });
+  }
 
   getPrecio = () => {
     var precio = this.state.pedido.precioUnitario;
@@ -95,6 +113,17 @@ class CargarPedido extends React.Component {
     if (this.state.codigoPedido !== "") {
       busqueda = '?busqueda=codigo=="' + this.state.codigoPedido + '"';
       this.listadoBusqueda(busqueda);
+    }
+    e.preventDefault(e);
+  };
+  handleSubmitDescripcion = (e) => {
+    var busqueda;
+    if (this.state.descripcion === "") {
+      this.listadoBusquedaDescripcion(busqueda);
+    }
+    if (this.state.descripcion !== "") {
+      busqueda = '?busqueda=descripcion=="' + this.state.descripcion + '"';
+      this.listadoBusquedaDescripcion(busqueda);
     }
     e.preventDefault(e);
   };
@@ -152,6 +181,14 @@ class CargarPedido extends React.Component {
         </div>
       );
     });
+    var listaDescripciones = this.state.productos.map((producto) => {
+      return (
+        <div>
+          <options value={producto.descripcion} key={producto.descripcion} />
+        </div>
+      );
+    });
+
     return (
       <Col xs="12" md="12">
         <ModalBody>
@@ -195,22 +232,25 @@ class CargarPedido extends React.Component {
                       />
                     </Col>
                   </FormGroup>
-                  {/* <FormGroup row>
+                  <Form onSubmit={this.handleSubmitProducto} id="formulario">
+                  <FormGroup row>
                     <Col md="3">
-                      <Label for="descripcion">Producto</Label>
+                      <Label for="descripcion">Descripción</Label>
                     </Col>
                     <Col xs="12" md="9">
                       <Input
                         type="text"
                         id="descripcion"
                         name="descripcion"
-                        placeholder="Elegir descripcion..."
-                        required={true}
-                        value={this.state.descripcion}
+                        placeholder="Completa Descripción..."
                         onChange={this.handleChangeProducto}
+                        value={this.state.producto.descripcion}
+                        list="producto"
                       />
                     </Col>
-                  </FormGroup> */}
+                    <datalist id="descripcion">{listaDescripciones}</datalist>
+                  </FormGroup>
+                  </Form>
                   <FormGroup row>
                     <Col md="3">
                       <Label for="mesero">Mesero</Label>
@@ -244,9 +284,9 @@ class CargarPedido extends React.Component {
                   </FormGroup>
                   <Form onSubmit={this.handleSubmitProducto} id="formulario">
                     <FormGroup row>
-                    <Col md="3">
-                      <Label for="codigo">Elegir codigo producto</Label>
-                    </Col>
+                      <Col md="3">
+                        <Label for="codigo">Elegir codigo producto</Label>
+                      </Col>
                       <Col xs="12" md="9">
                         <Input
                           type="number"

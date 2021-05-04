@@ -17,7 +17,7 @@ class Home extends React.Component {
         <div className="container">
           <div className="jumbotron mt-5">
             <div className="col-sm-8 mx-auto">
-              <h1 className="text-center">Conoce combapp!</h1>
+              <h1 className="text-center">Conoce El Catenacio!</h1>
             </div>
             <Button color="danger" size="lg" block onClick={this.onClick}>Ver productos</Button>
           </div>

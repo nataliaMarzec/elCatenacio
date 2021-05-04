@@ -15,6 +15,7 @@ import {
   ModalBody,
   ModalFooter,
   Row,
+  CheckBox,
 } from "reactstrap";
 import { AppSwitch } from "@coreui/react";
 
@@ -27,6 +28,7 @@ class CargarProducto extends React.Component {
       modal: false,
       codigo: "",
       onClick: false,
+   
     };
   }
 
@@ -35,7 +37,7 @@ class CargarProducto extends React.Component {
       producto: {
         codigo: "",
         descripcion: "",
-        precio: "",
+        precioUnitario: "",
         habilitado: "",
       },
     });
@@ -50,6 +52,8 @@ class CargarProducto extends React.Component {
     }
     event.preventDefault(event);
   };
+
+ 
 
   listadoBusqueda = (busqueda) => {
     if (busqueda != null) {
@@ -89,8 +93,10 @@ class CargarProducto extends React.Component {
       .then(this.props.listadoProductos)
       .then(this.estadoInicial());
   };
+ 
 
   render() {
+  
     return (
       <Col xs="12" md="12">
         <ModalBody>
@@ -134,33 +140,19 @@ class CargarProducto extends React.Component {
                       />
                     </Col>
                   </FormGroup>
+
                   <FormGroup row>
                     <Col md="3">
-                      <Label for="descripcion">Descripción</Label>
+                      <Label for="precioUnitario">Precio</Label>
                     </Col>
                     <Col xs="12" md="9">
                       <Input
                         type="text"
-                        id="descripcion"
-                        name="descripcion"
-                        placeholder="Completa Descripción..."
-                        value={this.state.producto.descripcion}
-                        onChange={this.handleChange}
-                      />
-                    </Col>
-                  </FormGroup>
-                  <FormGroup row>
-                    <Col md="3">
-                      <Label for="precio">Precio</Label>
-                    </Col>
-                    <Col xs="12" md="9">
-                      <Input
-                        type="text"
-                        id="precio"
-                        name="precio"
+                        id="precioUnitario"
+                        name="precioUnitario"
                         placeholder="Completa precio..."
                         // required
-                        value={this.state.producto.precio}
+                        value={this.state.producto.precioUnitario}
                         onChange={this.handleChange}
                       />
                     </Col>

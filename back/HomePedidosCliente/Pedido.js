@@ -3,23 +3,15 @@ const { models } = require("../SequelizeConnection");
 
 module.exports = function (sequelize, DataTypes) {
   const Pedido = sequelize.define(
-    "Pedido",
+    "Pedidos",
     {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
+        unique:true,
       },
-      // pedidoId: {
-      //   allowNull: true,
-      //   foreignKey: true,
-      //   type: DataTypes.UUID,
-      //   // unique: true,
-      //   onDelete:"SET NULL",
-      //   onUpdate:"CASCADE",
-      //   // constraints:false,
-      // },
       clienteId_pedido: {
         foreignKey: true,
         type: DataTypes.INTEGER,
@@ -40,31 +32,12 @@ module.exports = function (sequelize, DataTypes) {
 
     {
       tableName: "Pedidos",
-      modelName: "Pedido",
-      //   indexes: [
-      //     {
-      //       unique: true,
-      //       fields: ['pedidoId']
-      //     }
-      // ]
+      modelName: "Pedidos",
     }
   );
   Pedido.associate = () => {
     Pedido.belongsTo(models.Cliente);
-    Pedido.hasMany(models.Producto, {
-      foreignKey: "productoId",
-      as: "Productos",
-      through: "ItemsPedido",
-      targetKey:"cantidad"
-    });
 
-    //  Pedido.hasMany(sequelize.models.Producto)
-
-    // Pedido.hasMany(models.Producto, {
-    //   foreignKey: "productoFk",
-    //   as: "Productos",
-    //   allowNull: true,
-    // });
     // Pedido.belongsToMany(models.Producto, {
     //   through: "RegistroPedidoProducto",
     //   as: "productos",

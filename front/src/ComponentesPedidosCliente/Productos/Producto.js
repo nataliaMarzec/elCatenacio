@@ -45,7 +45,7 @@ class Producto extends React.Component {
       <tr>
         <td>{this.props.producto.codigo}</td>
         <td>{this.props.producto.descripcion}</td>
-        <td>{this.props.producto.precio}</td>
+        <td>{this.props.producto.precioUnitario}</td>
         <td>{this.props.producto.habilitado? "si":"no"}</td>
 
         <td>

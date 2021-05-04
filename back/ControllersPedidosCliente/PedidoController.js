@@ -1,7 +1,109 @@
-var { Op } = require("sequelize");
-const { Pedido, Producto } = require("../SequelizeConnection");
-
+var { Sequelize, Op } = require("sequelize");
+const { models } = require("../SequelizeConnection");
+const Pedido = models.Pedido;
 module.exports = {
+  create: async (req, res) => {
+    const pedido = req.body;
+
+    const {
+      id,
+      codigoPedido,
+      mesero,
+      seccion,
+      cantidad,
+      precioUnitario,
+      importeTotal,
+      montoCobrado,
+      pagado,
+    } = await Pedido.create({
+      pedido,
+      include: [
+        {
+          model: "ItemsPedido",
+          where: { pedidoId:"pedidoId" },
+        },
+      ],
+    });
+
+    return res.status(200).json({
+      id,
+      codigoPedido,
+      mesero,
+      seccion,
+      cantidad,
+      precioUnitario,
+      importeTotal,
+      montoCobrado,
+      pagado,
+      // itemsPedido:[itemsPedido]
+    });
+  },
+  encontrarPedidoConItems: async (req, res) => {
+    var pedidoConItems = await Pedido.findAll({include:["ItemsPedido"]
+    });
+    if (![req.body.values]) {
+      res.status(400).json({ err: "No hay pedido con items" });
+    } else {
+      return res.status(200).json(pedidoConItems);
+    }
+  },
+  // Company.findAll ({
+  // 	atributos: [['uuid', 'companyId'], 'nombre', 'calle', 'teléfono'],
+  // 	incluir: [{
+  // 		modelo: Producto,
+  // 		donde: {fk_companyid: db.Sequelize.col ('company.uuid')},
+  // 		atributos: ['código', 'nombre', 'detalles']
+  // 	}]
+  // })
+
+  // create:async(req,res)=>{
+  //   const pedido=req.body;
+  //   const itemPedido=req.body
+  //   const item=ItemsPedido.create({id:itemPedido.id,pedidoId:itemPedido.pedidoId,
+  //   productoId:itemPedido.productoId,estado:itemPedido.estado})
+  //   const pedidoi= await Pedido.create({id:pedido.id,codigoPedido:pedido.codigoPedido,
+  //     cantidad:pedido.cantidad,
+  //     itemsPedido:[item],
+  //     include: [
+  //       {
+  //         model:"ItemsPedido",
+  //         associations: [ItemsPedido,Pedido],
+  //         where: { pedidoId: Sequelize.col("ItemsPedido.pedidoId") },
+  //       },
+  //     ],
+  //   })
+  //   return res.status(200).json({pedidoi})
+
+  //   },
+
+  //   models.user.create( { username: "Juan",
+  //   password: "1234",
+  //   quizzes: [ { question: "12345", answer: "6" },
+  //              { question: "13579", answer: "11" },
+  //              { question: "11235", answer: "8" }
+  //            ]
+  // },
+  // { include: [ models.quiz ]
+  // }
+  // )
+  // .then(user => {
+  // console.log('Creado Usuario con varios quizzes.');
+  // })
+  // .catch(error => {
+  // console.log("Error:", error);
+  // });
+
+  createItemPedido: async (req, res) => {
+    const pedido = req.body;
+    const itemsPedido = await Pedido.create(
+      {
+        pedido,
+        items: [{ id: "1", pedidoId: "4", productoId: "2", estado: "true" }],
+      },
+      { include: ["itemPedido"] }
+    );
+    return res.status(200).json({ itemsPedido });
+  },
   create: async (req, res) => {
     const pedido = req.body;
 
