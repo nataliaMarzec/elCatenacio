@@ -19,10 +19,17 @@ class Pedidos extends React.Component {
     this.state = {
       pedido: {},
       pedidos: [],
-      producto:{},
-      productos:[],
+      producto: {},
+      productos: [],
       modal: false,
       editable: false,
+      menus: [],
+      unPedido: {},
+      cantidad: [],
+      importeTotal: [],
+      descripcion: [],
+      precioUnitario: [],
+      items:[]
     };
   }
 
@@ -35,6 +42,7 @@ class Pedidos extends React.Component {
   componentWillReceiveProps(props) {
     this.setState({ producto: props.producto });
     this.setState({ productos: props.productos });
+    // this.setState({menus:props.menus})
     console.log("reciveV", props.producto);
   }
 
@@ -47,15 +55,29 @@ class Pedidos extends React.Component {
   }
 
   listadoPedidos = () => {
-    fetch(`http://localhost:8383/pedidos`)
+    fetch(`http://localhost:8383/pedidosTodos`)
       .then((res) => res.json())
-      .then((pds) => this.setState({ pedidos: pds, pedido: {} }));
+      .then((pds) =>
+        this.setState({
+          pedidos: pds,
+          pedido: {},
+          // items:this.state.pedido.ItemsPedido,
+        })
+      );
+      console.log("listado pedidoItems__________",this.state.pedidos)
   };
 
   listadoProductos = () => {
     fetch(`http://localhost:8383/productos`)
       .then((res) => res.json())
-      .then((prods) => this.setState({ productos: prods, producto: {} }));
+      .then((prods) =>
+        this.setState({
+          productos: prods,
+          producto: {},
+          menus: prods.descripcion,
+          descripcion: "",
+        })
+      );
   };
 
   actualizarAlEliminar = (unPedido) => {
@@ -103,6 +125,7 @@ class Pedidos extends React.Component {
               listadoClientes={this.listadoProductos}
               producto={this.state.producto}
               productos={this.state.productos}
+              menus={this.state.menus}
             />
           </Modal>
 
@@ -119,11 +142,10 @@ class Pedidos extends React.Component {
                         <th>Código</th>
                         <th>Mesero</th>
                         <th>Sección</th>
-                        <th>Menú/codigo</th>
                         <th>Cantidad</th>
                         <th>Precio p/un.</th>
                         <th>Importe</th>
-                        <th>Pagado</th>
+                        <th>descripcion</th>
                         <th></th>
                       </tr>
                     </thead>
@@ -141,14 +163,15 @@ class Pedidos extends React.Component {
   renderRows() {
     let pedidos = this.state.pedidos;
     let productos = this.state.productos;
-   
+    let menus = this.state.menus;
     return !pedidos
-      ? console.log("NULL", null,productos)
+      ? console.log("NULL", null, productos, menus)
       : pedidos.map((unPedido, index) => {
           return (
             <Pedido
               key={index}
               pedido={unPedido}
+              unPedido={this.state.unPedido}
               pedidos={this.state.pedidos}
               productos={this.state.productos}
               producto={this.state.producto}

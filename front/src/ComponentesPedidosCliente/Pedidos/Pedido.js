@@ -7,6 +7,10 @@ class Pedido extends React.Component {
     this.state = {
       editar: false,
       toogle: this.props.toggle,
+      cantidad:this.props.cantidad,
+      importeTotal:this.props.importeTotal,
+      descripcion:this.props.descripcion,
+      precioUnitario:this.props.precioUnitario,
     };
     this.eliminarPedido = this.eliminarPedido.bind(this);
     this.seleccionarPedido = this.seleccionarPedido.bind(this);
@@ -27,10 +31,36 @@ class Pedido extends React.Component {
     this.props.toggle();
   }
 
+  componentWillMount() {
+    // console.log(importeTotal.reduce(reducer));
+    var items = this.props.pedido.ItemsPedido;
+    var cantidad = items.map((i) => (i = i.cantidad + ","));
+    var importeTotal = items.map((i) => (i = i.importeTotal + ","));
+    var precioUnitario = items.map((i) => (i = i.Productos.precioUnitario + ","));
+    var descripcion = items.map((i) => (i = i.Productos.descripcion + ","));
+    this.setState(
+      {
+        cantidad: cantidad,
+        importeTotal: importeTotal,
+        precioUnitario:precioUnitario,
+        descripcion: descripcion,
+      },
+      console.log("cantidad", descripcion)
+    );
+    // var cantidad=items.filter((item)=>item.Productos.cantidad)
+    //  console.log("items",items,"map",map,"cant",this.state.cantidad)
+    //  var cantidad=items.filter((item)=>item.cantidad)
+    //  console.log("items",cantidad)
+    // items.map(function(item){
+    //    var cantidadT= item.cantidad;
+    // })
+    // this.setState({cantidad})
+  }
+
   seleccionarPedido() {
     this.props.selector(this.props.pedido);
     console.log("seleccionar___", this.props.pedido);
-    console.log("productoS____",this.props.producto)
+    console.log("productoS____", this.props.producto);
     this.props.toggle();
   }
 
@@ -55,34 +85,28 @@ class Pedido extends React.Component {
     if (nextProps.pedido !== this.props.pedido) {
       this.setState({ pedido: nextProps.pedido });
     }
-    if (nextProps.productos !== this.props.productos) {
-      this.setState({ productos: this.props.productos });
+    if (nextProps.nuevaListaPedido !== this.props.nuevaListaPedido) {
+      this.setState({ nuevaListaPedido: this.props.nuevaListaPedido });
       console.log(
-        "productos props",
-        this.props.productos,
-        nextProps.productos.values()
+        "nuevaListaPEDIDO props",
+        this.props.nuevaListaPedido,
+        nextProps.nuevaListaPedido.values()
       );
+     
     }
-    if (nextProps.producto !== this.props.producto) {
-      this.setState({ producto: nextProps.producto });
-      console.log(
-        "producto prop",
-        this.props.producto
-      );
-    }
+  
   }
 
   render = () => {
     return (
       <tr>
-        <td>{this.props.pedido.codigo}</td>
+        <td>{this.props.pedido.codigoPedido}</td>
         <td>{this.props.pedido.mesero}</td>
         <td>{this.props.pedido.seccion}</td>
-        <td>{console.log(this.props.producto.codigo,"codigo")}</td>
-        <td>{this.props.pedido.cantidad}</td>
-        <td>{console.log(this.props.producto.precio,"precio")}</td>
-        <td>{this.props.pedido.importeTotal}</td>
-        <td>{this.props.pedido.pagado}</td>
+        <td>{this.state.cantidad}</td>
+        <td>{this.state.precioUnitario}</td>
+        <td>{this.state.importeTotal}</td>
+        <td>{this.state.descripcion}</td>
         {/* <td>{this.props.pedido.habilitado? "si":"no"}</td> */}
         <td>
           <Button

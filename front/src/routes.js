@@ -29,10 +29,23 @@ const Colors = React.lazy(() => import("./views/Theme/Colors"));
 const Usuarios = React.lazy(() => import("./views/Usuarios/Usuarios"));
 const NuevoUsuario = React.lazy(() => import("./views/Usuarios/NuevoUsuario"));
 
-const Pedidos = React.lazy(() => import("./ComponentesPedidosCliente/Pedidos/Pedidos"));
-const Pedido = React.lazy(() => import("./ComponentesPedidosCliente/Pedidos/Pedido"));
+const Pedidos = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/Pedidos")
+);
+const Pedido = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/Pedido")
+);
 const CargarPedido = React.lazy(() =>
   import("./ComponentesPedidosCliente/Pedidos/CargarPedido")
+);
+const CargarUnPedido = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/CargarUnPedido")
+);
+const UnPedido = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/UnPedido")
+);
+const UnPedidoRow = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/UnPedidoRow")
 );
 
 const Clientes = React.lazy(() =>
@@ -47,6 +60,11 @@ const CargarCliente = React.lazy(() =>
 
 const VistaDeProductosParaClientes = React.lazy(() =>
   import("./ComponentesPedidosCliente/Productos/VistaDeProductosParaClientes")
+);
+const VistaDeProductosParaClientesCard = React.lazy(() =>
+  import(
+    "./ComponentesPedidosCliente/Productos/VistaDeProductosParaClientesCard"
+  )
 );
 const Productos = React.lazy(() =>
   import("./ComponentesPedidosCliente/Productos/Productos")
@@ -87,7 +105,6 @@ const Login = React.lazy(() =>
 const Register = React.lazy(() =>
   import("./componentes/LoginYSesionDeUsuarios/Register.js")
 );
-
 
 const routes = [
   { path: "/", exact: true, name: "Home" },
@@ -167,8 +184,25 @@ const routes = [
     name: "CargarPedido",
     component: CargarPedido,
   },
+  {
+    path: "/unPedido",
+    exact: true,
+    name: "UnPedido",
+    component:UnPedido,
+  },  
+  {
+    path: "/unPedidoRow",
+    exact: false,
+    name: "UnPedidoRow",
+    component:UnPedidoRow,
+  },  
+{
+    path: "/cargarUnPedido",
+    exact: false,
+    name: "CargarUnPedido",
+    component: CargarUnPedido,
+  },  
   { path: "./pedido", exact: false, name: "Pedido", component: Pedido },
-
 
   {
     path: "/clientes",
@@ -192,6 +226,12 @@ const routes = [
     component: VistaDeProductosParaClientes,
   },
   {
+    path: "/vistaDeProductosParaClientesCard",
+    exact: false,
+    name: "VistaDeProductosParaClientesCard",
+    component: VistaDeProductosParaClientesCard,
+  },
+  {
     path: "/productos",
     exact: true,
     key: "#productos",
@@ -205,7 +245,6 @@ const routes = [
     component: CargarProducto,
   },
   { path: "./producto", exact: false, name: "Producto", component: Producto },
-
 
   { path: "/pago", exact: true, name: "Pago", component: Pago },
 

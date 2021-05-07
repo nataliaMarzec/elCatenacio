@@ -1,54 +1,40 @@
 "use strict";
+const { models } = require("../SequelizeConnection");
 
 module.exports = function (sequelize, DataTypes) {
   const Pedido = sequelize.define(
-    "Pedido",
+    "Pedidos",
     {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
+        unique:true,
       },
-      // pedidoFk: {
-      //   allowNull: false,
-      //   foreignKey: true,
-      //   type: DataTypes.INTEGER,
-      // },
       clienteId_pedido: {
         foreignKey: true,
         type: DataTypes.INTEGER,
       },
-      codigo: DataTypes.INTEGER,
+      codigoPedido: DataTypes.INTEGER,
       mesero: DataTypes.STRING,
       seccion: DataTypes.STRING,
-      cantidad: DataTypes.INTEGER,
-      precioUnitario: DataTypes.INTEGER,
-      importeTotal: DataTypes.INTEGER,
-      montoCobrado: DataTypes.INTEGER,
-      pagado: DataTypes.STRING,
     },
 
     {
       tableName: "Pedidos",
-      modelName: "Pedido",
+      modelName: "Pedidos",
     }
   );
-
-  Pedido.associate = (models) => {
+  Pedido.associate = () => {
     Pedido.belongsTo(models.Cliente);
-    Pedido.hasMany(models.Producto, {
-      foreignKey: "productoFk",
-      as: "Productos",
-    });
+
     // Pedido.belongsToMany(models.Producto, {
     //   through: "RegistroPedidoProducto",
     //   as: "productos",
     //   foreignKey: "productoFk"
     // });
-
   };
-  
 
   return Pedido;
 };

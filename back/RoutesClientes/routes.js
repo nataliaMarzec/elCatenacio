@@ -8,7 +8,7 @@ router.get("/clientes/:id", controllerCliente.getClienteId);
 router.get("/clientes", controllerCliente.getClientes);
 router.delete("/clientes/:id", controllerCliente.deleteClienteById);
 router.put("/clientes/:id", controllerCliente.update);
-router.get("/clientes/busqueda/:dni", controllerCliente.encontrarClientePorDni);
+router.get("/clientes/busqueda/:cuit", controllerCliente.encontrarClientePorCuit);
 
 
 

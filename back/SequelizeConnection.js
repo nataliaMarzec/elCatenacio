@@ -1,10 +1,10 @@
 "use strict";
 
 require("dotenv").config();
-
 const Sequelize = require("sequelize");
 const PedidoModel = require("./HomePedidosCliente/Pedido");
 const ProductoModel = require("./HomePedidosCliente/Producto");
+const ItemsPedidoModel = require("./HomePedidosCliente/ItemsPedido");
 const ClienteModel = require("./HomeClientes/Cliente");
 
 const sequelize = process.env.DB_URL
@@ -21,13 +21,44 @@ const sequelize = process.env.DB_URL
       },
     });
 
-var models = {};
-models = sequelize;
-models = Sequelize;
+const models = {};
+models.Sequelize = Sequelize;
+models.sequelize = sequelize;
 
-const Pedido = PedidoModel(sequelize, Sequelize);
-const Producto = ProductoModel(sequelize, Sequelize);
-const Cliente = ClienteModel(sequelize, Sequelize);
+models.Producto = ProductoModel(sequelize, Sequelize);
+models.ItemsPedido = ItemsPedidoModel(sequelize, Sequelize);
+models.Pedido = PedidoModel(sequelize, Sequelize);
+models.Cliente = ClienteModel(sequelize, Sequelize);
+
+
+models.Producto.hasOne(models.ItemsPedido, {
+  foreignKey: "productoId",
+  as: "ItemsPedido",
+  onDelete: "SET NULL",
+  onUpdate:"SET NULL"
+});
+
+models.ItemsPedido.belongsTo(models.Producto, {
+  foreignKey: "productoId",
+  as: "Productos",
+  onDelete: "CASCADE",
+  onUpdate:"CASCADE",
+  constraints:false,
+});
+
+models.Pedido.hasMany(models.ItemsPedido, {
+  as: "ItemsPedido",
+  foreignKey: "pedidoId",
+  constraints:false,
+
+});
+models.ItemsPedido.belongsTo(models.Pedido, {
+  as: "Pedidos",
+  foreignKey: "pedidoId",
+  targetKeys: "id",
+  unique:false,
+  constraints: false,
+});
 
 sequelize
   .authenticate()
@@ -38,15 +69,14 @@ sequelize
     console.error("ERROR,_BD_NO_CONECTADA:", err);
   });
 
-sequelize.sync({ force: false })
-  // sequelize.sync({force:true})
+sequelize
+  .sync()
+  // sequelize.sync({ force: true })
   .then(() => {
     console.log(`Base de datos y tablas creadas, modelos sincronizados!`);
   });
 
 module.exports = {
+  models,
   sequelize,
-  Pedido,
-  Producto,
-  Cliente,
 };

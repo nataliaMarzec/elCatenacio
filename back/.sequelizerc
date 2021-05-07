@@ -1,10 +1,10 @@
 const path = require('path');
 
 module.exports = {
-  'config': path.resolve('package.json'),
-  'models-path': path.resolve('HomeClientes'),
-  'seeders-path': path.resolve('seeders'),
-  'migrations-path': path.resolve('migrations'),
+  'config': path.resolve('./package.json'),
+  'models-path': path.resolve('./HomePedidosCliente','./HomeClientes','./HomePedidosCliente/index.js'),
+  'seeders-path': path.resolve('./seeders'),
+  'migrations-path': path.resolve('./migrations'),
   'debug':path.resolve('true')
   
 
