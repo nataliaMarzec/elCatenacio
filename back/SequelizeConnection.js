@@ -25,32 +25,40 @@ const models = {};
 models.Sequelize = Sequelize;
 models.sequelize = sequelize;
 
-models.ItemsPedido = ItemsPedidoModel(sequelize, Sequelize);
 models.Producto = ProductoModel(sequelize, Sequelize);
+models.ItemsPedido = ItemsPedidoModel(sequelize, Sequelize);
 models.Pedido = PedidoModel(sequelize, Sequelize);
 models.Cliente = ClienteModel(sequelize, Sequelize);
+
+
+models.Producto.hasOne(models.ItemsPedido, {
+  foreignKey: "productoId",
+  as: "ItemsPedido",
+  onDelete: "SET NULL",
+  onUpdate:"SET NULL"
+});
+
+models.ItemsPedido.belongsTo(models.Producto, {
+  foreignKey: "productoId",
+  as: "Productos",
+  onDelete: "CASCADE",
+  onUpdate:"CASCADE",
+  constraints:false,
+});
 
 models.Pedido.hasMany(models.ItemsPedido, {
   as: "ItemsPedido",
   foreignKey: "pedidoId",
+  constraints:false,
+
 });
 models.ItemsPedido.belongsTo(models.Pedido, {
   as: "Pedidos",
-  onDelete: "SET NULL",
   foreignKey: "pedidoId",
   targetKeys: "id",
+  unique:false,
   constraints: false,
 });
-// models.ItemsPedido.hasOne(models.Producto, {
-//   as:"Productos",
-//   foreignKey: "productoId",
-// });
-// models.Producto.belongsTo(models.ItemsPedido, {
-//   as: "ItemsPedido",
-//   foreignKey: "productoId",
-//   targetKey: "id",
-// });
-
 
 sequelize
   .authenticate()

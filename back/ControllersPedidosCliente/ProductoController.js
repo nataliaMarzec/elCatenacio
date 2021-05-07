@@ -1,89 +1,23 @@
 var { Op, Sequelize } = require("sequelize");
-const {models} = require("../SequelizeConnection");
-const Producto=models.Producto
+const { models } = require("../SequelizeConnection");
+const Producto = models.Producto;
+const ItemsPedido = models.ItemsPedido;
 module.exports = {
-  // create:async (req, resp)=>{
-	// 	const pedido= req.body;
-	// 	pedido.pedidoId = req.params.pedidoId;
-	// 	console.log('info pedido ', pedido);
-  //   const pedidoCompleto=await Pedido.create(pedidoId);
-	// 	return res.status(200).json({pedido})
-	// },
+  
   create: async (req, res) => {
     const producto = req.body;
-    const {
-      id,
-      pedidoId,
-      codigo,
-      habilitado,
-    } = await Producto.create(producto);
-
+    const { id, descripcion, codigo, habilitado } = await Producto.create(
+      producto
+    );
     return res.status(200).json({
       id,
-      pedidoId,
+      descripcion,
       codigo,
       habilitado,
     });
   },
 
-  // createProductoConPedido: async (req, res) => {
-  //     var pedido = await Pedido.findOne({
-  //       where: { pedidoId: req.params.pedidoId },
-  //     });
-  //   const producto = await Producto.create({
-  //     id: req.body.id,
-  //     productoId: req.body.productoId,
-  //     codigo: req.body.codigo,
-  //     habilitado: req.body.habilitado,
-  //     pedidoId:pedido.pedidoId,
-  //     pedido:{
-  //       include: [
-  //         {
-  //           model: Pedido,
-  //           where: { pedidoId: Sequelize.col("Pedidos.pedidoId") },
-  //         },
-  //       ],
-  //     }
-  //   });
-  //   return res.status(200).json(producto);
-  // },
-
-  // const pedidoID=Producto.find({where:Producto.Pedido.pedidoId})
-
-  // create:async (req, resp)=>{
-  // 	const producto = req.body;
-  // 	producto.pedidoId = req.params.codigo_pedio;
-  // 	console.log('Info producto ', producto);
-  //   const productoConPedido=Producto.create(producto)
-  // 			return res.json({productoConPedido})
-  // },
-
-  getProductos: async (req, res, next) => {
-    const productos = await Producto.findAll({
-      // include: [
-      //   {
-      //     model: Pedido,
-      //     required: true,
-      //   },
-      // ],
-    });
-    if (![req.body.values]) {
-      res.status(400).json({ err: "no obtiene lista de productos" });
-    } else {
-      return res.status(200).json(productos);
-    }
-  },
-
-  getProductoId: async (req, res) => {
-    var producto = await Producto.findByPk(req.params.id);
-    if (![req.body.values]) {
-      res.status(400).json({ err: "No hay producto con ID" });
-    } else {
-      return res.status(200).json(producto);
-    }
-  },
-
-  deleteProductoById: async (req, res) => {
+  delete: async (req, res) => {
     const producto = await Producto.findByPk(req.params.id);
     await producto.destroy();
     return res.json({ delete: "Producto eliminado" });
@@ -104,6 +38,39 @@ module.exports = {
       })
       .res.send(200, "producto editado");
   },
+
+
+  productosConItems(req, res) {
+    return Producto
+      .findAll({
+        include: [{
+          model:ItemsPedido,
+          as: 'ItemsPedido'
+        }],
+      })
+      .then((Producto) => res.status(200).send(Producto))
+      .catch((error) => { res.status(400).send(error); });
+      
+  },
+ 
+  getProductos: async (req, res, next) => {
+    const productos = await Producto.findAll({});
+    if (![req.body.values]) {
+      res.status(400).json({ err: "no obtiene lista de productos" });
+    } else {
+      return res.status(200).json(productos);
+    }
+  },
+
+  getProductoId: async (req, res) => {
+    var producto = await Producto.findByPk(req.params.id);
+    if (![req.body.values]) {
+      res.status(400).json({ err: "No hay producto con ID" });
+    } else {
+      return res.status(200).json(producto);
+    }
+  },
+
 
   encontrarProductoPorCodigo: async (req, res) => {
     var producto = await Producto.findOne({
@@ -133,7 +100,9 @@ module.exports = {
 
   getProductosDescripciones: async (req, res, next) => {
     const productos = await Producto.findAll();
-    const descripciones = await productos.map((producto) => producto.descripcion);
+    const descripciones = await productos.map(
+      (producto) => producto.descripcion
+    );
     // const productosFks = await Producto.findAll({
     //   where: {
     //     productoId: {
@@ -148,7 +117,7 @@ module.exports = {
     }
   },
 
-  //funciona para pedidoid y menus
+//funciona para pedidoid y menus|
   getProductosTodos: async (req, res, next) => {
     const productos = await Producto.findAll();
     const fk = await productos.map((producto) => producto.productoId);
@@ -165,7 +134,6 @@ module.exports = {
       return res.status(200).json(fk);
     }
   },
-
 
   getProductosTodos2: async (req, res, next) => {
     const productos = await Producto.findAll();
@@ -216,26 +184,7 @@ module.exports = {
     }
   },
 
-  // encontrarProductoPor: async (req, res) => {
-  //   var producto = await Producto.findOne({
-  //     where: { : req.params. },
-  //   });
-  //   if (![req.body.values]) {
-  //     res.status(400).json({ err: "No hay producto con codigo" });
-  //   } else {
-  //     return res.status(200).json(producto);
-  //   }
-  // },
-  // encontrarProductoPorPrecio: async (req, res) => {
-  //   var producto = await Producto.findOne({
-  //     where: { : req.params. },
-  //   });
-  //   if (![req.body.values]) {
-  //     res.status(400).json({ err: "No hay producto con codigo" });
-  //   } else {
-  //     return res.status(200).json(producto);
-  //   }
-  // },
+  
   encontrarProductoPorForeingKey: async (req, res) => {
     var producto = await Producto.findOne({
       where: { productoId: req.params.productoId },
@@ -321,15 +270,6 @@ module.exports = {
     return res.status(200).json(productos);
   },
 
- 
-
-  // getFkey:async(req,res)=>{
-  //   Project.findAll({ group: 'name' });
-  // }
-
-  // getfkeys:async (req,res) => {
-  //   try {
-  //       const productos = await Producto.findAll({
   //           include: [{
   //               model: Pedido,
   //               as: 'Pedidos',
@@ -337,10 +277,5 @@ module.exports = {
   //               through: { attributes: [] },
   //           }],
   //       });
-  //       console.log(JSON.stringify(productos));
-  //       process.exit();
-  //   } catch (error) {
-  //       console.log(error);
-  //   }
-  // }
+ 
 };

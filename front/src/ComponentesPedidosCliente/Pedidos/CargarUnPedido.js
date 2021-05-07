@@ -30,7 +30,7 @@ class CargarUnPedido extends React.Component {
       cliente: props.cliente || {},
       modal: false,
       mesero: "",
-      verTabla:props.verTabla
+      verTabla:props.verTabla,
     };
   }
 

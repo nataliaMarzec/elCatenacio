@@ -19,8 +19,19 @@ module.exports = {
         allowNull: true,
         foreignKey: true,
         type: Sequelize.INTEGER,
+        references: { model: "Productos", key: "id" },
+        onDelete: "CASCADE",
       },
-      estado: Sequelize.STRING,
+      cantidad: Sequelize.INTEGER,
+      importeTotal: {
+        type: Sequelize.INTEGER,
+      },
+      montoCobrado: {
+        type: Sequelize.INTEGER,
+      },
+      pagado: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

@@ -19,15 +19,6 @@ module.exports = function (sequelize, DataTypes) {
       codigoPedido: DataTypes.INTEGER,
       mesero: DataTypes.STRING,
       seccion: DataTypes.STRING,
-      cantidad:DataTypes.INTEGER,
-      importeTotal: DataTypes.INTEGER,
-      montoCobrado: DataTypes.INTEGER,
-      pagado: DataTypes.STRING,
-      //   status: {
-      //     type: DataTypes.ENUM('activo', 'inactivo'),
-      //     defaultValue: 'inactivo',
-      //     allowNull: false
-      // }
     },
 
     {

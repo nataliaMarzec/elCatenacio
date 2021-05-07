@@ -30,8 +30,10 @@ class CargarPedido extends React.Component {
       cliente: props.cliente || {},
       modal: false,
       codigo: "",
-      menus:props.menus || [],
-      descripcion:"",
+      menus: props.menus || [],
+      descripcion: "",
+      items:[],
+      id:"",
     };
     this.onSeleccion = this.onSeleccion.bind(this);
   }
@@ -42,11 +44,6 @@ class CargarPedido extends React.Component {
         codigoPedido: "",
         mesero: "",
         seccion: "",
-        cantidad: "",
-        precioUnitario: "",
-        importeTotal: "",
-        montoCobrado: "",
-        pagado: "",
       },
     });
   };
@@ -74,10 +71,13 @@ class CargarPedido extends React.Component {
     fetch(`http://localhost:8383/productos`)
       .then((res) => res.json())
       .then(
-        (prods) => this.setState({ productos: prods, producto: {},menus:[] }),
-        console.log("productoEnviado", this.state.productos,this.state.menus)
+        (prods) => this.setState({ productos: prods, producto: {}, menus: [] }),
+        console.log("productoEnviado", this.state.productos, this.state.menus)
       );
   };
+  
+
+ 
 
 
   onSeleccion(e) {
@@ -100,7 +100,7 @@ class CargarPedido extends React.Component {
     if (id) {
       this.editarPedido(id);
     } else {
-      this.crearPedido();
+      this.crearPedido();  
     }
     e.preventDefault(e);
   };
@@ -135,6 +135,15 @@ class CargarPedido extends React.Component {
         .then((prods) => this.setState({ productos: prods }));
     }
   };
+  buscarItemsPorPedidoId = (pedidoId) => {
+    if (pedidoId) {
+      fetch(`http://localhost:8383/itemsDePedido` + pedidoId)
+        .then((res) => res.json())
+        .then((prods) => this.setState({id:pedidoId,items:prods }));
+    }
+
+  };
+
 
   crearPedido = () => {
     fetch("http://localhost:8383/pedidos/nuevo", {
@@ -147,6 +156,7 @@ class CargarPedido extends React.Component {
     })
       .then((res) => this.props.listadoPedidos())
       .then((res) => this.estadoInicial());
+      console.log("CREARRRR",this.state.pedido)
   };
 
   // agregarProductoAPedidos = (id) =>{
@@ -232,25 +242,25 @@ class CargarPedido extends React.Component {
                       />
                     </Col>
                   </FormGroup>
-                  <Form onSubmit={this.handleSubmitProducto} id="formulario">
-                  <FormGroup row>
-                    <Col md="3">
-                      <Label for="descripcion">Descripción</Label>
-                    </Col>
-                    <Col xs="12" md="9">
-                      <Input
-                        type="text"
-                        id="descripcion"
-                        name="descripcion"
-                        placeholder="Completa Descripción..."
-                        onChange={this.handleChangeProducto}
-                        value={this.state.producto.descripcion}
-                        list="producto"
-                      />
-                    </Col>
-                    <datalist id="descripcion">{listaDescripciones}</datalist>
-                  </FormGroup>
-                  </Form>
+                  {/* <Form onSubmit={this.handleSubmitProducto} id="formulario">
+                    <FormGroup row>
+                      <Col md="3">
+                        <Label for="descripcion">Descripción</Label>
+                      </Col>
+                      <Col xs="12" md="9">
+                        <Input
+                          type="text"
+                          id="descripcion"
+                          name="descripcion"
+                          placeholder="Completa Descripción..."
+                          onChange={this.handleChangeProducto}
+                          value={this.state.producto.descripcion}
+                          list="producto"
+                        />
+                      </Col>
+                      <datalist id="descripcion">{listaDescripciones}</datalist>
+                    </FormGroup>
+                  </Form> */}
                   <FormGroup row>
                     <Col md="3">
                       <Label for="mesero">Mesero</Label>
@@ -431,6 +441,7 @@ class CargarPedido extends React.Component {
     nuevoPedido[e.target.name] =
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
     this.setState({ pedido: nuevoPedido });
+    console.log("item handle change",this.state.pedido.ItemsPedido)
   };
 
   handleChangeProducto = (e) => {

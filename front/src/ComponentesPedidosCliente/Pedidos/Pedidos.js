@@ -24,6 +24,12 @@ class Pedidos extends React.Component {
       modal: false,
       editable: false,
       menus: [],
+      unPedido: {},
+      cantidad: [],
+      importeTotal: [],
+      descripcion: [],
+      precioUnitario: [],
+      items:[]
     };
   }
 
@@ -49,17 +55,30 @@ class Pedidos extends React.Component {
   }
 
   listadoPedidos = () => {
-    fetch(`http://localhost:8383/pedidos`)
+    fetch(`http://localhost:8383/pedidosTodos`)
       .then((res) => res.json())
-      .then((pds) => this.setState({ pedidos: pds, pedido: {} }));
+      .then((pds) =>
+        this.setState({
+          pedidos: pds,
+          pedido: {},
+          // items:this.state.pedido.ItemsPedido,
+        })
+      );
+      console.log("listado pedidoItems__________",this.state.pedidos)
   };
 
   listadoProductos = () => {
     fetch(`http://localhost:8383/productos`)
       .then((res) => res.json())
-      .then((prods) => this.setState({ productos: prods, producto: {},menus:prods.descripcion,descripcion:"" }));
+      .then((prods) =>
+        this.setState({
+          productos: prods,
+          producto: {},
+          menus: prods.descripcion,
+          descripcion: "",
+        })
+      );
   };
-
 
   actualizarAlEliminar = (unPedido) => {
     var listaActualizada = this.state.pedidos.filter(
@@ -123,11 +142,10 @@ class Pedidos extends React.Component {
                         <th>Código</th>
                         <th>Mesero</th>
                         <th>Sección</th>
-                        {/* <th>Menú/codigo</th> */}
                         <th>Cantidad</th>
                         <th>Precio p/un.</th>
                         <th>Importe</th>
-                        <th>Pagado</th>
+                        <th>descripcion</th>
                         <th></th>
                       </tr>
                     </thead>
@@ -153,10 +171,10 @@ class Pedidos extends React.Component {
             <Pedido
               key={index}
               pedido={unPedido}
+              unPedido={this.state.unPedido}
               pedidos={this.state.pedidos}
               productos={this.state.productos}
               producto={this.state.producto}
-              menus={this.state.menus}
               selector={this.seleccionar}
               actualizarAlEliminar={this.actualizarAlEliminar}
               eliminarPedido={this.eliminarPedido.bind(this)}

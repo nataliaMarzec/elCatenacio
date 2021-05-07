@@ -25,16 +25,7 @@ module.exports = {
       seccion: {
         type: Sequelize.STRING,
       },
-      cantidad: Sequelize.INTEGER,
-      importeTotal: {
-        type: Sequelize.INTEGER,
-      },
-      montoCobrado: {
-        type: Sequelize.INTEGER,
-      },
-      pagado: {
-        type: Sequelize.STRING,
-      },
+     
     });
   },
   down: async (queryInterface, Sequelize) => {

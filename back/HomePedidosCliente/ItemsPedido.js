@@ -17,24 +17,29 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         foreignKey: true,
         type: DataTypes.INTEGER,
-        // onDelete: "SET NULL",
-        // onUpdate: "CASCADE",
       },
       productoId: {
         allowNull: true,
         foreignKey: true,
         type: DataTypes.INTEGER,
-        // onDelete: "CASCADE",
-        // onUpdate: "CASCADE",
+        references: { model: "Productos", key: "id" },
+        onDelete: "CASCADE",
       },
+      cantidad:DataTypes.INTEGER,
+      importeTotal: DataTypes.INTEGER,
+      montoCobrado: DataTypes.INTEGER,
+      pagado: DataTypes.STRING,
+      //   status: {
+      //     type: DataTypes.ENUM('activo', 'inactivo'),
+      //     defaultValue: 'inactivo',
+      //     allowNull: false
+      // }
       estado: DataTypes.STRING,
-
     },
 
     {
       tableName: "ItemsPedido",
       modelName: "ItemsPedido",
-      
     }
   );
 
