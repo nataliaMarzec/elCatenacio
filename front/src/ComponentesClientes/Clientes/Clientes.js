@@ -135,8 +135,10 @@ class Clientes extends React.Component {
           <option value={cliente.cuit} />
         </div>
       );
+      
     });
-   
+    console.log("listaCuitCliente",listaCuitCliente)
+
     return (
       <div className="container">
         <div></div>

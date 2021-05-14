@@ -5,6 +5,38 @@ const Producto = models.Producto;
 const ItemsPedido = models.ItemsPedido;
 const Pedido = models.Pedido;
 module.exports = {
+
+  //funciona!!
+  addConItems(req, res) {
+    return Pedido.create(
+      {
+        id: req.body.id,
+        codigoPedido: req.body.codigoPedido,
+        mesero: req.body.mesero,
+        seccion: req.body.seccion,
+        ItemsPedido: req.body.ItemsPedido,
+ 
+      },
+      {
+        include: [
+          {
+            model: ItemsPedido,
+            as: "ItemsPedido",
+            where: { pedidoId: Pedido.id },
+            include: [
+              {
+                model: Producto,
+                as: "Productos",
+                where: { productoId:ItemsPedido.productoId },
+              },
+            ],
+          },
+        ],
+      }
+    )
+      .then((pedido) => res.status(201).send(pedido))
+      .catch((error) => res.status(400).send(error));
+  },
   //bien
   add(req, res) {
     return Pedido.create({
@@ -78,37 +110,7 @@ module.exports = {
       return res.status(200).json(pedido);
     }
   },
-  //funciona!!
-  addConItems(req, res) {
-    return Pedido.create(
-      {
-        id: req.body.id,
-        codigoPedido: req.body.codigoPedido,
-        mesero: req.body.mesero,
-        seccion: req.body.seccion,
-        ItemsPedido: req.body.ItemsPedido,
- 
-      },
-      {
-        include: [
-          {
-            model: ItemsPedido,
-            as: "ItemsPedido",
-            where: { pedidoId: Pedido.id },
-            include: [
-              {
-                model: Producto,
-                as: "Productos",
-                where: { productoId:ItemsPedido.productoId },
-              },
-            ],
-          },
-        ],
-      }
-    )
-      .then((pedido) => res.status(201).send(pedido))
-      .catch((error) => res.status(400).send(error));
-  },
+  
 
   //actualiza el pedido pero no el item
   updateConItems(req, res) {

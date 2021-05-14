@@ -28,7 +28,7 @@ module.exports = function (sequelize, DataTypes) {
       cantidad:DataTypes.INTEGER,
       importeTotal: DataTypes.INTEGER,
       montoCobrado: DataTypes.INTEGER,
-      pagado: DataTypes.STRING,
+      pagado: DataTypes.BOOLEAN,
       //   status: {
       //     type: DataTypes.ENUM('activo', 'inactivo'),
       //     defaultValue: 'inactivo',

@@ -1,4 +1,5 @@
 var { Sequelize, Op } = require("sequelize");
+const Producto = require("../HomePedidosCliente/Producto");
 const { models } = require("../SequelizeConnection");
 const ItemsPedido = models.ItemsPedido;
 const Productos = models.Producto;
@@ -24,23 +25,22 @@ module.exports = {
   addConProducto(req, res) {
     return ItemsPedido.create(
       {
-      id: req.body.id,
-      pedidoId: req.body.pedidoId,
-      productoId: req.body.productoId,
-      cantidad: req.body.cantidad,
-      precioUnitario: req.body.precioUnitario,
-      importeTotal: req.body.importeTotal,
-      montoCobrado: req.body.montoCobrado,
-      pagado: req.body.pagado,
-      Productos: req.body.Productos,
- 
+        id: req.body.id,
+        pedidoId: req.body.pedidoId,
+        productoId: req.body.productoId,
+        cantidad: req.body.cantidad,
+        precioUnitario: req.body.precioUnitario,
+        importeTotal: req.body.importeTotal,
+        montoCobrado: req.body.montoCobrado,
+        pagado: req.body.pagado,
+        Productos: req.body.Productos,
       },
       {
         include: [
           {
-            model:Productos,
+            model: Productos,
             as: "Productos",
-            where: { productoId:ItemsPedido.productoId },
+            where: { productoId: ItemsPedido.productoId },
           },
         ],
       }
@@ -96,6 +96,35 @@ module.exports = {
       return res.status(200).json({ err: "item ya tiene producto", item });
     }
   },
+  //bien usar para crear producto con item
+  addProductoAItem: async (req, res) => {
+    var producto = await Productos.findOne({
+      where: { descripcion: req.params.descripcion },
+    });
+    var idp = producto.id;
+    return ItemsPedido.create(
+      {
+        id: req.body.id,
+        pedidoId: req.body.pedidoId,
+        productoId: producto.id,
+        cantidad: req.body.cantidad,
+        precioUnitario: req.body.precioUnitario,
+        importeTotal: req.body.importeTotal,
+        montoCobrado: req.body.montoCobrado,
+        pagado: req.body.pagado,
+      },
+      {
+        include: [
+          {
+            model: Productos,
+            as: "Productos",
+          },
+        ],
+      }
+    )
+      .then((item) => res.status(201).send(item))
+      .catch((error) => res.status(400).send(error));
+  },
 
   updateProducto: async (req, res) => {
     var item = await ItemsPedido.findOne({
@@ -116,7 +145,6 @@ module.exports = {
       return res.status(200).json({ err: "item ya tiene producto", item });
     }
   },
-
 
   //bien
   todosLosItems(req, res) {
@@ -215,7 +243,10 @@ module.exports = {
   },
 
   delete(req, res) {
-    return ItemsPedido.findOne({ where: { id: req.params.id },include:["Productos"] })
+    return ItemsPedido.findOne({
+      where: { id: req.params.id },
+      include: ["Productos"],
+    })
       .then((item) => {
         if (!item) {
           return res.status(400).send({

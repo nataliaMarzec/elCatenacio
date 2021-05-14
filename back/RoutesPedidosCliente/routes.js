@@ -4,8 +4,8 @@ const controllerPedido = require("../ControllersPedidosCliente/PedidoController"
 const controllerProducto = require("../ControllersPedidosCliente/ProductoController");
 const controllerItemsPedido = require("../ControllersPedidosCliente/ItemsPedidoController");
 
-router.post("/pedidos/", controllerPedido.add);
-router.post("/pedidos/items",controllerPedido.addConItems)
+// router.post("/pedidos/", controllerPedido.add);
+router.post("/pedidos/",controllerPedido.addConItems)
 router.get("/pedidosTodos", controllerPedido.encontrarPedidoConItems);
 router.get("/pedidos/:id", controllerPedido.getPedidoId);
 router.put("/pedidos/items/:id", controllerPedido.updateConItems);
@@ -48,6 +48,7 @@ router.get("/itemsDePedidos", controllerItemsPedido.todosLosItemsDePedidos);
 router.put("/itemsPedido/:id",controllerItemsPedido.updatePorId);
 router.delete("/itemsPedido/:id",controllerItemsPedido.delete);
 router.post("/itemsPedido/producto",controllerItemsPedido.addConProducto);
+router.put("/itemsPedidos/:descripcion",controllerItemsPedido.addProductoAItem);
 
 
 

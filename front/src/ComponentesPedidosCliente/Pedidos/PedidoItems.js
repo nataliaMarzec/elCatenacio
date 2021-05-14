@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "reactstrap";
 
-class Pedido extends React.Component {
+class PedidoItems extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -11,7 +11,7 @@ class Pedido extends React.Component {
       importeTotal: this.props.importeTotal,
       descripciones: this.props.descripciones,
       precioUnitario: this.props.precioUnitario,
-      names:[]
+      names: [],
     };
     this.eliminarPedido = this.eliminarPedido.bind(this);
     this.seleccionarPedido = this.seleccionarPedido.bind(this);
@@ -36,7 +36,6 @@ class Pedido extends React.Component {
   //   let descripciones=this.props.descripciones.map((d)=>d.name)
   //   console.log("will descripciones____",descripciones)
   // }
-
 
   // componentWillMount() {
   //   this.props.listadoPedidos()
@@ -82,7 +81,6 @@ class Pedido extends React.Component {
   };
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-   
     if (nextProps.pedidos !== this.props.pedidos) {
       this.setState({ pedidos: this.props.pedidos });
       console.log(
@@ -105,12 +103,12 @@ class Pedido extends React.Component {
     // if (nextProps.item !== this.props.item) {
     //   this.setState({ item: nextProps.item });
     // }
-    if (nextProps.descripcis !== this.props.descripcis) {
-      this.setState({ descripcis: this.props.descripcis });
+    if (nextProps.names !== this.props.names) {
+      this.setState({ names: this.props.names });
       console.log(
         "DESCRIPCIS props",
-        this.props.descripcis,
-        nextProps.descripcis.values()
+        this.props.names,
+        nextProps.names.values()
       );
     }
     if (nextProps.productos !== this.props.productos) {
@@ -124,21 +122,16 @@ class Pedido extends React.Component {
     if (nextProps.producto !== this.props.producto) {
       this.setState({ producto: nextProps.producto });
     }
-    
   }
 
   render = () => {
-     
     return (
       <tr>
-        <td>{this.props.pedido.codigoPedido}</td>
-        <td>{this.props.pedido.mesero}</td>
-        <td>{this.props.pedido.seccion}</td>
+        <td>{this.props.item.pedidoId}</td>
+        <td>{this.props.item.cantidad}</td>
         <td>{this.props.names}</td>
-         {/*<td>{this.state.precioUnitario}</td>
-        <td>{this.state.importeTotal}</td>
-        <td>{this.state.descripcion}</td> */}
-        {/* <td>{this.props.pedido.habilitado? "si":"no"}</td> */}
+        <td>{this.props.item.importe}</td>
+        <th>Observaciones</th>
         <td>
           <Button
             color="danger"
@@ -149,10 +142,11 @@ class Pedido extends React.Component {
           </Button>{" "}
           &nbsp;&nbsp;
           <Button
+            size="btn-xs"
             className="btn #e65100 orange darken-4"
             onClick={this.seleccionarPedido}
           >
-            <i className="fa fa-dot-circle-o">{""} Editar</i>
+            <i className="fa fa-dot-circle-o">{""}</i>
           </Button>
         </td>
       </tr>
@@ -160,4 +154,4 @@ class Pedido extends React.Component {
   };
 }
 
-export default Pedido;
+export default PedidoItems;

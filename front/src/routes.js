@@ -47,6 +47,9 @@ const UnPedido = React.lazy(() =>
 const UnPedidoRow = React.lazy(() =>
   import("./ComponentesPedidosCliente/Pedidos/UnPedidoRow")
 );
+const MultiSelect = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/MultiSelect")
+);
 
 const Clientes = React.lazy(() =>
   import("./ComponentesClientes/Clientes/Clientes")
@@ -195,6 +198,12 @@ const routes = [
     exact: false,
     name: "UnPedidoRow",
     component:UnPedidoRow,
+  },  
+  {
+    path: "/multiselect",
+    exact: false,
+    name: "MultiSelect",
+    component:MultiSelect,
   },  
 {
     path: "/cargarUnPedido",
