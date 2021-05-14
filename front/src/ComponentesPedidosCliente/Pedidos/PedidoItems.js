@@ -92,17 +92,17 @@ class PedidoItems extends React.Component {
     if (nextProps.pedido !== this.props.pedido) {
       this.setState({ pedido: nextProps.pedido });
     }
-    // if (nextProps.items !== this.props.items) {
-    //   this.setState({ items: this.props.items });
-    //   console.log(
-    //     "Items props",
-    //     this.props.items,
-    //     nextProps.items.values()
-    //   );
-    // }
-    // if (nextProps.item !== this.props.item) {
-    //   this.setState({ item: nextProps.item });
-    // }
+    if (nextProps.items !== this.props.items) {
+      this.setState({ items: this.props.items });
+      console.log(
+        "Items props",
+        this.props.items,
+        nextProps.items.values()
+      );
+    }
+    if (nextProps.item !== this.props.item) {
+      this.setState({ item: nextProps.item });
+    }
     if (nextProps.names !== this.props.names) {
       this.setState({ names: this.props.names });
       console.log(
@@ -125,12 +125,13 @@ class PedidoItems extends React.Component {
   }
 
   render = () => {
+    // console.log("items",this.props.items)
     return (
       <tr>
-        <td>{this.props.item.pedidoId}</td>
-        <td>{this.props.item.cantidad}</td>
+        {/* <td>{this.props.item.pedidoId}</td> */}
+       {/*  <td>{this.props.item.cantidad}</td>
         <td>{this.props.names}</td>
-        <td>{this.props.item.importe}</td>
+        <td>{this.props.item.importe}</td> */}
         <th>Observaciones</th>
         <td>
           <Button
