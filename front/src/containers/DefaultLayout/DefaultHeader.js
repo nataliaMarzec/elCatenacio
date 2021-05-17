@@ -22,15 +22,15 @@ class DefaultHeader extends Component {
     const { children, ...attributes } = this.props;
 
     return (
-      <React.Fragment>
+      <React.Fragment >
         <AppSidebarToggler className="d-lg-none" display="md" mobile />
-        <NavbarBrand href="https://github.com/nataliaMarzec/elCatenacio/" target='_blank'>El Catenacio</NavbarBrand>
+        <NavbarBrand  href="https://github.com/nataliaMarzec/elCatenacio/" target='_blank'>El Catenacio</NavbarBrand>
 
-        <AppSidebarToggler className="d-md-down-none" display="lg" />
+        <AppSidebarToggler  className="d-md-down-none" display="lg" />
 
-        <Nav className="d-md-down-none" navbar>
+        <Nav  className="d-md-down-none" navbar>
 
-       <Router>
+       <Router >
         <Switch>
         <Route path="/clientes" name="clientes" render={props=><Clientes {...props}/>} />
         <Route path="/articulos" name="ArticulosLista" render={props => <ArticulosLista {...props}/>} />
@@ -45,7 +45,7 @@ class DefaultHeader extends Component {
 
         {/*Aca comienza el navbar de arriba(header)de la derecha*/}
 
-        <Nav className="ml-auto" navbar>
+        <Nav  className="ml-auto" navbar>
          
           <NavItem className="d-md-down-none">
             <NavLink to="#" className="nav-link"><i className="icon-bell"></i><Badge pill color="danger">5 a ver--</Badge></NavLink>

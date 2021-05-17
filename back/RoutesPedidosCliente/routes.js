@@ -48,8 +48,8 @@ router.get("/itemsDePedidos", controllerItemsPedido.todosLosItemsDePedidos);
 router.put("/itemsPedido/:id",controllerItemsPedido.updatePorId);
 router.delete("/itemsPedido/:id",controllerItemsPedido.delete);
 router.post("/itemsPedido/producto",controllerItemsPedido.addConProducto);
-router.put("/itemsPedidos/:descripcion",controllerItemsPedido.addProductoAItem);
-
+router.get("/itemsPedidos/:descripcion",controllerItemsPedido.addProductoAItem);
+router.put("/itemsPedidos/:productoId",controllerItemsPedido.updateCantidadItem)
 
 
 

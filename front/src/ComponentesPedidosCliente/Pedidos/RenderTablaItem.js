@@ -17,7 +17,7 @@ import {
   ModalFooter,
   Row,
   Container,
-  Table
+  Table,
 } from "reactstrap";
 
 import { AppSwitch } from "@coreui/react";
@@ -39,12 +39,10 @@ class RenderTablaItem extends React.Component {
       modal: false,
       codigo: "",
       descripcion: "",
-      items:props.items || [],
+      productoId: props.productoId,
+      items: props.items || [],
       id: "",
-      options: [
-        { value: 1, label: "h" },
-        { value: 2, label: "c" },
-      ],
+      selectedValues: props.selectedValues || [],
     };
   }
 
@@ -70,51 +68,66 @@ class RenderTablaItem extends React.Component {
       },
     });
   };
-  componentWillReceiveProps(props){
-      this.setState({items:props.items})
+  componentWillReceiveProps(props) {
+    this.setState({ items: props.items });
+    this.setState({ productos: props.productos });
+    this.setState({ producto: props.producto });
+    this.setState({ selectedValues: props.selectedValues });
   }
   componentDidMount() {
     this.props.listadoItemsPedido();
-    console.log("will items---",this.props)
+    console.log("will items---", this.props);
   }
   render() {
+    var listaProductosEnPedido = this.props.listaProductosEnPedido;
     var listaItems = this.state.items;
+
+
     console.log("items tabla", listaItems);
+    
     if (listaItems.length) {
-    return listaItems.map((item, index) => (
-        <div className="container">
-      <Container fluid style={{ backgroundColor: "#f1f1f1" }}>
-        <h3>Cargar item</h3>
-        <body></body>
-        <Row>
-          <Col class="col-lg-12">
-            <div className="animated fadeIn">
-              <Row>
-                <Col xs="12" lg="12">
-                  <Card>
-                    <CardBody>
-                      <Table responsive bordered size="sm">
-                        <thead>
-                          <tr>
-                            <th>Código</th>
-                            <th>Cantidad</th>
-                            <th>Productos</th>
-                            <th>Importe</th>
-                            <th>Observaciones</th>
-                          </tr>
-                        </thead>
-                        <tbody>{this.renderItems(item, index)}</tbody>
-                      </Table>
-                    </CardBody>
-                  </Card>
-                </Col>
-              </Row>
-            </div>
-            {/* <Card fluid>
+      return listaItems.map((item, index) => (
+      
+        <div className="container-fluid">
+          <Container style={{ backgroundColor: "#f1f1f1" }}>
+            {/* <h3>Cargar item</h3> */}
+            <body></body>
+            <Row>
+              <Col class="col-lg-12">
+                <div className="animated fadeIn">
+                  <Row>
+                    <Col xs="12" lg="12">
+                      {/* <Card> */}
+                        {/* <CardBody> */}
+                          <Table responsive bordered size="sm">
+                            <thead>
+                              <tr>
+                                <th>Código</th>
+                                <th>Cantidad</th>
+                                <th>Productos</th>
+                                <th>Importe</th>
+                                <th>Observaciones</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {this.renderItems(
+                                item,
+                                index,
+                                item.productoId,
+                                listaProductosEnPedido
+                              )}
+                            </tbody>
+                          </Table>
+                        {/* </CardBody> */}
+                      {/* </Card> */}
+                    </Col>
+                  </Row>
+                </div>
+                {/* <Card fluid>
                 <CardHeader>Detalles pedido</CardHeader>
                 <CardBody> */}
-            {/* </CardBody> */}
-            {/* <Form class="row">
+                {/* </CardBody> */}
+                {/* <Form class="row">
                   <FormGroup >
                    <Col className="col-md-4">
                    <Label>hola</Label>
@@ -123,18 +136,17 @@ class RenderTablaItem extends React.Component {
                     
                   </FormGroup>
                 </Form> */}
-            {/* </Card> */}
-          </Col>
-          <Col class="col-lg-4">
-            <h1>chau</h1>
-          </Col>
-          {/* <Col class="col-lg-4">
+                {/* </Card> */}
+              </Col>
+              <Col class="col-lg-4">{/* <h1>chau</h1> */}</Col>
+              {/* <Col class="col-lg-4">
               <h1>hola</h1>
             </Col> */}
-        </Row>
-      </Container>
-      </div>
-    ));
+            </Row>
+          </Container>
+        </div>
+      )
+      );
     } else {
       return (
         <div className="container">
@@ -147,11 +159,31 @@ class RenderTablaItem extends React.Component {
       );
     }
   }
-  renderItems(item, index) {
+  renderItems(item, index, productoId, listaProductosEnPedido) {
     var itemsLista = this.state.items;
-    var listaActualizada = itemsLista.filter((item) => item == item);
-    console.log("renderRows", listaActualizada);
-    return <PedidoItems key={index} item={item} items={listaActualizada} />;
+    // var listaActualizada = itemsLista.map((item) => item == item);
+    if (listaProductosEnPedido.length) {
+      var producto = listaProductosEnPedido.find((p) => p.id == productoId);
+      console.log("renderRows", item.cantidad);
+      var cantidad = item.cantidad;
+      var precio = producto.precio;
+    //   return !itemsLista
+    //     ? console.log("NULL__pedidos", null, itemsLista)
+    //     : itemsLista.map((item) => {
+            return (
+              <PedidoItems
+                key={index}
+                item={item}
+                items={itemsLista}
+                // items={listaActualizada}
+                productoId={productoId}
+                descripcion={producto.descripcion}
+                importe={cantidad * precio}
+                // listadoItemsPedido={this.props.listadoItemsPedido}
+              />
+            );
+        //   });
+    }
   }
 }
 export default RenderTablaItem;

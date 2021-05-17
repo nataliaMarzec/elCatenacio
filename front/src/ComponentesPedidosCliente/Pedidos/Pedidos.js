@@ -1,7 +1,6 @@
 import React from "react";
 import Pedido from "./Pedido";
 import CargarPedido from "./CargarPedido";
-import PedidoItem from "./PedidoItems";
 import RenderTablaItem from "./RenderTablaItem";
 
 import {
@@ -39,13 +38,13 @@ class Pedidos extends React.Component {
       descripcion: {},
       descripciones: [],
       precioUnitario: [],
+      selectedValues: null,
       items: [],
       item: {},
-      selectedValues:null,
-      items: [],
-      item: {},
+      productoId: "",
+      selector: {},
     };
-    this.listadoItemsPedido=this.listadoItemsPedido.bind(this)
+    this.listadoItemsPedido = this.listadoItemsPedido.bind(this);
   }
 
   toggle = () => {
@@ -124,6 +123,7 @@ class Pedidos extends React.Component {
     );
     this.setState({ pedidos: listaActualizada, pedido: {} });
   };
+  actualizarCantidad = () => {};
 
   eliminarPedido(id) {
     this.props.eliminarPedido(id);
@@ -141,96 +141,90 @@ class Pedidos extends React.Component {
     this.setState({ descripciones: descripciones });
   }
 
-  ModalHeaderStrong = () => {
-    return (
-      <ModalHeader editable={this.state.editable} toggle={this.toggle}>
-        <strong>Nuevo</strong>Pedido
-      </ModalHeader>
+  settingDescripciones = (selectedValues) => {
+    if (selectedValues != null) {
+      this.setState(
+        {
+          item: {
+            ...this.state.item,
+            pedidoId: this.state.pedidoId,
+            selectedValues: selectedValues
+              .map(function (d) {
+                console.log("map", d.id);
+                return d.descripcion;
+              })
+              .forEach((n) => {
+                this.agregarProductoAItem(n);
+              }),
+          },
+        },
+        () =>
+          console.log("state", this.state.item.pedidoId, "+++", selectedValues)
+      );
+    }
+  };
+
+  onSelect = (selectedValues) => {
+    this.setState({ selectedValues }, () =>
+      console.log("onSelect", selectedValues)
     );
-  };
-  onSeleccion(e) {
-    let { name, value } = e.target;
-    let productos = [...this.state.productos];
-    let indice = productos.findIndex((el) => el.descripcion == name);
-    productos[indice].check = !productos[indice].check;
-    this.setState({
-      productos: [...productos],
-    });
-  }
-
-  onSelect = selectedValues => {
-    this.setState({selectedValues })
-
-    // ()=>console.log("onSeletc",this.state.descripciones));
-    // let descs = [...this.state.descripciones];
-    // descs.push({ descrip });
-    
-    // this.setState({
-    //   descripciones: [...descs],
-    // });
-    //para cada desc crear un item
-    // console.log("onSelect", this.state.descripciones, "+++",descripciones);
+    this.settingDescripciones(selectedValues);
   };
 
-  onRemove = (descripciones) => {
-    this.setState({ descripciones: descripciones });
+  onRemove = (selectedValues) => {
+    this.setState({ selectedValues });
   };
-
-  onSubmit(e) {
-    var descripcion = this.state.descripcion;
-    var descripciones = this.state.descripciones;
-    for (var i = 0; i < descripciones.length; i++) {
-      this.agregarProductoAItem(descripcion);
-    }
-    e.preventDefault();
-  }
-  finalizar(selectedValues){
-    if(selectedValues !=null){
-    let descrip=selectedValues.map((d)=>d.name)
-    console.log("descripmap",descrip)
-    }
-    console.log("finalizar",selectedValues)
-  }
 
   agregarProductoAItem = (descripcion) => {
     fetch("http://localhost:8383/itemsPedidos/" + descripcion, {
-      method: "put",
+      method: "get",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.state.item),
+      // body: JSON.stringify(this.state.item),
     })
-      .then((res) => this.props.listadoItemsPedido())
+      .then((res) => this.listadoItemsPedido())
+      .then((res) => this.setState({ productoId: this.state.producto.id }))
       .then((res) => this.estadoInicial());
-    // console.log("CREARRRR", this.state.pedido);
   };
+
+  seleccionar = (unItem) => {
+    this.setState({ item: unItem });
+  };
+
+  handleChange(event) {
+    var nuevoItem = Object.assign({}, this.state.item);
+    nuevoItem[event.target.name] =
+      event.target.type === "checkbox"
+        ? event.target.checked
+        : event.target.value;
+    this.setState({ item: nuevoItem });
+  }
 
   event = (event) => {
     event.preventDefault();
   };
 
   render(props) {
-    var {selectedValues}=this.state
-    // console.log("items tabla", items);
+    var { selectedValues } = this.state;
+    var listaItems = this.state.items;
     var listaProductosEnPedido = this.state.productos.map((p) => ({
-      name: p.descripcion + "   " ,
+      name: p.descripcion + "",
       id: p.id,
       precio: "$" + p.precioUnitario,
+      descripcion: p.descripcion,
     }));
-
-    // console.log("listaProductosEnPedido", listaProductosEnPedido, "+++");
-    // console.log("descripcionesrender", this.state.productos);
     return (
       <div className="container">
         <div></div>
         <Row>
           &nbsp;
-          <FormGroup>
+          <FormGroup onSubmit={this.event}>
             <Label for="descripciones">
               Menus
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
-              <Button color="info" onClick={this.finalizar(this.state.selectedValues)}>
+              <Button color="info" onClick={this.onSelect}>
                 +
               </Button>
             </Label>
@@ -254,20 +248,47 @@ class Pedidos extends React.Component {
             />
           </FormGroup>
         </Row>
-        {/* <div className="container">
-          <tbody>
-            {
-              <this.RenderTablaItem
-                items={items}
-                listadoItemsPedido={this.listadoItemsPedido}
-              ></this.RenderTablaItem>
-            }
-          </tbody>
-        </div> */}
-        <RenderTablaItem
+        <CardHeader style={{ backgroundColor: "#eedc0a" }}>
+          Detalles de pedido
+        </CardHeader>
+        <CardHeader>
+        <Container style={{ backgroundColor: "#f1f1f1" }}>
+          <Row>
+            <Col class="col-lg-4">
+              <Table style={{ backgroundColor: "#eee363" }}>
+                <thead>
+                  <tr>
+                    <th>Código</th>
+                    <th>Productos</th>
+                    <th>Cantidad</th>
+                    <th></th>
+                    {/* <th>Importe</th>
+                    <th>Observaciones</th> */}
+                  </tr>
+                </thead>
+                <tbody>{this.renderItems(listaProductosEnPedido)}</tbody>
+              </Table>
+            </Col>
+           <Col class="col-lg-4"><h6>hola</h6>
+            {/*  <Table style={{ backgroundColor: "#eee363" }}>
+                <thead>
+                  <tr>
+                    <th>Importe</th>
+                    <th>Observaciones</th>
+                  </tr>
+                </thead>
+                <tbody>{this.renderItems(listaProductosEnPedido)}</tbody>
+              </Table>*/}
+            </Col> 
+          </Row>
+          </Container>
+        </CardHeader>
+        {/* <RenderTablaItem
           items={this.state.items}
+          pedidoId={this.state.pedidoId}
           listadoItemsPedido={this.listadoItemsPedido}
-        ></RenderTablaItem>
+          listaProductosEnPedido={listaProductosEnPedido}
+        ></RenderTablaItem> */}
 
         <CargarPedido
           listadoPedidos={this.listadoPedidos}
@@ -306,114 +327,43 @@ class Pedidos extends React.Component {
       </div>
     );
   }
-  actualizarItems = () => {
-    this.setState({ items: this.state.items });
-    // console.log("actualizar items", this.state.items);
-  };
 
-  RenderTablaItem() {
-    var listaItems = this.state.items;
-    // console.log("items tabla", listaItems);
-    // if (listaItems.length) {
-    return listaItems.map((item, index) => (
-      <Container fluid style={{ backgroundColor: "#f1f1f1" }}>
-        <h3>Cargar item</h3>
-        <body></body>
-        <Row>
-          <Col class="col-lg-12">
-            <div className="animated fadeIn">
-              <Row>
-                <Col xs="12" lg="12">
-                  <Card>
-                    <CardBody>
-                      <Table responsive bordered size="sm">
-                        <thead>
-                          <tr>
-                            <th>Código</th>
-                            <th>Cantidad</th>
-                            <th>Productos</th>
-                            <th>Importe</th>
-                            <th>Observaciones</th>
-                          </tr>
-                        </thead>
-                        <tbody>{this.renderItems(item, index)}</tbody>
-                      </Table>
-                    </CardBody>
-                  </Card>
-                </Col>
-              </Row>
-            </div>
-            {/* <Card fluid>
-                <CardHeader>Detalles pedido</CardHeader>
-                <CardBody> */}
-            {/* </CardBody> */}
-            {/* <Form class="row">
-                  <FormGroup >
-                   <Col className="col-md-4">
-                   <Label>hola</Label>
-                    <Input></Input>
-                   </Col>
-                    
-                  </FormGroup>
-                </Form> */}
-            {/* </Card> */}
-          </Col>
-          <Col class="col-lg-4">
-            <h1>chau</h1>
-          </Col>
-          {/* <Col class="col-lg-4">
-              <h1>hola</h1>
-            </Col> */}
-        </Row>
-      </Container>
-    ));
-    // } else {
-    //   return (
-    //     <div className="container">
-    //       <div className="jumbotron mt-5">
-    //         <div className="col-sm-8 mx-auto">
-    //           <h1 className="text-center">No hay items para mostrar</h1>
-    //         </div>
-    //       </div>
-    //     </div>
-    //   );
-    // }
+  renderItems(listaProductosEnPedido) {
+    let pedidos = this.state.pedidos;
+    let productos = this.state.productos;
+    let items = this.state.items;
+    if (listaProductosEnPedido.length) {
+      return !items
+        ? console.log("NULL__pedidos", null, items)
+        : items.map((unItem, index) => {
+            var producto = listaProductosEnPedido.find(
+              (p) => p.id == unItem.productoId
+            );
+            return (
+              <PedidoItems
+                key={index}
+                item={unItem}
+                items={this.state.items}
+                // names={names}
+                productos={this.state.productos}
+                descripcion={producto.descripcion}
+                productoId={unItem.productoId}
+                importe={producto.precio}
+                cantidad={unItem.cantidad}
+                selector={this.seleccionar}
+                listadoPedidos={this.listadoPedidos}
+                listadoProductos={this.listadoProductos}
+                listadoItemsPedido={this.listadoItemsPedido}
+                selector={this.seleccionar}
+                estadoInicial={this.estadoInicial}
+                actualizarAlEliminar={this.actualizarAlEliminar}
+                eliminarPedido={this.eliminarPedido.bind(this)}
+                toggle={this.toggle}
+              />
+            );
+          });
+    }
   }
-
-  renderItems(item, index) {
-    var itemsLista = this.state.items;
-    var listaActualizada = itemsLista.filter((item) => item == item);
-    console.log("renderRows", listaActualizada);
-    return <PedidoItems key={index} item={item} items={listaActualizada} />;
-  }
-  // renderItems() {
-  //   let pedidos = this.state.pedidos;
-  //   let productos = this.state.productos;
-  //   let items = this.state.items;
-  //   let names = this.state.descripciones.map((d) => d.name);
-
-  //   return !items
-  //     ? console.log("NULL__pedidos", null, items)
-  //     : items.map((unItem, index) => {
-  //         return (
-  //           <PedidoItem
-  //             key={index}
-  //             item={unItem}
-  //             items={this.state.items}
-  //             names={names}
-  //             productos={this.state.productos}
-  //             producto={this.state.producto}
-  //             listadoPedidos={this.listadoPedidos}
-  //             listadoProductos={this.listadoProductos}
-  //             listadoItemsPedido={this.listadoItemsPedido}
-  //             selector={this.seleccionar}
-  //             actualizarAlEliminar={this.actualizarAlEliminar}
-  //             eliminarPedido={this.eliminarPedido.bind(this)}
-  //             toggle={this.toggle}
-  //           />
-  //         );
-  //       });
-  // }
   renderRows() {
     let pedidos = this.state.pedidos;
     let productos = this.state.productos;

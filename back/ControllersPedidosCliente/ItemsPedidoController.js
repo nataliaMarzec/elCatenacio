@@ -96,7 +96,7 @@ module.exports = {
       return res.status(200).json({ err: "item ya tiene producto", item });
     }
   },
-  //bien usar para crear producto con item
+  //usado
   addProductoAItem: async (req, res) => {
     var producto = await Productos.findOne({
       where: { descripcion: req.params.descripcion },
@@ -121,9 +121,21 @@ module.exports = {
           },
         ],
       }
-    )
+    ) 
       .then((item) => res.status(201).send(item))
       .catch((error) => res.status(400).send(error));
+  },
+//usado
+  updateCantidadItem: async (req, res) => {
+    var item = await ItemsPedido.findOne({
+      where: { productoId: req.params.productoId },
+    });
+      var cantidad = await item.update({cantidad:req.body.cantidad});
+      console.log("cantidad",cantidad, "pid",item);
+      return res.status(200).json(cantidad);
+    // } else {
+    //   return res.status(200).json({ err: "item ya tiene producto", item });
+    // }
   },
 
   updateProducto: async (req, res) => {

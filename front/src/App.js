@@ -19,9 +19,10 @@ const Home = React.lazy(() => import('./componentes/LoginYSesionDeUsuarios/Home.
 
 function App() {
   // const {usuario,cargandoUsuario,login,signup,logout}=useUsuario()
+  // style={{ backgroundColor: "#ac7c54" }}
   return (
-    <div className="App">
-    <Router>
+    <div className="App" style={{ backgroundColor: "#c09bcf" }}>
+    <Router >
  
       <main className="App-main">
       <React.Suspense fallback={loading()}>
