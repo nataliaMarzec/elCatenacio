@@ -1,23 +1,17 @@
 import React from "react";
 import Pedido from "./Pedido";
 import CargarPedido from "./CargarPedido";
-import RenderTablaItem from "./RenderTablaItem";
 
 import {
   Table,
   Container,
   Row,
-  Button,
-  Modal,
-  ModalHeader,
   Col,
   Card,
   CardHeader,
   CardBody,
   Label,
-  Form,
   FormGroup,
-  Input,
 } from "reactstrap";
 import { Multiselect } from "multiselect-react-dropdown";
 import PedidoItems from "./PedidoItems";
@@ -33,7 +27,7 @@ class Pedidos extends React.Component {
       modal: false,
       editable: false,
       unPedido: {},
-      cantidad: [],
+      cantidad: {},
       importeTotal: [],
       descripcion: {},
       descripciones: [],
@@ -123,7 +117,6 @@ class Pedidos extends React.Component {
     );
     this.setState({ pedidos: listaActualizada, pedido: {} });
   };
-  actualizarCantidad = () => {};
 
   eliminarPedido(id) {
     this.props.eliminarPedido(id);
@@ -133,49 +126,64 @@ class Pedidos extends React.Component {
     this.setState({ pedido: unPedido });
   };
 
-  handleChange(descripcion) {
-    this.setState({ descripcion: descripcion });
-  }
-
-  handleMultiChange(descripciones) {
-    this.setState({ descripciones: descripciones });
-  }
+  seleccionarItem = (unItem) => {
+    this.setState({ item: unItem });
+    // console.log("seleccionar", this.state.item);
+  };
 
   settingDescripciones = (selectedValues) => {
-    if (selectedValues != null) {
+    // if (selectedValues != null) {
       this.setState(
         {
-          item: {
-            ...this.state.item,
-            pedidoId: this.state.pedidoId,
-            selectedValues: selectedValues
-              .map(function (d) {
-                console.log("map", d.id);
-                return d.descripcion;
-              })
-              .forEach((n) => {
-                this.agregarProductoAItem(n);
-              }),
-          },
-        },
-        () =>
-          console.log("state", this.state.item.pedidoId, "+++", selectedValues)
+          // item: {
+          //   ...this.state.item,
+          // productoId: this.state.productoId,
+          selectedValues: selectedValues
+            .map(function (d) {
+              // console.log("map",d.descripcion,selectedValues.length);
+              return d.descripcion;
+            })
+            .forEach((n) => {
+              this.getProductoAItem(n);
+              selectedValues.pop(n)
+              console.log(
+                "SelectValues-----",
+                selectedValues.length,
+                this.state.descripciones
+              );
+            }),
+          // },
+        }
+        // () =>
+        // console.log("state", this.state.item.productoId, "+++", selectedValues)
       );
-    }
+    // }
   };
 
-  onSelect = (selectedValues) => {
-    this.setState({ selectedValues }, () =>
-      console.log("onSelect", selectedValues)
-    );
-    this.settingDescripciones(selectedValues);
-  };
+  // onSelect = (selectedValues) => {
+  //   var descripciones = selectedValues;
+  //   // this.settingDescripciones(selectedValues);
+  //   descripciones
+  //     .map((d) => d.descripcion)
+  //     .forEach((n) => {
+  //       if (!n) {
+  //         this.getProductoAItem(n);
+  //       }
+  //     });
+  //   this.setState(
+  //     { descripciones },
+  //     console.log("descripciones", descripciones)
+
+  //     //  () =>
+  //     // console.log("onSelect", selectedValues)
+  //   );
+  // };
 
   onRemove = (selectedValues) => {
     this.setState({ selectedValues });
   };
 
-  agregarProductoAItem = (descripcion) => {
+  getProductoAItem = (descripcion) => {
     fetch("http://localhost:8383/itemsPedidos/" + descripcion, {
       method: "get",
       headers: {
@@ -187,10 +195,6 @@ class Pedidos extends React.Component {
       .then((res) => this.listadoItemsPedido())
       .then((res) => this.setState({ productoId: this.state.producto.id }))
       .then((res) => this.estadoInicial());
-  };
-
-  seleccionar = (unItem) => {
-    this.setState({ item: unItem });
   };
 
   handleChange(event) {
@@ -215,25 +219,26 @@ class Pedidos extends React.Component {
       precio: "$" + p.precioUnitario,
       descripcion: p.descripcion,
     }));
+    // console.log("listaProductosEnPedido",listaProductosEnPedido);
     return (
       <div className="container">
         <div></div>
         <Row>
           &nbsp;
-          <FormGroup onSubmit={this.event}>
+          <FormGroup>
             <Label for="descripciones">
               Menus
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
-              <Button color="info" onClick={this.onSelect}>
+              {/* <Button color="info" onClick={this.onSelect}>
                 +
-              </Button>
+              </Button> */}
             </Label>
 
             <Multiselect
               id="descripcion"
               options={listaProductosEnPedido}
               selectedValues={selectedValues}
-              onSelect={this.onSelect}
+              onSelect={this.settingDescripciones}
               groupBy="precio"
               // showCheckbox={true}
               // searchBox
@@ -252,25 +257,30 @@ class Pedidos extends React.Component {
           Detalles de pedido
         </CardHeader>
         <CardHeader>
-        <Container style={{ backgroundColor: "#f1f1f1" }}>
-          <Row>
-            <Col class="col-lg-4">
-              <Table style={{ backgroundColor: "#eee363" }}>
-                <thead>
-                  <tr>
-                    <th>Código</th>
-                    <th>Productos</th>
-                    <th>Cantidad</th>
-                    <th></th>
-                    {/* <th>Importe</th>
+          <Container style={{ backgroundColor: "#f1f1f1" }}>
+            <Row>
+              <Col className="col-lg-4">
+                {/* {Boolean(
+                  listaItems.length !=0 && ( */}
+                <Table style={{ backgroundColor: "#eee363" }}>
+                  <thead>
+                    <tr>
+                      <th>Código</th>
+                      <th>Productos</th>
+                      <th>Cantidad</th>
+                      <th></th>
+                      {/* <th>Importe</th>
                     <th>Observaciones</th> */}
-                  </tr>
-                </thead>
-                <tbody>{this.renderItems(listaProductosEnPedido)}</tbody>
-              </Table>
-            </Col>
-           <Col class="col-lg-4"><h6>hola</h6>
-            {/*  <Table style={{ backgroundColor: "#eee363" }}>
+                    </tr>
+                  </thead>
+
+                  <tbody>{this.renderItems(listaProductosEnPedido)}</tbody>
+                </Table>
+
+                {/* )} */}
+              </Col>
+              {/* <Col class="col-lg-4"><h6>hola</h6> */}
+              {/*  <Table style={{ backgroundColor: "#eee363" }}>
                 <thead>
                   <tr>
                     <th>Importe</th>
@@ -279,8 +289,8 @@ class Pedidos extends React.Component {
                 </thead>
                 <tbody>{this.renderItems(listaProductosEnPedido)}</tbody>
               </Table>*/}
-            </Col> 
-          </Row>
+              {/* </Col>  */}
+            </Row>
           </Container>
         </CardHeader>
         {/* <RenderTablaItem
@@ -329,12 +339,10 @@ class Pedidos extends React.Component {
   }
 
   renderItems(listaProductosEnPedido) {
-    let pedidos = this.state.pedidos;
-    let productos = this.state.productos;
     let items = this.state.items;
     if (listaProductosEnPedido.length) {
       return !items
-        ? console.log("NULL__pedidos", null, items)
+        ? console.log("NULL__NO HAY ITEMS", null, listaProductosEnPedido)
         : items.map((unItem, index) => {
             var producto = listaProductosEnPedido.find(
               (p) => p.id == unItem.productoId
@@ -344,17 +352,15 @@ class Pedidos extends React.Component {
                 key={index}
                 item={unItem}
                 items={this.state.items}
-                // names={names}
                 productos={this.state.productos}
-                descripcion={producto.descripcion}
                 productoId={unItem.productoId}
+                descripcion={producto.descripcion}
                 importe={producto.precio}
                 cantidad={unItem.cantidad}
-                selector={this.seleccionar}
+                selector={this.seleccionarItem}
                 listadoPedidos={this.listadoPedidos}
                 listadoProductos={this.listadoProductos}
                 listadoItemsPedido={this.listadoItemsPedido}
-                selector={this.seleccionar}
                 estadoInicial={this.estadoInicial}
                 actualizarAlEliminar={this.actualizarAlEliminar}
                 eliminarPedido={this.eliminarPedido.bind(this)}
@@ -368,7 +374,6 @@ class Pedidos extends React.Component {
     let pedidos = this.state.pedidos;
     let productos = this.state.productos;
     // let descripciones=this.state.descripciones;
-    let names = this.state.descripciones.map((d) => d.name);
 
     return !pedidos
       ? console.log("NULL__pedidos", null, pedidos)
@@ -383,7 +388,6 @@ class Pedidos extends React.Component {
               producto={this.state.producto}
               items={this.state.items}
               item={this.state.item}
-              names={names}
               selector={this.seleccionar}
               actualizarAlEliminar={this.actualizarAlEliminar}
               eliminarPedido={this.eliminarPedido.bind(this)}

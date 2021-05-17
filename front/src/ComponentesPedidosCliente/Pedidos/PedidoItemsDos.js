@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Input } from "reactstrap";
 
-class PedidoItems extends React.Component {
+class PedidoItemsDos extends React.Component {
   constructor(props) {
     super(props);
     this.state = {

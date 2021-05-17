@@ -96,14 +96,15 @@ module.exports = {
       return res.status(200).json({ err: "item ya tiene producto", item });
     }
   },
-  //usado
+  
+  //usado 
   addProductoAItem: async (req, res) => {
     var producto = await Productos.findOne({
       where: { descripcion: req.params.descripcion },
     });
     var idp = producto.id;
     return ItemsPedido.create(
-      {
+      { 
         id: req.body.id,
         pedidoId: req.body.pedidoId,
         productoId: producto.id,
@@ -130,12 +131,10 @@ module.exports = {
     var item = await ItemsPedido.findOne({
       where: { productoId: req.params.productoId },
     });
-      var cantidad = await item.update({cantidad:req.body.cantidad});
-      console.log("cantidad",cantidad, "pid",item);
-      return res.status(200).json(cantidad);
-    // } else {
-    //   return res.status(200).json({ err: "item ya tiene producto", item });
-    // }
+      var itemCantidad = await item.update({cantidad:req.body.cantidad});
+      console.log("cantidad",itemCantidad.cantidad, "item",item);
+      return res.status(200).json(itemCantidad);
+
   },
 
   updateProducto: async (req, res) => {
@@ -294,6 +293,7 @@ module.exports = {
       res.status(400).json({ err: "No Item con productoId" });
     } else {
       return res.status(200).json(item);
+
     }
   },
 };

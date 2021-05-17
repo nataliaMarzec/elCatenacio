@@ -11,7 +11,6 @@ class Pedido extends React.Component {
       importeTotal: this.props.importeTotal,
       descripciones: this.props.descripciones,
       precioUnitario: this.props.precioUnitario,
-      names:[]
     };
     this.eliminarPedido = this.eliminarPedido.bind(this);
     this.seleccionarPedido = this.seleccionarPedido.bind(this);
@@ -67,8 +66,8 @@ class Pedido extends React.Component {
 
   seleccionarPedido() {
     this.props.selector(this.props.pedido);
-    console.log("seleccionar___", this.props.pedido);
-    console.log("productoS____", this.props.producto);
+    // console.log("seleccionar___", this.props.pedido);
+    // console.log("productoS____", this.props.producto);
     this.props.toggle();
   }
 
@@ -85,11 +84,11 @@ class Pedido extends React.Component {
    
     if (nextProps.pedidos !== this.props.pedidos) {
       this.setState({ pedidos: this.props.pedidos });
-      console.log(
-        "pedidos props",
-        this.props.pedidos,
-        nextProps.pedidos.values()
-      );
+      // console.log(
+      //   "pedidos props",
+      //   this.props.pedidos,
+      //   nextProps.pedidos.values()
+      // );
     }
     if (nextProps.pedido !== this.props.pedido) {
       this.setState({ pedido: nextProps.pedido });
@@ -105,21 +104,14 @@ class Pedido extends React.Component {
     // if (nextProps.item !== this.props.item) {
     //   this.setState({ item: nextProps.item });
     // }
-    if (nextProps.descripcis !== this.props.descripcis) {
-      this.setState({ descripcis: this.props.descripcis });
-      console.log(
-        "DESCRIPCIS props",
-        this.props.descripcis,
-        nextProps.descripcis.values()
-      );
-    }
+   
     if (nextProps.productos !== this.props.productos) {
       this.setState({ productos: this.props.productos });
-      console.log(
-        "PRODUCTOS props",
-        this.props.productos,
-        nextProps.productos.values()
-      );
+      // console.log(
+      //   "PRODUCTOS props",
+      //   this.props.productos,
+      //   nextProps.productos.values()
+      // );
     }
     if (nextProps.producto !== this.props.producto) {
       this.setState({ producto: nextProps.producto });
@@ -134,7 +126,7 @@ class Pedido extends React.Component {
         <td>{this.props.pedido.codigoPedido}</td>
         <td>{this.props.pedido.mesero}</td>
         <td>{this.props.pedido.seccion}</td>
-        <td>{this.props.names}</td>
+        {/* <td>{this.props.names}</td> */}
          {/*<td>{this.state.precioUnitario}</td>
         <td>{this.state.importeTotal}</td>
         <td>{this.state.descripcion}</td> */}
