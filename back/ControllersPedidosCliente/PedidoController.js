@@ -5,7 +5,39 @@ const Producto = models.Producto;
 const ItemsPedido = models.ItemsPedido;
 const Pedido = models.Pedido;
 module.exports = {
-
+  guardarPedidoId: async (req, res) => {
+    var item = await ItemsPedido.findOne({
+      where: { codigo: req.params.codigo },
+    });
+    var id=req.params.id
+    if (item) {
+      const pedido = await Pedido.create({
+        id:id,
+        include: [
+          {
+            association:ItemsPedido,
+            where:{foreingkey:"pedidoId",targetKey:"id"}
+          },
+        ],
+      });
+      var pid = pedido.id;
+      var itemPedidoId = await item.update({
+        pedidoId:id,
+        include: [
+          {
+            association:Pedido,
+            where:{foreingkey:"pedidoId"}
+          },
+        ],
+      });
+      console.log("pedidoId", id);
+      return res.status(200).json(itemPedidoId);
+    } else {
+      return res
+        .status(404)
+        .json("no encontro item", { item, pid, itemPedidoId });
+    }
+  },
   //funciona!!
   addConItems(req, res) {
     return Pedido.create(
@@ -15,7 +47,6 @@ module.exports = {
         mesero: req.body.mesero,
         seccion: req.body.seccion,
         ItemsPedido: req.body.ItemsPedido,
- 
       },
       {
         include: [
@@ -27,7 +58,7 @@ module.exports = {
               {
                 model: Producto,
                 as: "Productos",
-                where: { productoId:ItemsPedido.productoId },
+                where: { productoId: ItemsPedido.productoId },
               },
             ],
           },
@@ -110,7 +141,6 @@ module.exports = {
       return res.status(200).json(pedido);
     }
   },
-  
 
   //actualiza el pedido pero no el item
   updateConItems(req, res) {
@@ -159,7 +189,7 @@ module.exports = {
       });
   },
 
-  delete:async(req, res)=> {
+  delete: async (req, res) => {
     return await Pedido.findByPk(req.params.id)
       .then((pedido) => {
         if (!pedido) {
@@ -174,7 +204,6 @@ module.exports = {
       })
       .catch((error) => res.status(400).send(error));
   },
- 
 
   agregarItems(idPedido, items, callback) {
     Pedido.findOne({ id: idPedido }, (error, pedido) => {
@@ -202,8 +231,6 @@ module.exports = {
       }
     });
   },
-
-
 
   createItemPedido: async (req, res) => {
     const pedido = req.body;
@@ -243,8 +270,6 @@ module.exports = {
       return res.status(200).json(pedido);
     }
   },
-
-  
 
   update: async (req, res) => {
     const pedido = await Pedido.findByPk(req.params.id);
@@ -289,8 +314,4 @@ module.exports = {
       return res.status(200).json(pedido);
     }
   },
-
-
-
-
 };

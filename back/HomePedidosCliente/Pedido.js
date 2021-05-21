@@ -8,11 +8,11 @@ module.exports = function (sequelize, DataTypes) {
       id: {
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true,
+        primaryKey:true,
         type: DataTypes.INTEGER,
-        unique:true,
+
       },
-      clienteId_pedido: {
+      clienteId: {
         foreignKey: true,
         type: DataTypes.INTEGER,
       },
@@ -24,17 +24,14 @@ module.exports = function (sequelize, DataTypes) {
     {
       tableName: "Pedidos",
       modelName: "Pedidos",
+      // indexes:[
+      //     {
+      //         unique: true,
+      //         fields: ['pedidoId']
+      //     },
+      //   ]
     }
   );
-  Pedido.associate = () => {
-    Pedido.belongsTo(models.Cliente);
-
-    // Pedido.belongsToMany(models.Producto, {
-    //   through: "RegistroPedidoProducto",
-    //   as: "productos",
-    //   foreignKey: "productoFk"
-    // });
-  };
 
   return Pedido;
 };

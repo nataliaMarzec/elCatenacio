@@ -8,11 +8,11 @@ module.exports = {
       id: {
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true,
+        primaryKey:true,
         type: Sequelize.INTEGER,
-        unique: true,
+      
       },
-      clienteId_pedido: {
+      clienteId: {
         foreignKey: true,
         type: Sequelize.INTEGER,
       },
@@ -25,7 +25,12 @@ module.exports = {
       seccion: {
         type: Sequelize.STRING,
       },
-     
+      // indexes:[
+      //   {
+      //       unique: true,
+      //       fields: ['pedidoId']
+      //   },
+      // ]
     });
   },
   down: async (queryInterface, Sequelize) => {

@@ -8,9 +8,9 @@ class PedidoItemsDos extends React.Component {
       editar: false,
       toogle: props.toggle,
       cantidad: props.cantidad,
-      importeTotal: props.importeTotal,
+      importe: props.importe,
       descripciones: props.descripciones,
-      precioUnitario: props.precioUnitario,
+      precio: props.precio,
       items: props.items,
       item: props.item,
     };
@@ -33,14 +33,8 @@ class PedidoItemsDos extends React.Component {
     this.props.toggle();
   }
 
-  // componentWillMount(){
-  //   let descripciones=this.props.descripciones.map((d)=>d.name)
-  //   console.log("will descripciones____",descripciones)
-  // }
-
   seleccionarPedido() {
     this.props.selector(this.props.pedido);
-    // console.log("seleccionar___", this.props.pedido);
     this.props.toggle();
   }
 
@@ -76,6 +70,14 @@ class PedidoItemsDos extends React.Component {
       this.setState({ cantidad: this.props.cantidad });
       // console.log("cantidad---", this.props.cantidad);
     }
+    if (nextProps.precio !== this.props.precio) {
+      this.setState({ precio: this.props.precio });
+      console.log("precio---", this.props.precio);
+    }
+    // if (nextProps.importe !== this.props.importe) {
+    //   this.setState({ importe: this.props.importe });
+    //   console.log("importe---", this.props.importe);
+    // }
     if (nextProps.productos !== this.props.productos) {
       this.setState({ productos: this.props.productos });
     }
@@ -84,8 +86,8 @@ class PedidoItemsDos extends React.Component {
     }
   }
 
-  updateCantidadItem = (productoId) => {
-    fetch("http://localhost:8383/itemsPedidos/" + productoId, {
+  updateObservacionesItem = (productoId) => {
+    fetch("http://localhost:8383/itemObservaciones/" + productoId, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -94,68 +96,48 @@ class PedidoItemsDos extends React.Component {
       body: JSON.stringify(this.state.item),
     })
       .then((res) => this.props.listadoItemsPedido)
-      .then((res) =>
-        this.setState(
-          { item: { ...this.state.item, cantidad: this.state.item.cantidad } },
-          // () =>
-          //   console.log(
-          //     "update-cantidad",
-          //     this.state.item,
-          //     this.state.item.cantidad
-          //   )
-        )
-      );
-    // .then((res) => this.props.estadoInicial());
-    // console.log("GUARDARITEM", productoId, this.props.cantidad);
+      .then((res) => this.setState({ item: { ...this.state.item } }));
   };
 
-
-  guardarCantidad(productoId) {
-    // this.props.selector(this.props.item);
-    this.updateCantidadItem(productoId);
-    // console.log("seleccionar___", productoId, this.props.cantidad);
+  guardar(productoId) {
+    this.updateObservacionesItem(productoId);
   }
 
-  
   handleChange = (e) => {
     var nuevoItem = Object.assign({}, this.state.item);
     nuevoItem[e.target.name] = e.target.value;
     this.setState({ item: nuevoItem });
   };
 
-
   event = (e) => {
     e.preventDefault();
   };
 
   render = () => {
-    // console.log("items",this.props.items)
     return (
       <tr key={this.props.index}>
-        <td>{this.props.productoId}</td>
-        <td>{this.props.descripcion}</td>
-        <td onSubmit={this.event}>
+        <td>${this.props.importe}</td>
+        <td key="observaciones" onSubmit={this.event}>
           <input
-            style={{ backgroundColor: "#eee363" }}
-            type="number"
-            id="cantidad"
-            name="cantidad"
-            placeholder="1"
+            style={{ backgroundColor: "#F5C765" }}
+            type="text"
+            id={this.state.item.observaciones}
+            name="observaciones"
+            placeholder="observaciones"
             // required
-            value={this.state.item.cantidad || 1}
+            value={this.state.item.observaciones}
             onChange={this.handleChange.bind(this)}
             className="form-control"
           ></input>
         </td>
         <td>
-          {" "}
           {"  "}
           <Button
             color="info"
             size="btn-xs"
-            onClick={() => this.guardarCantidad(this.props.productoId)}
+            onClick={() => this.guardar(this.props.productoId)}
           >
-            <i className="cui-trash icons font-1xl d-block mt-1"></i>
+            <i className="fa fa-dot-circle-o">{""}</i>
           </Button>
         </td>
         {/* <td>{this.props.importe}</td> */}
@@ -193,4 +175,4 @@ class PedidoItemsDos extends React.Component {
   };
 }
 
-export default PedidoItems;
+export default PedidoItemsDos;

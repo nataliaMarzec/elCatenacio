@@ -6,6 +6,10 @@ module.exports = {
   
   create: async (req, res) => {
     const producto = req.body;
+    var existe=await Producto.findOne({
+      where: { descripcion:producto.descripcion },
+    });
+    if(!existe){
     const { id, descripcion, codigo, habilitado } = await Producto.create(
       producto
     );
@@ -15,6 +19,9 @@ module.exports = {
       codigo,
       habilitado,
     });
+  }else{
+    return res.status(400).json("ya existe producto")
+  }
   },
 
   delete: async (req, res) => {

@@ -3,10 +3,12 @@ const router = new express.Router();
 const controllerPedido = require("../ControllersPedidosCliente/PedidoController");
 const controllerProducto = require("../ControllersPedidosCliente/ProductoController");
 const controllerItemsPedido = require("../ControllersPedidosCliente/ItemsPedidoController");
+const controllerPago = require("../ControllersPedidosCliente/PagoController");
+const controllerResponsableDeMesa = require("../ControllersPedidosCliente/ResponsableDeMesaController");
 
 // router.post("/pedidos/", controllerPedido.add);
 router.post("/pedidos/",controllerPedido.addConItems)
-router.get("/pedidosTodos", controllerPedido.encontrarPedidoConItems);
+// router.get("/pedidosTodos", controllerPedido.encontrarPedidoConItems);
 router.get("/pedidos/:id", controllerPedido.getPedidoId);
 router.put("/pedidos/items/:id", controllerPedido.updateConItems);
 router.delete("/pedidos/:id", controllerPedido.delete);
@@ -16,6 +18,7 @@ router.get("/unPedido", controllerPedido.getUnPedido);
 router.put("/pedidos/:id", controllerPedido.update);
 router.get("/pedidos/buscar/:codigo", controllerPedido.encontrarPedidoPorCodigo);
 router.get("/pedidos/busqueda/:mesero", controllerPedido.encontrarPedidoPorMesero);
+router.get("/itemParaPedido/:codigo/:id", controllerPedido.guardarPedidoId);
 
 
 
@@ -50,8 +53,14 @@ router.delete("/itemsPedido/:id",controllerItemsPedido.delete);
 router.post("/itemsPedido/producto",controllerItemsPedido.addConProducto);
 router.get("/itemsPedidos/:descripcion",controllerItemsPedido.addProductoAItem);
 router.put("/itemsPedidos/:productoId",controllerItemsPedido.updateCantidadItem)
+router.put("/itemObservaciones/:productoId",controllerItemsPedido.updateObservaciones)
+router.get("/itemsPedidos/importe/:importe/:productoId",controllerItemsPedido.updateImporteItem)
 
+router.post("/pago/nuevo",controllerPago.create);
 
+router.post("/responsable/nuevo",controllerResponsableDeMesa.create);
+router.get("/responsables", controllerResponsableDeMesa.todosLosResponsablesDeMesa);
+router.get("/clientes/busqueda/:nombre", controllerResponsableDeMesa.encontrarResponsablePorNombre);
 
 
 

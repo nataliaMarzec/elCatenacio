@@ -5,6 +5,8 @@ const Sequelize = require("sequelize");
 const PedidoModel = require("./HomePedidosCliente/Pedido");
 const ProductoModel = require("./HomePedidosCliente/Producto");
 const ItemsPedidoModel = require("./HomePedidosCliente/ItemsPedido");
+const PagoModel=require("./HomePedidosCliente/Pago")
+const ResponsableDeMesaModel=require("./HomePedidosCliente/ResponsableDeMesa")
 const ClienteModel = require("./HomeClientes/Cliente");
 
 const sequelize = process.env.DB_URL
@@ -19,6 +21,11 @@ const sequelize = process.env.DB_URL
         acquire: 30000,
         idle: 10000,
       },
+      tableOptions: {
+        ENGINE: 'innodb',
+         // SET FOREIGN_KEY_CHECKS=0;
+      }
+     
     });
 
 const models = {};
@@ -29,7 +36,8 @@ models.Producto = ProductoModel(sequelize, Sequelize);
 models.ItemsPedido = ItemsPedidoModel(sequelize, Sequelize);
 models.Pedido = PedidoModel(sequelize, Sequelize);
 models.Cliente = ClienteModel(sequelize, Sequelize);
-
+models.Pago= PagoModel(sequelize,Sequelize)
+models.ResponsableDeMesa=ResponsableDeMesaModel(sequelize,Sequelize)
 
 models.Producto.hasOne(models.ItemsPedido, {
   foreignKey: "productoId",
@@ -49,15 +57,17 @@ models.ItemsPedido.belongsTo(models.Producto, {
 models.Pedido.hasMany(models.ItemsPedido, {
   as: "ItemsPedido",
   foreignKey: "pedidoId",
+  sourceKey:"id",
+  // unique:false,
   constraints:false,
 
 });
 models.ItemsPedido.belongsTo(models.Pedido, {
   as: "Pedidos",
   foreignKey: "pedidoId",
-  targetKeys: "id",
-  unique:false,
-  constraints: false,
+  targetKey: "id",
+  constraints:false,
+  // unique:false,
 });
 
 sequelize

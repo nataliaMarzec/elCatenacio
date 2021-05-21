@@ -7,12 +7,13 @@ class PedidoItems extends React.Component {
     this.state = {
       editar: false,
       toogle: props.toggle,
-      cantidad: props.cantidad,
-      importeTotal: props.importeTotal,
-      descripciones: props.descripciones,
-      precioUnitario: props.precioUnitario,
       items: props.items,
       item: props.item,
+      importe: props.importe,
+      descripciones: props.descripciones,
+      cantidad: props.cantidad,
+      precio: props.precio,
+      importe: props.importe,
     };
     this.eliminarPedido = this.eliminarPedido.bind(this);
     this.seleccionarPedido = this.seleccionarPedido.bind(this);
@@ -76,6 +77,14 @@ class PedidoItems extends React.Component {
       this.setState({ cantidad: this.props.cantidad });
       // console.log("cantidad---", this.props.cantidad);
     }
+    if (nextProps.precio !== this.props.precio) {
+      this.setState({ precio: this.props.precio });
+      // console.log("precio---", this.props.precio);
+    }
+    if (nextProps.importe !== this.props.importe) {
+      this.setState({ importe: this.props.importe });
+      // console.log("importe---", this.props.importe);
+    }
     if (nextProps.productos !== this.props.productos) {
       this.setState({ productos: this.props.productos });
     }
@@ -97,42 +106,73 @@ class PedidoItems extends React.Component {
       .then((res) =>
         this.setState(
           { item: { ...this.state.item, cantidad: this.state.item.cantidad } },
-          // () =>
-          //   console.log(
-          //     "update-cantidad",
-          //     this.state.item,
-          //     this.state.item.cantidad
-          //   )
+          () => console.log("update-cantidad", this.state.item.cantidad)
         )
       );
     // .then((res) => this.props.estadoInicial());
     // console.log("GUARDARITEM", productoId, this.props.cantidad);
   };
 
+  updateImporteItem = (importeTotal, productoId) => {
+    fetch(
+      `http://localhost:8383/itemsPedidos/importe/${importeTotal}/${productoId}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((res) => this.props.listadoItemsPedido())
+      .then((res) =>
+        this.setState(
+          {
+            item: { ...this.state.item, importe: importeTotal },
+            // ,      function() {
+            // }
+          },
+          console.log("importe", importeTotal)
+        )
+      );
+  };
 
-  guardarCantidad(productoId) {
-    // this.props.selector(this.props.item);
+  guardar(importeTotal, productoId) {
+    var precio = this.state.precio;
     this.updateCantidadItem(productoId);
-    // console.log("seleccionar___", productoId, this.props.cantidad);
+    if (importeTotal == null) {
+      this.updateImporteItem(precio, productoId);
+    } else {
+      this.updateImporteItem(importeTotal, productoId);
+    }
   }
 
-  
   handleChange = (e) => {
     var nuevoItem = Object.assign({}, this.state.item);
     nuevoItem[e.target.name] = e.target.value;
-    this.setState({ item: nuevoItem });
+    this.setState({ item: nuevoItem, cantidad: nuevoItem.cantidad });
+    var total = 0;
+    var cantidad = nuevoItem.cantidad;
+    var precio = this.state.precio;
+    if (cantidad == null) {
+      total = 1 * precio;
+      this.setState({ precio: this.state.precio, importe: total });
+      return total;
+    } else {
+      total = cantidad * precio;
+      this.setState({ precio: this.state.precio, importe: total });
+      return total;
+    }
   };
-
 
   event = (e) => {
     e.preventDefault();
   };
 
   render = () => {
-    // console.log("items",this.props.items)
     return (
       <tr key={this.props.index}>
-        <td>{this.props.productoId}</td>
+        <td>{this.props.codigo}</td>
         <td>{this.props.descripcion}</td>
         <td onSubmit={this.event}>
           <input
@@ -142,7 +182,7 @@ class PedidoItems extends React.Component {
             name="cantidad"
             placeholder="1"
             // required
-            value={this.state.item.cantidad || 1}
+            value={this.state.item.cantidad}
             onChange={this.handleChange.bind(this)}
             className="form-control"
           ></input>
@@ -153,13 +193,13 @@ class PedidoItems extends React.Component {
           <Button
             color="info"
             size="btn-xs"
-            onClick={() => this.guardarCantidad(this.props.productoId)}
+            onClick={() =>
+              this.guardar(this.state.importe, this.props.productoId)
+            }
           >
-            <i className="cui-trash icons font-1xl d-block mt-1"></i>
+            <i className="fa fa-dot-circle-o">{""}</i>{" "}
           </Button>
         </td>
-        {/* <td>{this.props.importe}</td> */}
-        {/* &nbsp;&nbsp; */}
         {/* <Button
             color="danger"
             size="btn-xs"

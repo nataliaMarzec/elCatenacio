@@ -84,23 +84,23 @@ class Pedido extends React.Component {
    
     if (nextProps.pedidos !== this.props.pedidos) {
       this.setState({ pedidos: this.props.pedidos });
-      // console.log(
-      //   "pedidos props",
-      //   this.props.pedidos,
-      //   nextProps.pedidos.values()
-      // );
+      console.log(
+        "pedidos props",
+        this.props.pedidos,
+        nextProps.pedidos.values()
+      );
     }
     if (nextProps.pedido !== this.props.pedido) {
       this.setState({ pedido: nextProps.pedido });
     }
-    // if (nextProps.items !== this.props.items) {
-    //   this.setState({ items: this.props.items });
-    //   console.log(
-    //     "Items props",
-    //     this.props.items,
-    //     nextProps.items.values()
-    //   );
-    // }
+    if (nextProps.items !== this.props.items) {
+      this.setState({ items: this.props.items });
+      console.log(
+        "Items props",
+        this.props.items,
+        nextProps.items.values()
+      );
+    }
     // if (nextProps.item !== this.props.item) {
     //   this.setState({ item: nextProps.item });
     // }
@@ -124,12 +124,9 @@ class Pedido extends React.Component {
     return (
       <tr>
         <td>{this.props.pedido.codigoPedido}</td>
-        <td>{this.props.pedido.mesero}</td>
+        <td>{this.props.responsableDeMesa}</td>
         <td>{this.props.pedido.seccion}</td>
-        {/* <td>{this.props.names}</td> */}
-         {/*<td>{this.state.precioUnitario}</td>
-        <td>{this.state.importeTotal}</td>
-        <td>{this.state.descripcion}</td> */}
+        <td>{this.props.pedido.importeTotal}</td>
         {/* <td>{this.props.pedido.habilitado? "si":"no"}</td> */}
         <td>
           <Button

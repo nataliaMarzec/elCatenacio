@@ -19,7 +19,7 @@ import {
 } from "reactstrap";
 
 import { AppSwitch } from "@coreui/react";
-import { Multiselect } from "multiselect-react-dropdown";
+// import { Multiselect } from "multiselect-react-dropdown";
 // import MultSelect from "./MultSelect";
 // import MultiSelect from "./MultiSelect"
 
@@ -57,8 +57,7 @@ class CargarPedido extends React.Component {
           {
             cantidad: 1,
             importeTotal: 0,
-            montoCobrado: 0,
-            pagado: "no",
+            observaciones:"",
             Productos: {
               descripcion: "",
               precioUnitario: 0,

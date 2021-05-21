@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable("ItemsPedido", {
-      id: {
+      codigo: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
@@ -14,6 +14,10 @@ module.exports = {
         allowNull: true,
         foreignKey: true,
         type: Sequelize.INTEGER,
+        unique:false,
+        constraints:false,
+        references: { model: "Pedidos", key: "id" , constraints:false},
+
       },
       productoId: {
         allowNull: true,
@@ -22,16 +26,14 @@ module.exports = {
         references: { model: "Productos", key: "id" },
         onDelete: "CASCADE",
       },
-      cantidad: Sequelize.INTEGER,
-      importeTotal: {
+      cantidad: {
+        type: Sequelize.INTEGER,
+        defaultValue: 1,
+      },
+      importe: {
         type: Sequelize.INTEGER,
       },
-      montoCobrado: {
-        type: Sequelize.INTEGER,
-      },
-      pagado: {
-        type: Sequelize.STRING,
-      },
+      observaciones: Sequelize.STRING,
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

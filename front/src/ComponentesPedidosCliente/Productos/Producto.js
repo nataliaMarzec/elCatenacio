@@ -66,7 +66,6 @@ class Producto extends React.Component {
           </Button>
           &nbsp;&nbsp;
           <Button
-            className="btn #e65100 orange darken-4"
             // onClick={}
             color="info"
           >

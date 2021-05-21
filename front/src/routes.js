@@ -47,6 +47,9 @@ const UnPedido = React.lazy(() =>
 const UnPedidoRow = React.lazy(() =>
   import("./ComponentesPedidosCliente/Pedidos/UnPedidoRow")
 );
+const TablaPedido = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/TablaPedido")
+);
 
 const Clientes = React.lazy(() =>
   import("./ComponentesClientes/Clientes/Clientes")
@@ -204,6 +207,7 @@ const routes = [
     component: CargarUnPedido,
   },
   { path: "./pedido", exact: false, name: "Pedido", component: Pedido },
+  { path: "./tablaPedido", exact: false, name: "TablaPedido", component:TablaPedido },
 
   {
     path: "/clientes",

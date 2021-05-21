@@ -12,9 +12,15 @@ import {
   CardBody,
   Label,
   FormGroup,
+  Button,
+  CardFooter,
+  CardSubtitle,
+  CardText,
 } from "reactstrap";
 import { Multiselect } from "multiselect-react-dropdown";
 import PedidoItems from "./PedidoItems";
+import PedidoItemsDos from "./PedidoItemsDos";
+import TablaPedido from "./TablaPedido";
 // import './styles.css'
 class Pedidos extends React.Component {
   constructor(props) {
@@ -28,7 +34,6 @@ class Pedidos extends React.Component {
       editable: false,
       unPedido: {},
       cantidad: {},
-      importeTotal: [],
       descripcion: {},
       descripciones: [],
       precioUnitario: [],
@@ -37,6 +42,12 @@ class Pedidos extends React.Component {
       item: {},
       productoId: "",
       selector: {},
+      importe: props.importe,
+      mostrarTabla: false,
+      nuevosProductos: [],
+      idPedido: 1,
+      codigo: "",
+      pedidoId: 1,
     };
     this.listadoItemsPedido = this.listadoItemsPedido.bind(this);
   }
@@ -56,9 +67,8 @@ class Pedidos extends React.Component {
         ItemsPedido: [
           {
             cantidad: 1,
-            importeTotal: 0,
-            montoCobrado: 0,
-            pagado: "no",
+            importe: 0,
+            observaciones: "",
             Productos: {
               descripcion: "",
               precioUnitario: 0,
@@ -72,6 +82,10 @@ class Pedidos extends React.Component {
   componentWillReceiveProps(props) {
     this.setState({ producto: props.producto });
     this.setState({ productos: props.productos });
+    this.setState(
+      { importe: props.importe },
+      console.log("recibetotal", props.importe)
+    );
   }
 
   componentDidMount() {
@@ -79,9 +93,10 @@ class Pedidos extends React.Component {
   }
   componentWillMount() {
     this.listadoPedidos();
+    this.listadoProductos();
   }
   listadoPedidos = () => {
-    fetch(`http://localhost:8383/pedidosTodos`)
+    fetch(`http://localhost:8383/pedidos`)
       .then((res) => res.json())
       .then((pds) =>
         this.setState({
@@ -126,37 +141,42 @@ class Pedidos extends React.Component {
     this.setState({ pedido: unPedido });
   };
 
-  seleccionarItem = (unItem) => {
+  seleccionarItem(unItem) {
     this.setState({ item: unItem });
     // console.log("seleccionar", this.state.item);
-  };
+  }
 
+  //modificar las opciones o selectValues
   settingDescripciones = (selectedValues) => {
     // if (selectedValues != null) {
-      this.setState(
-        {
-          // item: {
-          //   ...this.state.item,
-          // productoId: this.state.productoId,
-          selectedValues: selectedValues
-            .map(function (d) {
-              // console.log("map",d.descripcion,selectedValues.length);
-              return d.descripcion;
-            })
-            .forEach((n) => {
-              this.getProductoAItem(n);
-              selectedValues.pop(n)
-              console.log(
-                "SelectValues-----",
-                selectedValues.length,
-                this.state.descripciones
-              );
-            }),
-          // },
-        }
-        // () =>
-        // console.log("state", this.state.item.productoId, "+++", selectedValues)
-      );
+    var item = this.state.item;
+    this.setState(
+      {
+        // item: {
+        //   ...this.state.item,
+        // productoId: this.state.productoId,
+        selectedValues: selectedValues
+          .map(function (d) {
+            // if(!item.descripcion){
+            console.log("item", item.descripcion);
+            return d.descripcion;
+            // }
+          })
+          .forEach((n) => {
+            this.getProductoAItem(n);
+            // selectedValues.pop(selectedValues[n])
+
+            console.log(
+              "SelectValues-----",
+              selectedValues.length,
+              this.state.descripciones
+            );
+          }),
+        // },
+      }
+      // () =>
+      // console.log("state", this.state.item.productoId, "+++", selectedValues)
+    );
     // }
   };
 
@@ -184,18 +204,46 @@ class Pedidos extends React.Component {
   };
 
   getProductoAItem = (descripcion) => {
-    fetch("http://localhost:8383/itemsPedidos/" + descripcion, {
-      method: "get",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      // body: JSON.stringify(this.state.item),
-    })
-      .then((res) => this.listadoItemsPedido())
-      .then((res) => this.setState({ productoId: this.state.producto.id }))
-      .then((res) => this.estadoInicial());
+    let nuevosProductos = this.state.nuevosProductos;
+    let existe = nuevosProductos.find((d) => d == descripcion);
+    if (!existe) {
+      nuevosProductos.push(descripcion);
+      fetch("http://localhost:8383/itemsPedidos/" + descripcion, {
+        method: "get",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => this.listadoItemsPedido())
+        .then((res) =>
+          this.setState(
+            {
+              productoId: this.state.producto.id,
+            },
+            console.log("guardarDescripcion", this.state.nuevosProductos)
+          )
+        )
+        .then((res) => this.estadoInicial());
+    } else {
+      console.log("ya existe descripcion", descripcion);
+    }
   };
+
+  //  uniquePedidoId(prefix) {
+  //     var id = + new Date() + '-' + Math.floor(Math.random() * 1000);
+  //     return prefix ? prefix + id : id;
+  // };
+
+  uniquePedidoId() {
+    var idCounter = this.state.pedidoId;
+    var id = ++idCounter;
+    this.setState(
+      { pedidoId: id },
+      console.log("unique", id, this.state.pedidoId)
+    );
+    return id;
+  }
 
   handleChange(event) {
     var nuevoItem = Object.assign({}, this.state.item);
@@ -210,16 +258,58 @@ class Pedidos extends React.Component {
     event.preventDefault();
   };
 
+  guardar(items, pedidoId) {
+    var items = items;
+    console.log("guardar", items, pedidoId);
+    this.uniquePedidoId();
+    items
+      .map((i) => i.codigo)
+      .forEach((c) => this.crearPedidoConPedidoId(c, pedidoId));
+
+    // e.preventDefault(e);
+  }
+
+  crearPedidoConPedidoId = (codigo, pedidoId) => {
+    fetch(`http://localhost:8383/itemParaPedido/${codigo}/${pedidoId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => this.listadoItemsPedido())
+      .then(this.listadoPedidos())
+      .then((res) =>
+        this.setState(
+          {
+            item: { ...this.state.item, codigo: codigo, pedidoId: pedidoId },
+          },
+          console.log("codigo,pedidoId", codigo, pedidoId)
+        )
+      );
+  };
+
+  handleChange(event) {
+    var nuevoItem = Object.assign({}, this.state.item);
+    nuevoItem[event.target.name] =
+      event.target.type === "checkbox"
+        ? event.target.checked
+        : event.target.value;
+    this.setState({ item: nuevoItem });
+  }
+
   render(props) {
     var { selectedValues } = this.state;
-    var listaItems = this.state.items;
+    var items = this.state.items;
+    var codigo = this.state.items.map((i) => i.codigo);
     var listaProductosEnPedido = this.state.productos.map((p) => ({
       name: p.descripcion + "",
       id: p.id,
       precio: "$" + p.precioUnitario,
       descripcion: p.descripcion,
+      precioUnitario: p.precioUnitario,
     }));
-    // console.log("listaProductosEnPedido",listaProductosEnPedido);
+    // console.log("listaProductosEnPedido$$", listaProductosEnPedido);
     return (
       <div className="container">
         <div></div>
@@ -246,7 +336,7 @@ class Pedidos extends React.Component {
               hidePlaceholder={true}
               loading={false}
               // showArrow={true}
-              onRemove={this.onRemove}
+              // onRemove={this.onRemove}
               placeholder="Seleccione un producto"
               displayValue="name"
               emptyRecordMsg="No hay más productos para seleccionar"
@@ -254,14 +344,15 @@ class Pedidos extends React.Component {
           </FormGroup>
         </Row>
         <CardHeader style={{ backgroundColor: "#eedc0a" }}>
-          Detalles de pedido
+          <Row>
+            <Col class="col-lg-10">Detalles de pedido </Col>
+            <CardText align="left">Pedido n°:{this.state.pedidoId} </CardText>
+          </Row>
         </CardHeader>
         <CardHeader>
           <Container style={{ backgroundColor: "#f1f1f1" }}>
             <Row>
-              <Col className="col-lg-4">
-                {/* {Boolean(
-                  listaItems.length !=0 && ( */}
+              <Col class="col-lg-4">
                 <Table style={{ backgroundColor: "#eee363" }}>
                   <thead>
                     <tr>
@@ -269,134 +360,123 @@ class Pedidos extends React.Component {
                       <th>Productos</th>
                       <th>Cantidad</th>
                       <th></th>
-                      {/* <th>Importe</th>
-                    <th>Observaciones</th> */}
                     </tr>
                   </thead>
-
                   <tbody>{this.renderItems(listaProductosEnPedido)}</tbody>
                 </Table>
 
                 {/* )} */}
               </Col>
-              {/* <Col class="col-lg-4"><h6>hola</h6> */}
-              {/*  <Table style={{ backgroundColor: "#eee363" }}>
-                <thead>
-                  <tr>
-                    <th>Importe</th>
-                    <th>Observaciones</th>
-                  </tr>
-                </thead>
-                <tbody>{this.renderItems(listaProductosEnPedido)}</tbody>
-              </Table>*/}
-              {/* </Col>  */}
+              <Col class="col-lg-4">
+                <Table style={{ backgroundColor: "#F5C765" }}>
+                  <thead>
+                    <tr>
+                      <th>Importe</th>
+                      <th>Observaciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>{this.renderItemsDos(listaProductosEnPedido)}</tbody>
+                </Table>
+              </Col>
             </Row>
           </Container>
+          <CardFooter>
+            <Button
+              color="info"
+              size="btn-xs"
+              onClick={() => this.guardar(items, this.state.pedidoId)}
+            >
+              {" "}
+              <i className="fa fa-dot-circle-o">{""}Guardar</i>
+            </Button>
+          </CardFooter>
         </CardHeader>
-        {/* <RenderTablaItem
-          items={this.state.items}
-          pedidoId={this.state.pedidoId}
-          listadoItemsPedido={this.listadoItemsPedido}
-          listaProductosEnPedido={listaProductosEnPedido}
-        ></RenderTablaItem> */}
 
-        <CargarPedido
-          listadoPedidos={this.listadoPedidos}
-          listadoProductos={this.listadoProductos}
-          pedido={this.state.pedido}
-          pedidos={this.state.pedidos}
-          producto={this.state.producto}
-          productos={this.state.productos}
-        />
+        <div></div>
         <Row>&nbsp;</Row>
         <div className="animated fadeIn">
-          <Row>
-            <Col xs="12" lg="12">
-              <Card>
-                <CardBody>
-                  <Table responsive bordered size="sm">
-                    <thead>
-                      <tr>
-                        <th>Código</th>
-                        <th>Mesero</th>
-                        <th>Sección</th>
-                        <th>Cantidad</th>
-                        <th>Precio p/un.</th>
-                        <th>Importe</th>
-                        <th>descripcion</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>{this.renderRows()}</tbody>
-                  </Table>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
+          <Container style={{ backgroundColor: "#f1f1f1" }}>
+            <TablaPedido
+              pedidos={this.state.pedidos}
+              pedido={this.state.pedido}
+              items={this.state.items}
+              pedidoId={this.state.pedidoId}
+              listadoItemsPedido={this.listadoItemsPedido}
+              listaProductosEnPedido={listaProductosEnPedido}
+              listadoPedidos={this.listadoPedidos}
+              listadoProductos={this.listadoProductos}
+            ></TablaPedido>
+          </Container>
         </div>
+        <Row>&nbsp;</Row>
       </div>
     );
   }
 
   renderItems(listaProductosEnPedido) {
     let items = this.state.items;
+    let productos = this.state.productos;
     if (listaProductosEnPedido.length) {
-      return !items
-        ? console.log("NULL__NO HAY ITEMS", null, listaProductosEnPedido)
-        : items.map((unItem, index) => {
-            var producto = listaProductosEnPedido.find(
-              (p) => p.id == unItem.productoId
-            );
-            return (
-              <PedidoItems
-                key={index}
-                item={unItem}
-                items={this.state.items}
-                productos={this.state.productos}
-                productoId={unItem.productoId}
-                descripcion={producto.descripcion}
-                importe={producto.precio}
-                cantidad={unItem.cantidad}
-                selector={this.seleccionarItem}
-                listadoPedidos={this.listadoPedidos}
-                listadoProductos={this.listadoProductos}
-                listadoItemsPedido={this.listadoItemsPedido}
-                estadoInicial={this.estadoInicial}
-                actualizarAlEliminar={this.actualizarAlEliminar}
-                eliminarPedido={this.eliminarPedido.bind(this)}
-                toggle={this.toggle}
-              />
-            );
-          });
+      return items.map((unItem, index) => {
+        const producto = listaProductosEnPedido.find(
+          (p) => p.id == unItem.productoId
+        );
+        // console.log("codigo", unItem.codigo);
+        return (
+          <PedidoItems
+            key={index}
+            item={unItem}
+            items={items}
+            productos={productos}
+            productoId={unItem.productoId}
+            descripcion={producto.descripcion}
+            precio={producto.precioUnitario}
+            cantidad={unItem.cantidad}
+            importe={unItem.importe}
+            codigo={unItem.codigo}
+            selector={this.seleccionarItem}
+            listadoPedidos={this.listadoPedidos}
+            listadoProductos={this.listadoProductos}
+            listadoItemsPedido={this.listadoItemsPedido}
+            estadoInicial={this.estadoInicial}
+            actualizarAlEliminar={this.actualizarAlEliminar}
+            eliminarPedido={this.eliminarPedido.bind(this)}
+            toggle={this.toggle}
+          />
+        );
+      });
     }
   }
-  renderRows() {
-    let pedidos = this.state.pedidos;
-    let productos = this.state.productos;
-    // let descripciones=this.state.descripciones;
 
-    return !pedidos
-      ? console.log("NULL__pedidos", null, pedidos)
-      : pedidos.map((unPedido, index) => {
-          return (
-            <Pedido
-              key={index}
-              pedido={unPedido}
-              unPedido={this.state.unPedido}
-              pedidos={this.state.pedidos}
-              productos={this.state.productos}
-              producto={this.state.producto}
-              items={this.state.items}
-              item={this.state.item}
-              selector={this.seleccionar}
-              actualizarAlEliminar={this.actualizarAlEliminar}
-              eliminarPedido={this.eliminarPedido.bind(this)}
-              toggle={this.toggle}
-              listadoPedidos={this.listadoPedidos}
-              listadoProductos={this.listadoProductos}
-            />
-          );
-        });
+  renderItemsDos(listaProductosEnPedido) {
+    let items = this.state.items;
+
+    if (listaProductosEnPedido.length) {
+      return items.map((unItem, index) => {
+        const producto = listaProductosEnPedido.find(
+          (p) => p.id == unItem.productoId
+        );
+        return (
+          <PedidoItemsDos
+            key={index}
+            item={unItem}
+            items={this.state.items}
+            productos={this.state.productos}
+            productoId={unItem.productoId}
+            descripcion={producto.descripcion}
+            importe={unItem.importe || producto.precioUnitario}
+            selector={this.seleccionarItem}
+            listadoPedidos={this.listadoPedidos}
+            listadoProductos={this.listadoProductos}
+            listadoItemsPedido={this.listadoItemsPedido}
+            estadoInicial={this.estadoInicial}
+            actualizarAlEliminar={this.actualizarAlEliminar}
+            eliminarPedido={this.eliminarPedido.bind(this)}
+            toggle={this.toggle}
+          />
+        );
+      });
+    }
   }
 }
 
