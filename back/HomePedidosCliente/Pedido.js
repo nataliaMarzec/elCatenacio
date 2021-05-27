@@ -17,19 +17,12 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
       },
       codigoPedido: DataTypes.INTEGER,
-      mesero: DataTypes.STRING,
       seccion: DataTypes.STRING,
     },
 
     {
       tableName: "Pedidos",
       modelName: "Pedidos",
-      // indexes:[
-      //     {
-      //         unique: true,
-      //         fields: ['pedidoId']
-      //     },
-      //   ]
     }
   );
 

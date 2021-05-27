@@ -19,9 +19,6 @@ import {
 } from "reactstrap";
 
 import { AppSwitch } from "@coreui/react";
-// import { Multiselect } from "multiselect-react-dropdown";
-// import MultSelect from "./MultSelect";
-// import MultiSelect from "./MultiSelect"
 
 // import logo from "../assets/img/brand/logo.svg";
 class CargarPedido extends React.Component {
@@ -39,17 +36,13 @@ class CargarPedido extends React.Component {
       descripcion: "",
       items: [],
       id: "",
-      options: [
-        { value: 1, label: "h" },
-        { value: 2, label: "c" },
-      ],
     };
   }
 
   estadoInicial = () => {
     this.setState({
       pedido: {
-        clienteId_pedido: null,
+        clienteId: null,
         codigoPedido: "",
         mesero: "",
         seccion: "",
@@ -80,8 +73,7 @@ class CargarPedido extends React.Component {
 
   componentDidMount() {
     this.props.listadoPedidos();
-    console.log("PEDIDOS----", this.state.pedidos);
-    console.log("PRODUCTOS----", this.state.productos);
+    
   }
 
   componentWillMount() {

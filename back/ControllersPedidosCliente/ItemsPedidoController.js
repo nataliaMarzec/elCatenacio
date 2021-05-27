@@ -9,7 +9,7 @@ module.exports = {
   //bien
   create: (async = (req, res) => {
     return ItemsPedido.create({
-      codigo:req.body.codigo,
+      codigo: req.body.codigo,
       pedidoId: req.body.pedidoId,
       productoId: req.body.productoId,
       cantidad: req.body.cantidad,
@@ -24,7 +24,7 @@ module.exports = {
   addConProducto(req, res) {
     return ItemsPedido.create(
       {
-        codigo:req.body.codigo,
+        codigo: req.body.codigo,
         pedidoId: req.body.pedidoId,
         productoId: req.body.productoId,
         cantidad: req.body.cantidad,
@@ -103,7 +103,7 @@ module.exports = {
     var idp = producto.id;
     return ItemsPedido.create(
       {
-        codigo:req.body.codigo,
+        codigo: req.body.codigo,
         pedidoId: req.body.pedidoId,
         productoId: producto.id,
         cantidad: req.body.cantidad,
@@ -128,8 +128,11 @@ module.exports = {
     var item = await ItemsPedido.findOne({
       where: { productoId: req.params.productoId },
     });
-    var itemCantidad = await item.update({ cantidad: req.body.cantidad });
-    console.log("cantidad", itemCantidad.cantidad, "item", item);
+    var itemCantidad = await item.update({
+      cantidad: req.body.cantidad,
+      pedidoId: req.body.pedidoId,
+    });
+    console.log("cantidad", itemCantidad.cantidad, "item", item,item.pedidoId);
     return res.status(200).json(itemCantidad);
   },
   //usado
@@ -252,7 +255,7 @@ module.exports = {
         }
         return item
           .update({
-            codigo:req.body.codigo,
+            codigo: req.body.codigo,
             pedidoId: req.body.pedidoId,
             productoId: req.body.productoId,
             cantidad: req.body.cantidad,

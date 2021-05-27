@@ -26,7 +26,7 @@ class Pedidos extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      pedido: {},
+      pedido: props.pedido,
       pedidos: [],
       producto: {},
       productos: [],
@@ -45,11 +45,15 @@ class Pedidos extends React.Component {
       importe: props.importe,
       mostrarTabla: false,
       nuevosProductos: [],
-      idPedido: 1,
+      idPedido: 0,
       codigo: "",
       pedidoId: 1,
+      seccion: props.seccion,
+      importeTotal: {},
+      id: {},
     };
     this.listadoItemsPedido = this.listadoItemsPedido.bind(this);
+    this.obtenerIdPedido = this.obtenerIdPedido.bind(this);
   }
 
   toggle = () => {
@@ -60,7 +64,8 @@ class Pedidos extends React.Component {
   estadoInicial = () => {
     this.setState({
       pedido: {
-        clienteId_pedido: null,
+        id: this.state.id,
+        clienteId: null,
         codigoPedido: "",
         mesero: "",
         seccion: "",
@@ -83,8 +88,14 @@ class Pedidos extends React.Component {
     this.setState({ producto: props.producto });
     this.setState({ productos: props.productos });
     this.setState(
-      { importe: props.importe },
-      console.log("recibetotal", props.importe)
+      { pedido: props.pedido }
+      // , () =>console.log("pedido", props.pedido)
+    );
+    this.setState({ id: props.id }, () => console.log("idProps", props.id));
+    this.setState({ seccion: props.seccion });
+    this.setState(
+      { importe: props.importe }
+      // console.log("recibetotal", props.importe)
     );
   }
 
@@ -94,6 +105,7 @@ class Pedidos extends React.Component {
   componentWillMount() {
     this.listadoPedidos();
     this.listadoProductos();
+    // this.setState({ idPedido: this.state.idPedido });
   }
   listadoPedidos = () => {
     fetch(`http://localhost:8383/pedidos`)
@@ -105,6 +117,7 @@ class Pedidos extends React.Component {
         })
       );
   };
+
   listadoProductos = () => {
     fetch(`http://localhost:8383/productos`)
       .then((res) => res.json())
@@ -230,7 +243,7 @@ class Pedidos extends React.Component {
     }
   };
 
-  //  uniquePedidoId(prefix) {
+  //  uniqueCodigo(prefix) {
   //     var id = + new Date() + '-' + Math.floor(Math.random() * 1000);
   //     return prefix ? prefix + id : id;
   // };
@@ -258,13 +271,14 @@ class Pedidos extends React.Component {
     event.preventDefault();
   };
 
-  guardar(items, pedidoId) {
+  guardar(codigo, items, pedidoId) {
     var items = items;
     console.log("guardar", items, pedidoId);
     this.uniquePedidoId();
-    items
-      .map((i) => i.codigo)
-      .forEach((c) => this.crearPedidoConPedidoId(c, pedidoId));
+    // this.crearPedidoConPedidoId(codigo, pedidoId);
+    // items
+    //   .map((i) => i.codigo)
+    // .forEach((c) => this.crearPedidoConPedidoId(c, pedidoId));
 
     // e.preventDefault(e);
   }
@@ -297,11 +311,92 @@ class Pedidos extends React.Component {
         : event.target.value;
     this.setState({ item: nuevoItem });
   }
+  onClick = (id, descripcion, pedidos) => {
+    // this.crearPedido();
+    // this.settearPedidoYProductoAItem(id,descripcion)
+    // this.obtenerUltimoId(pedidos);
+    // this.sumar(items);
+    // console.log("items", id, descripcion);
+    //  e.preventDefault(e);
+  };
+
+ 
+  obtenerUltimoId = (pedidos) => {
+    let pedido = pedidos[pedidos.length - 1].id;
+    let total = pedido + 1;
+    if (pedidos) {
+      console.log("ultimo id------", total);
+      this.setState(
+        { idPedido: total },
+        console.log("id", this.props.idPedido)
+      );
+      return total;
+    } else {
+      this.setState({ idPedido:pedido });
+      return total;
+    }
+  };
+
+
+  sumar = (items) => {
+    let importes = items.map((i) => i.importe);
+    let total = importes.reduce((a, b) => a + b, 0);
+    this.setState(
+      { importeTotal: total },
+      console.log("importetotal", this.state.importe)
+    );
+    return total;
+  };
+
+  settearPedidoYProductoAItem = (id, descripcion) => {
+    fetch(`/pedidos/items/pedido/${id}/producto/${descripcion}`, {
+      method: "put",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(this.state.item),
+    })
+      .then(
+        this.setState(
+          {
+            items: this.state.items,
+            item: this.state.item,
+            pedidoId: id,
+          },
+          console.log("crearItem", this.state.item)
+        )
+      )
+      .then((res) => this.listadoItemsPedido());
+    console.log("CREARItem", id, descripcion);
+  };
+  crearPedido = () => {
+    fetch("http://localhost:8383/pedidos/nuevo", {
+      method: "post",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(this.state.pedido),
+    })
+      .then((res) => res.json())
+      .then((ped) =>
+        this.setState({ id: ped.id,idPedido:ped.id,seccion:ped.seccion }, () => console.log("id", this.state.id))
+      )
+      .then((res) => this.listadoPedidos);
+    console.log("CREARRRR", this.state.id);
+  };
+  obtenerIdPedido = () => {
+    this.setState(
+      { id: this.state.id },
+      console.log("obteniendo id pedido ###", this.state.id)
+    );
+  };
 
   render(props) {
+    let hoy = new Date();
+    const id = this.state.id;
     var { selectedValues } = this.state;
-    var items = this.state.items;
-    var codigo = this.state.items.map((i) => i.codigo);
     var listaProductosEnPedido = this.state.productos.map((p) => ({
       name: p.descripcion + "",
       id: p.id,
@@ -309,124 +404,141 @@ class Pedidos extends React.Component {
       descripcion: p.descripcion,
       precioUnitario: p.precioUnitario,
     }));
-    // console.log("listaProductosEnPedido$$", listaProductosEnPedido);
+    console.log("listaProductosEnPedido$$", id);
     return (
       <div className="container">
-        <div></div>
-        <Row>
-          &nbsp;
-          <FormGroup>
-            <Label for="descripciones">
-              Menus
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
-              {/* <Button color="info" onClick={this.onSelect}>
-                +
-              </Button> */}
-            </Label>
-
-            <Multiselect
-              id="descripcion"
-              options={listaProductosEnPedido}
-              selectedValues={selectedValues}
-              onSelect={this.settingDescripciones}
-              groupBy="precio"
-              // showCheckbox={true}
-              // searchBox
-              closeIcon="circle2"
-              hidePlaceholder={true}
-              loading={false}
-              // showArrow={true}
-              // onRemove={this.onRemove}
-              placeholder="Seleccione un producto"
-              displayValue="name"
-              emptyRecordMsg="No hay más productos para seleccionar"
-            />
-          </FormGroup>
-        </Row>
         <CardHeader style={{ backgroundColor: "#eedc0a" }}>
           <Row>
-            <Col class="col-lg-10">Detalles de pedido </Col>
-            <CardText align="left">Pedido n°:{this.state.pedidoId} </CardText>
+            <Col class="col-lg-10">Pedido </Col>
+            <CardText align="left">Pedido n°:{this.state.idPedido} </CardText>
           </Row>
         </CardHeader>
-        <CardHeader>
-          <Container style={{ backgroundColor: "#f1f1f1" }}>
-            <Row>
-              <Col class="col-lg-4">
-                <Table style={{ backgroundColor: "#eee363" }}>
-                  <thead>
-                    <tr>
-                      <th>Código</th>
-                      <th>Productos</th>
-                      <th>Cantidad</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>{this.renderItems(listaProductosEnPedido)}</tbody>
-                </Table>
-
-                {/* )} */}
-              </Col>
-              <Col class="col-lg-4">
-                <Table style={{ backgroundColor: "#F5C765" }}>
-                  <thead>
-                    <tr>
-                      <th>Importe</th>
-                      <th>Observaciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>{this.renderItemsDos(listaProductosEnPedido)}</tbody>
-                </Table>
-              </Col>
-            </Row>
-          </Container>
-          <CardFooter>
-            <Button
-              color="info"
-              size="btn-xs"
-              onClick={() => this.guardar(items, this.state.pedidoId)}
-            >
-              {" "}
-              <i className="fa fa-dot-circle-o">{""}Guardar</i>
-            </Button>
-          </CardFooter>
-        </CardHeader>
-
-        <div></div>
-        <Row>&nbsp;</Row>
         <div className="animated fadeIn">
           <Container style={{ backgroundColor: "#f1f1f1" }}>
-            <TablaPedido
-              pedidos={this.state.pedidos}
-              pedido={this.state.pedido}
-              items={this.state.items}
-              pedidoId={this.state.pedidoId}
-              listadoItemsPedido={this.listadoItemsPedido}
-              listaProductosEnPedido={listaProductosEnPedido}
-              listadoPedidos={this.listadoPedidos}
-              listadoProductos={this.listadoProductos}
-            ></TablaPedido>
+            <Card>
+              <CardHeader>
+                <Row>
+                  <Col>Detalles de pedido</Col>
+                  <Col align="left">Fecha:{hoy.toLocaleDateString()}</Col>
+                </Row>
+              </CardHeader>
+              <TablaPedido
+                pedidos={this.state.pedidos}
+                pedido={this.state.pedido}
+                items={this.state.items}
+                pedidoId={this.state.pedidoId}
+                listadoItemsPedido={this.listadoItemsPedido}
+                listaProductosEnPedido={listaProductosEnPedido}
+                listadoPedidos={this.listadoPedidos}
+                listadoProductos={this.listadoProductos}
+                obtenerId={this.obtenerId}
+                crearPedido={this.crearPedido}
+              ></TablaPedido>
+              <CardBody>
+                <Row>
+                  &nbsp;
+                  <FormGroup>
+                    <Multiselect
+                      id="descripcion"
+                      options={listaProductosEnPedido}
+                      selectedValues={selectedValues}
+                      onSelect={this.settingDescripciones}
+                      groupBy="precio"
+                      // showCheckbox={true}
+                      // searchBox
+                      closeIcon="circle2"
+                      hidePlaceholder={true}
+                      loading={false}
+                      // showArrow={true}
+                      // onRemove={this.onRemove}
+                      placeholder="Seleccione un producto"
+                      displayValue="name"
+                      emptyRecordMsg="No hay más productos para seleccionar"
+                    />
+                  </FormGroup>
+                </Row>
+              </CardBody>
+              <Container style={{ backgroundColor: "#f1f1f1" }}>
+                <Row>
+                  <Col class="col-lg-4">
+                    <Table style={{ backgroundColor: "#eee363" }}>
+                      <thead>
+                        <tr>
+                          <th>Código</th>
+                          <th>Productos</th>
+                          <th>Cantidad</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>{this.renderItems(listaProductosEnPedido)}</tbody>
+                    </Table>
+
+                    {/* )} */}
+                  </Col>
+                  <Col class="col-lg-4">
+                    <Table style={{ backgroundColor: "#F5C765" }}>
+                      <thead>
+                        <tr>
+                          <th>Importe</th>
+                          <th>Observaciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {this.renderItemsDos(listaProductosEnPedido)}
+                      </tbody>
+                    </Table>
+                  </Col>
+                </Row>
+                <CardFooter>
+                  <CardText align="left">
+                    Importe total $:
+                    {/* {this.sumar(items)}{" "} */}
+                  </CardText>
+                </CardFooter>
+              </Container>
+              <CardFooter>
+                <Button
+                  color="info"
+                  size="btn-xs"
+                  // onClick={this.obtenerIdPedido()}
+                  // onClick={() => this.onClick(53, "asado", pedidos)}
+                >
+                  {" "}
+                  <i className="fa fa-dot-circle-o">{""}Guardar</i>
+                </Button>
+              </CardFooter>
+            </Card>
           </Container>
         </div>
-        <Row>&nbsp;</Row>
       </div>
     );
   }
 
+  handleEvent = (e) => {
+    console.log("evento++++++++++", e);
+  };
+
   renderItems(listaProductosEnPedido) {
     let items = this.state.items;
+    const id = this.state.id;
     let productos = this.state.productos;
     if (listaProductosEnPedido.length) {
       return items.map((unItem, index) => {
+        const pid = id;
+        unItem.pedidoId = pid;
+        console.log("pedido++++++++++++++++++++++",unItem.pedidoId);
         const producto = listaProductosEnPedido.find(
           (p) => p.id == unItem.productoId
         );
         // console.log("codigo", unItem.codigo);
         return (
           <PedidoItems
+            pedidoId={unItem.pedidoId}
+            handleEvent={this.handleEvent}
             key={index}
             item={unItem}
             items={items}
+            pedido={this.state.pedido}
             productos={productos}
             productoId={unItem.productoId}
             descripcion={producto.descripcion}
@@ -463,6 +575,8 @@ class Pedidos extends React.Component {
             items={this.state.items}
             productos={this.state.productos}
             productoId={unItem.productoId}
+            pedidos={this.state.pedidos}
+            pedido={this.state.pedido}
             descripcion={producto.descripcion}
             importe={unItem.importe || producto.precioUnitario}
             selector={this.seleccionarItem}

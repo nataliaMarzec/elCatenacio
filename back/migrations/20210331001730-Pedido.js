@@ -19,9 +19,6 @@ module.exports = {
       codigoPedido: {
         type: Sequelize.INTEGER,
       },
-      mesero: {
-        type: Sequelize.STRING,
-      },
       seccion: {
         type: Sequelize.STRING,
       },

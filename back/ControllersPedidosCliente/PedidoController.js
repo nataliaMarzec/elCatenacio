@@ -5,28 +5,119 @@ const Producto = models.Producto;
 const ItemsPedido = models.ItemsPedido;
 const Pedido = models.Pedido;
 module.exports = {
+  //usado devuelve id
+  // create: async (req, res) => {
+  //   return Pedido.create({
+  //     codigoPedido: req.body.codigoPedido,
+  //     seccion: req.body.seccion,
+  //   }).then(function (pedido) {
+  //     console.log(pedido);
+  //     Pedido.findOne({ where: { id: pedido.id } }).then(function (result) {
+  //       console.log("id-----------------------", result);
+  //       var id = result.id;
+  //       return res.status(200).send({ id });
+  //     });
+  //   });
+  // },
+  create: async (req, res) => {
+    const { seccion } = req.body;
+    const { pedidoId } = req.body;
+    const { ItemsPedido } = req.body;
+    console.log("req.body", req.body);
+    const pedido = {
+      seccion: seccion,
+      ItemsPedido: {},
+    };
+    const PedidoItem = await Pedido.create(pedido);
+    // ItemsPedido.pedidoId = pedido.id;
+    // PedidoItem.ItemsPedido.push(ItemsPedido);
+    await PedidoItem.save();
+    // await ItemsPedido.save();
+    let id= PedidoItem.id
+    return res.json({
+      message: "se guardo el pedido ",
+      id
+    });
+  },
+
+  //prueba
+  // createPedidoConItem: async (req, res) => {
+  //   return Pedido.create({
+  //     codigoPedido: req.body.codigoPedido,
+  //     seccion: req.body.seccion,
+  //     include: [
+  //       {
+  //         model: ItemsPedido,
+  //         as: "ItemsPedido",
+  //         where: { pedidoId: Pedido.id },
+  //       },
+  //     ],
+  //   }).then(function (pedido) {
+  //     console.log(pedido);
+  //     Pedido.findOne({ where: { id: pedido.id } })
+  //       .then(function (result) {
+  //         console.log("id-----------------------", result);
+  //         var id = result.id;
+  //         return res.status(200).send({ id });
+  //       })
+  //       .then(function (pedido) {
+  //         console.log("idPedido", pedido);
+  //         var item = await ItemsPedido.create({
+  //           codigo: req.body.codigo,
+  //           pedidoId: pedido.id,
+  //           productoId: req.body.productoId,
+  //           cantidad: req.body.cantidad,
+  //           precioUnitario: req.body.precioUnitario,
+  //           importe: req.body.importe,
+  //           observaciones: req.body.observaciones,
+  //         });
+  //         return res.status(200).json(item);
+  //       });
+  //   });
+  // },
+  //usado
+  addPedidoItem: async (req, res) => {
+    var pedido = await Pedido.findOne({
+      where: { id: req.params.id },
+    });
+    console.log("id", pedido.id);
+    var producto = await Producto.findOne({
+      where: { descripcion: req.params.descripcion },
+    });
+    var item = await ItemsPedido.create({
+      codigo: req.body.codigo,
+      pedidoId: pedido.id,
+      productoId: producto.id,
+      cantidad: req.body.cantidad,
+      precioUnitario: req.body.precioUnitario,
+      importe: req.body.importe,
+      observaciones: req.body.observaciones,
+    });
+    return res.status(200).json(item);
+  },
+  //usado revisar
   guardarPedidoId: async (req, res) => {
     var item = await ItemsPedido.findOne({
       where: { codigo: req.params.codigo },
     });
-    var id=req.params.id
+    var id = req.params.id;
     if (item) {
       const pedido = await Pedido.create({
-        id:id,
+        id: id,
         include: [
           {
-            association:ItemsPedido,
-            where:{foreingkey:"pedidoId",targetKey:"id"}
+            association: ItemsPedido,
+            where: { foreingkey: "pedidoId", targetKey: "id" },
           },
         ],
       });
       var pid = pedido.id;
       var itemPedidoId = await item.update({
-        pedidoId:id,
+        pedidoId: id,
         include: [
           {
-            association:Pedido,
-            where:{foreingkey:"pedidoId"}
+            association: Pedido,
+            where: { foreingkey: "pedidoId" },
           },
         ],
       });
@@ -38,46 +129,50 @@ module.exports = {
         .json("no encontro item", { item, pid, itemPedidoId });
     }
   },
-  //funciona!!
+
+  //probando
   addConItems(req, res) {
-    return Pedido.create(
-      {
-        id: req.body.id,
-        codigoPedido: req.body.codigoPedido,
-        mesero: req.body.mesero,
-        seccion: req.body.seccion,
-        ItemsPedido: req.body.ItemsPedido,
-      },
-      {
-        include: [
-          {
-            model: ItemsPedido,
-            as: "ItemsPedido",
-            where: { pedidoId: Pedido.id },
-            include: [
-              {
-                model: Producto,
-                as: "Productos",
-                where: { productoId: ItemsPedido.productoId },
-              },
-            ],
-          },
-        ],
-      }
-    )
-      .then((pedido) => res.status(201).send(pedido))
-      .catch((error) => res.status(400).send(error));
-  },
-  //bien
-  add(req, res) {
-    return Pedido.create({
+    let pedido = Pedido.create({
       id: req.body.id,
       codigoPedido: req.body.codigoPedido,
-      mesero: req.body.mesero,
       seccion: req.body.seccion,
-    })
-      .then((pedido) => res.status(201).send(pedido))
-      .catch((error) => res.status(400).send(error));
+    }).save({ id: pedido.id });
+    let Id = pedido.id;
+    // let Id = Pedido.findOne({ id: pedido.id });
+    //  items = ItemsPedido.findAll({
+    //   where: { pedidoId: pedido.id },
+    //   include: [
+    //     {
+    //       model: Producto,
+    //       as: "Productos",
+    //       where: { productoId: ItemsPedido.productoId },
+    //     },
+    //   ],
+    // });
+    // let pedidoUpdate= items.forEach((i) => {
+    //   i.save({ pedidoId: pedidoId });
+    //   Pedidolet.update({ ItemsPedido: req.body.ItemsPedido,
+    //     include: [
+    //       {
+    //         model: ItemsPedido,
+    //         as: "ItemsPedido",
+    //         where: { pedidoId: Pedido.id },
+    //         include: [
+    //           {
+    //             model: Producto,
+    //             as: "Productos",
+    //             where: { productoId: ItemsPedido.productoId },
+    //           },
+    //         ],
+    //       },
+    //     ],
+    //   } );
+    // });
+    console.log("id", Id);
+    return res.status(200).json(Id);
+
+    // .then((pedido) => res.status(201).send(pedido))
+    // .catch((error) => res.status(400).send(error));
   },
 
   //funciona!
@@ -119,28 +214,39 @@ module.exports = {
       return res.status(200).json(pedidosConItems);
     }
   },
-  //bien
-  getPedidoId: async (req, res) => {
-    var pedido = await Pedido.findByPk(req.params.id, {
-      include: [
-        {
-          model: ItemsPedido,
-          as: "ItemsPedido",
-          include: [
-            {
-              model: Producto,
-              as: "Productos",
-            },
-          ],
-        },
-      ],
+  getIdPedido: async (req, res) => {
+    var pedido = await Pedido.findOne({
+      where: { id: req.params.id },
+      // include: ["Productos"],
     });
     if (![req.body.values]) {
-      res.status(400).json({ err: "No hay pedido con ID" });
+      res.status(400).json({ err: "No pedido con id" });
     } else {
       return res.status(200).json(pedido);
     }
   },
+
+  // getIdPedido: async (req, res) => {
+  //   var pedido = await Pedido.findByOne(req.params.id, {
+  //     // include: [
+  //     //   {
+  //     //     model: ItemsPedido,
+  //     //     as: "ItemsPedido",
+  //     //     include: [
+  //     //       {
+  //     //         model: Producto,
+  //     //         as: "Productos",
+  //     //       },
+  //     //     ],
+  //     //   },
+  //     // ],
+  //   });
+  //   if (![req.body.values]) {
+  //     res.status(400).json({ err: "No hay pedido con ID" });
+  //   } else {
+  //     return res.status(200).json(pedido);
+  //   }
+  // },
 
   //actualiza el pedido pero no el item
   updateConItems(req, res) {
@@ -164,7 +270,6 @@ module.exports = {
             {
               id: req.body.id || pedido.id,
               codigoPedido: req.body.codigoPedido || pedido.codigoPedido,
-              mesero: req.body.mesero || pedido.mesero,
               seccion: req.body.seccion || pedido.seccion,
               ItemsPedido: req.body.ItemsPedido || pedido.ItemsPedido,
             },
@@ -273,13 +378,12 @@ module.exports = {
 
   update: async (req, res) => {
     const pedido = await Pedido.findByPk(req.params.id);
-    const { id, codigoPedido, mesero, seccion } = await pedido.update(req.body);
+    const { id, codigoPedido, seccion } = await pedido.update(req.body);
 
     return res
       .json({
         id,
         codigoPedido,
-        mesero,
         seccion,
       })
       .res.send(200, "pedido editado");

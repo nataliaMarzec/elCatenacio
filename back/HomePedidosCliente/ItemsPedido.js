@@ -17,8 +17,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         foreignKey: true,
         type: DataTypes.INTEGER,
-        unique: false,
-        constraints:false,
         references: { model: "Pedidos", key: "id", constraints:false, },
       },
       productoId: {

@@ -5,17 +5,86 @@ class Pedido extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      editar: false,
       toogle: this.props.toggle,
-      cantidad: this.props.cantidad,
-      importeTotal: this.props.importeTotal,
-      descripciones: this.props.descripciones,
-      precioUnitario: this.props.precioUnitario,
+      nombre: "",
+      responsablesDeMesa: [],
+      responsable: {},
+      secciones: [
+        { id: 1, name: "Abierta" },
+        { id: 2, name: "Carpa" },
+      ],
+      seccion: "",
+      pedido: props.pedido,
+      pedidos: props.pedidos,
+      id: props.id,
     };
     this.eliminarPedido = this.eliminarPedido.bind(this);
-    this.seleccionarPedido = this.seleccionarPedido.bind(this);
   }
 
+  componentWillMount = () => {
+    this.listadoResponsablesDeMesa();
+    this.setState({
+      secciones: this.state.secciones,
+      seccion: this.state.seccion,
+      id: this.state.id,
+    });
+  };
+  verDetallesResponsable(nombre) {
+    var listaActualizada = this.state.responsablesDeMesa.filter(
+      (item) => nombre == item.nombre
+    );
+    this.setState({ responsablesDeMesa: listaActualizada });
+  }
+  handleChangeResponsable = (e) => {
+    const target = e.target;
+    const value = target.value;
+    const name = target.name;
+    this.setState({ [name]: value });
+    this.setState({ responsable: value });
+    // console.log("responsable", this.state.responsable, value);
+  };
+
+  handleChangeSeccion = (e) => {
+    var nuevoPedido = Object.assign({}, this.state.pedido);
+    nuevoPedido[e.target.name] = e.target.value;
+    this.setState({
+      pedido: nuevoPedido,
+      seccion: nuevoPedido.seccion,
+    });
+  };
+
+  handleSubmitResponsable = (e) => {
+    var busqueda;
+    if (this.state.nombre === "") {
+      this.listadoBusqueda(busqueda);
+    }
+    if (this.state.nombre !== "") {
+      busqueda = '?busqueda=nombre=="' + this.state.nombre + '"';
+      this.listadoBusqueda(busqueda);
+    }
+    e.preventDefault(e);
+  };
+
+  listadoBusqueda = (busqueda) => {
+    if (busqueda != null) {
+      fetch(`http://localhost:8383/responsables` + busqueda)
+        .then((res) => res.json())
+        .then((resp) => this.setState({ responsablesDeMesa: resp }));
+    }
+    if (busqueda == null) {
+      fetch(`http://localhost:8383/responsables`)
+        .then((res) => res.json())
+        .then((resp) => this.setState({ responsablesDeMesa: resp }));
+    }
+  };
+
+  listadoResponsablesDeMesa = () => {
+    fetch(`http://localhost:8383/responsables`)
+      .then((res) => res.json())
+      .then((resps) =>
+        this.setState({ responsablesDeMesa: resps, responsable: {} })
+      );
+  };
   eliminarPedido = (id) => {
     fetch("http://localhost:8383/pedidos/" + id, {
       method: "DELETE",
@@ -31,118 +100,91 @@ class Pedido extends React.Component {
     this.props.toggle();
   }
 
-  // componentWillMount(){
-  //   let descripciones=this.props.descripciones.map((d)=>d.name)
-  //   console.log("will descripciones____",descripciones)
-  // }
-
-
-  // componentWillMount() {
-  //   this.props.listadoPedidos()
-  //   var items = this.props.pedido.ItemsPedido;
-  //   var prod = this.props.pedido.ItemsPedido.Productos;
-  //   var cantidad = items.map((i) => (i = i.cantidad + ","));
-  //   var importeTotal = items.map((i) => (i = i.importeTotal + ","));
-  //   // var precioUnitario = items.map((i) => (i = i.Productos.precioUnitario + ","));
-  //   // var descripcion = items.map((i) => (i = i.Productos.descripcion + ","));
-  //   this.setState(
-  //     {
-  //       cantidad: cantidad,
-  //       importeTotal: importeTotal,
-  //       // precioUnitario:precioUnitario,
-  //       // descripcion: descripcion,
-  //     },
-  //     console.log("cantidad",prod)
-  //   );
-  // var cantidad=items.filter((item)=>item.Productos.cantidad)
-  //  console.log("items",items,"map",map,"cant",this.state.cantidad)
-  //  var cantidad=items.filter((item)=>item.cantidad)
-  //  console.log("items",cantidad)
-  // items.map(function(item){
-  //    var cantidadT= item.cantidad;
-  // })
-  // this.setState({cantidad})
-  // }
-
   seleccionarPedido() {
     this.props.selector(this.props.pedido);
-    // console.log("seleccionar___", this.props.pedido);
-    // console.log("productoS____", this.props.producto);
     this.props.toggle();
   }
 
-  agregarVenta = () => {
-    this.props.pedidoseleccionado(this.props.pedido);
-  };
-
-  editCliente = () => {
-    this.props.editarCliente(this.props.pedido);
-    this.props.toogle();
-  };
-
   UNSAFE_componentWillReceiveProps(nextProps) {
-   
     if (nextProps.pedidos !== this.props.pedidos) {
       this.setState({ pedidos: this.props.pedidos });
-      console.log(
-        "pedidos props",
-        this.props.pedidos,
-        nextProps.pedidos.values()
-      );
     }
     if (nextProps.pedido !== this.props.pedido) {
       this.setState({ pedido: nextProps.pedido });
     }
-    if (nextProps.items !== this.props.items) {
-      this.setState({ items: this.props.items });
-      console.log(
-        "Items props",
-        this.props.items,
-        nextProps.items.values()
-      );
-    }
-    // if (nextProps.item !== this.props.item) {
-    //   this.setState({ item: nextProps.item });
-    // }
-   
-    if (nextProps.productos !== this.props.productos) {
-      this.setState({ productos: this.props.productos });
-      // console.log(
-      //   "PRODUCTOS props",
-      //   this.props.productos,
-      //   nextProps.productos.values()
-      // );
-    }
-    if (nextProps.producto !== this.props.producto) {
-      this.setState({ producto: nextProps.producto });
-    }
-    
   }
 
+  guardar = () => {
+    this.props.crearPedido();
+    // this.obtenerUltimoId(this.state.pedidos);
+  };
+
+  limpiar = () => {
+    document.getElementById("nombre").value = "";
+    this.listadoResponsablesDeMesa();
+    this.setState({ seccion: "" });
+    this.setState({ secciones: this.state.secciones });
+  };
+
   render = () => {
-     
+    let secciones = this.state.secciones;
     return (
       <tr>
-        <td>{this.props.pedido.codigoPedido}</td>
-        <td>{this.props.responsableDeMesa}</td>
-        <td>{this.props.pedido.seccion}</td>
-        <td>{this.props.pedido.importeTotal}</td>
+        <td>{this.state.pedido.id}</td>
+        <td>
+          <input
+            type="text"
+            id="nombre"
+            ref="nombre"
+            onChange={this.handleChangeResponsable}
+            list="responsable"
+            placeholder="Elige responsable"
+            className="form-control"
+          />
+
+          <datalist id="responsable" autoComplete="on">
+            {this.state.responsablesDeMesa.map((responsable, index) => {
+              return <option key={index} value={responsable.nombre} />;
+            })}
+          </datalist>
+        </td>
+        <td>
+          {" "}
+          <input
+            type="text"
+            id="seccion"
+            name="seccion"
+            value={this.state.seccion}
+            onChange={this.handleChangeSeccion.bind(this)}
+            list="secciones"
+            placeholder="Elige sección"
+            className="form-control"
+          />
+          <datalist id="secciones" autoComplete="on">
+            {secciones.map((seccion, index) => {
+              return (
+                <option key={index} id={seccion.id} value={seccion.name} />
+              );
+            })}
+          </datalist>
+        </td>
+        <td>hora</td>
         {/* <td>{this.props.pedido.habilitado? "si":"no"}</td> */}
         <td>
-          <Button
-            color="danger"
-            size="btn-xs"
-            onClick={() => this.eliminarPedido(this.props.pedido.id)}
-          >
+          <Button color="info" size="btn-xs" onClick={() => this.limpiar()}>
             <i className="cui-trash icons font-1xl d-block mt-1"></i>
           </Button>{" "}
           &nbsp;&nbsp;
-          <Button
-            className="btn #e65100 orange darken-4"
-            onClick={this.seleccionarPedido}
+          <Button color="info" size="btn-xs" onClick={() => this.guardar()}>
+            <i className="fa fa-dot-circle-o">{""}</i>
+          </Button>{" "}
+          {/* <Button
+            color="info"
+            size="btn-xs"
+            onClick={() => this.obtenerIdPedido(this.state.id)}
           >
-            <i className="fa fa-dot-circle-o">{""} Editar</i>
-          </Button>
+            <i className="fa fa-dot-circle-o">{""} ID</i>
+          </Button>{" "} */}
         </td>
       </tr>
     );

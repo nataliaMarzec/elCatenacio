@@ -14,11 +14,13 @@ class PedidoItems extends React.Component {
       cantidad: props.cantidad,
       precio: props.precio,
       importe: props.importe,
+      pedido: props.pedido,
+      pedidoId:props.pedidoId
     };
     this.eliminarPedido = this.eliminarPedido.bind(this);
     this.seleccionarPedido = this.seleccionarPedido.bind(this);
   }
-
+ 
   eliminarPedido = (id) => {
     fetch("http://localhost:8383/pedidos/" + id, {
       method: "DELETE",
@@ -61,6 +63,11 @@ class PedidoItems extends React.Component {
     }
     if (nextProps.pedido !== this.props.pedido) {
       this.setState({ pedido: nextProps.pedido });
+      // console.log("PEDIDO PROPS-------", this.props.pedido);
+    }
+    if (nextProps.pedidoId !== this.props.pedidoId) {
+      this.setState({ pedidoId: nextProps.pedidoId });
+      console.log("Pedido id PROPS-------", this.props.pedidoId);
     }
     if (nextProps.items !== this.props.items) {
       this.setState({ items: this.props.items });
@@ -94,19 +101,23 @@ class PedidoItems extends React.Component {
   }
 
   updateCantidadItem = (productoId) => {
+    const pedidoId=this.state.pedidoId
     fetch("http://localhost:8383/itemsPedidos/" + productoId, {
       method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.state.item),
+      body: JSON.stringify(this.state.item, this.state.pedidoId),
     })
       .then((res) => this.props.listadoItemsPedido)
+      .then((item) =>
+        this.setState({pedidoId:this.state.pedidoId}, () => console.log("pedidoIdcantidad",this.state.item.pedidoId))
+      )
       .then((res) =>
         this.setState(
           { item: { ...this.state.item, cantidad: this.state.item.cantidad } },
-          () => console.log("update-cantidad", this.state.item.cantidad)
+          () => console.log("update-cantidad", this.state.pedidoId)
         )
       );
     // .then((res) => this.props.estadoInicial());
@@ -139,6 +150,8 @@ class PedidoItems extends React.Component {
 
   guardar(importeTotal, productoId) {
     var precio = this.state.precio;
+    var pedidoId=this.state.pedidoId
+    console.log("pedidoId%%%%%",pedidoId)
     this.updateCantidadItem(productoId);
     if (importeTotal == null) {
       this.updateImporteItem(precio, productoId);
@@ -168,6 +181,7 @@ class PedidoItems extends React.Component {
   event = (e) => {
     e.preventDefault();
   };
+ 
 
   render = () => {
     return (
@@ -193,12 +207,14 @@ class PedidoItems extends React.Component {
           <Button
             color="info"
             size="btn-xs"
+            // onClick={handleEvent}
             onClick={() =>
               this.guardar(this.state.importe, this.props.productoId)
             }
           >
             <i className="fa fa-dot-circle-o">{""}</i>{" "}
           </Button>
+        
         </td>
         {/* <Button
             color="danger"

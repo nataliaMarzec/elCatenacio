@@ -49,8 +49,6 @@ models.Producto.hasOne(models.ItemsPedido, {
 models.ItemsPedido.belongsTo(models.Producto, {
   foreignKey: "productoId",
   as: "Productos",
-  onDelete: "CASCADE",
-  onUpdate:"CASCADE",
   constraints:false,
 });
 
@@ -60,6 +58,8 @@ models.Pedido.hasMany(models.ItemsPedido, {
   sourceKey:"id",
   // unique:false,
   constraints:false,
+  onDelete: "CASCADE",
+  onUpdate:"CASCADE"
 
 });
 models.ItemsPedido.belongsTo(models.Pedido, {

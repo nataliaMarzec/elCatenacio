@@ -28,8 +28,6 @@ class Producto extends React.Component {
     this.props.toggle();
   }
 
-
-
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.productos !== this.props.productos) {
       this.setState({ productos: this.props.productos });
