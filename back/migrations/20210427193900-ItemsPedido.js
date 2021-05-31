@@ -28,7 +28,6 @@ module.exports = {
       },
       cantidad: {
         type: Sequelize.INTEGER,
-        defaultValue: 1,
       },
       importe: {
         type: Sequelize.INTEGER,

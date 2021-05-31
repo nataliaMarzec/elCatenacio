@@ -36,16 +36,16 @@ class DefaultLayout extends Component {
   render() {
     return (
       <div className="app"  >
-        <AppHeader style={{ backgroundColor: "#9d6e47" }} fixed>
+        <AppHeader style={{ backgroundColor: "#441f4c" }} fixed>
             <DefaultHeader  onLogout={e=>this.signOut(e)}/>
         </AppHeader>
         <div className="app-body" >
-          <AppSidebar style={{ backgroundColor: "#9d6e47" }} fixed display="lg">
-            <AppSidebarHeader style={{ backgroundColor: "#9d6e47" }} />
-            <AppSidebarForm style={{ backgroundColor: "#9d6e47" }}/>
-            <AppSidebarNav style={{ backgroundColor: "#9d6e47" }} navConfig={navigation} {...this.props} router={router}/>
+          <AppSidebar style={{ backgroundColor: "#441f4c" }} fixed display="lg">
+            <AppSidebarHeader style={{ backgroundColor: "#441f4c" }} />
+            <AppSidebarForm style={{ backgroundColor: "#441f4c" }}/>
+            <AppSidebarNav style={{ backgroundColor: "#441f4c" }} navConfig={navigation} {...this.props} router={router}/>
             <AppSidebarFooter />
-            <AppSidebarMinimizer style={{ backgroundColor: "#ac7c54" }} />
+            <AppSidebarMinimizer style={{ backgroundColor: "#ed1106" }} />
           </AppSidebar>
           <main className="main">
             <AppBreadcrumb style={{ backgroundColor: "#ac7c54" }}  appRoutes={routes} router={router}/>

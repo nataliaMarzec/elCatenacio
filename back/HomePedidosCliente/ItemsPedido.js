@@ -28,7 +28,6 @@ module.exports = function (sequelize, DataTypes) {
       },
       cantidad: {
         type: DataTypes.INTEGER,
-        defaultValue: 1,
       },
       importe: DataTypes.INTEGER,
       observaciones: DataTypes.STRING,

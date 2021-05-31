@@ -9,57 +9,21 @@ class PedidoItems extends React.Component {
       toogle: props.toggle,
       items: props.items,
       item: props.item,
-      importe: props.importe,
       descripciones: props.descripciones,
       cantidad: props.cantidad,
       precio: props.precio,
-      importe: props.importe,
+      // importe: props.importe,
+      importe:props.precio,
       pedido: props.pedido,
-      pedidoId:props.pedidoId
+      pedidoId: props.pedidoId,
+      name: "importe",
+      value: props.value,
     };
-    this.eliminarPedido = this.eliminarPedido.bind(this);
-    this.seleccionarPedido = this.seleccionarPedido.bind(this);
   }
- 
-  eliminarPedido = (id) => {
-    fetch("http://localhost:8383/pedidos/" + id, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    }).then(this.props.actualizarAlEliminar(this.props.pedido));
-  };
-
-  editar() {
-    this.props.editarPedidoFetch(this.props.pedido);
-    this.props.toggle();
-  }
-
-  // componentWillMount(){
-  //   let descripciones=this.props.descripciones.map((d)=>d.name)
-  //   console.log("will descripciones____",descripciones)
-  // }
-
-  seleccionarPedido() {
-    this.props.selector(this.props.pedido);
-    // console.log("seleccionar___", this.props.pedido);
-    this.props.toggle();
-  }
-
-  editCliente = () => {
-    this.props.editarCliente(this.props.pedido);
-    this.props.toogle();
-  };
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.pedidos !== this.props.pedidos) {
       this.setState({ pedidos: this.props.pedidos });
-      // console.log(
-      //   "pedidos props",
-      //   this.props.pedidos,
-      //   nextProps.pedidos.values()
-      // );
     }
     if (nextProps.pedido !== this.props.pedido) {
       this.setState({ pedido: nextProps.pedido });
@@ -100,8 +64,8 @@ class PedidoItems extends React.Component {
     }
   }
 
-  updateCantidadItem = (productoId) => {
-    const pedidoId=this.state.pedidoId
+  updateCantidadItem = (productoId,cantidad) => {
+    const pedidoId = this.state.pedidoId;
     fetch("http://localhost:8383/itemsPedidos/" + productoId, {
       method: "PUT",
       headers: {
@@ -112,16 +76,11 @@ class PedidoItems extends React.Component {
     })
       .then((res) => this.props.listadoItemsPedido)
       .then((item) =>
-        this.setState({pedidoId:this.state.pedidoId}, () => console.log("pedidoIdcantidad",this.state.item.pedidoId))
-      )
-      .then((res) =>
         this.setState(
-          { item: { ...this.state.item, cantidad: this.state.item.cantidad } },
-          () => console.log("update-cantidad", this.state.pedidoId)
+          { pedidoId: this.state.pedidoId, cantidad: this.state.item.cantidad },
+          () => console.log("updatecantidad",this.state.pedidoId, this.state.cantidad)
         )
       );
-    // .then((res) => this.props.estadoInicial());
-    // console.log("GUARDARITEM", productoId, this.props.cantidad);
   };
 
   updateImporteItem = (importeTotal, productoId) => {
@@ -140,8 +99,6 @@ class PedidoItems extends React.Component {
         this.setState(
           {
             item: { ...this.state.item, importe: importeTotal },
-            // ,      function() {
-            // }
           },
           console.log("importe", importeTotal)
         )
@@ -150,100 +107,99 @@ class PedidoItems extends React.Component {
 
   guardar(importeTotal, productoId) {
     var precio = this.state.precio;
-    var pedidoId=this.state.pedidoId
-    console.log("pedidoId%%%%%",pedidoId)
+    var pedidoId = this.state.pedidoId;
+    console.log("pedidoId%%%%%", pedidoId);
     this.updateCantidadItem(productoId);
-    if (importeTotal == null) {
-      this.updateImporteItem(precio, productoId);
-    } else {
+    console.log("guarda%%%%%",this.state.cantidad);
+    // if (importeTotal == null) {
+    //   this.updateImporteItem(precio, productoId);
+    // } else {
       this.updateImporteItem(importeTotal, productoId);
+    // }
+  }
+
+  // prueba(cantidad) {
+  //   var total = 0;
+  //   var cantidad = cantidad;
+  //   var precio = this.state.precio;
+  //   total = cantidad * precio;
+  //   this.setState({ precio: this.state.precio, importe: total });
+  //   return total;
+  // }
+
+  searchFun(e) {
+    if (e.target.value.length !== 0) {
+      let enteredValue = e.target.value.toLowerCase();
+      let presentValue = this.props.options.filter(function (data) {
+        return data.name.indexOf(enteredValue) > -1;
+      });
+      this.setState({ productos: presentValue });
+    } else {
+      this.setState({ productos: this.state.productos });
     }
   }
 
+  calcular = (item) => {
+    var cantidad = item.cantidad;
+    // var importe = item.importe;
+    var precio = this.state.precio;
+    let total = cantidad * precio;
+    this.setState({ precio: this.state.precio, importe: total,cantidad:cantidad });
+    console.log("importe",precio, this.state.importe);
+    return total;
+  };
+
   handleChange = (e) => {
     var nuevoItem = Object.assign({}, this.state.item);
+    console.log("nuevoItem", nuevoItem);
     nuevoItem[e.target.name] = e.target.value;
-    this.setState({ item: nuevoItem, cantidad: nuevoItem.cantidad });
-    var total = 0;
-    var cantidad = nuevoItem.cantidad;
-    var precio = this.state.precio;
-    if (cantidad == null) {
-      total = 1 * precio;
-      this.setState({ precio: this.state.precio, importe: total });
-      return total;
-    } else {
-      total = cantidad * precio;
-      this.setState({ precio: this.state.precio, importe: total });
-      return total;
-    }
+    this.setState({ item: nuevoItem }, () => this.calcular(nuevoItem));
+    // this.setState({ importe: this.state.item.importe });
+    console.log(
+      "item",
+      nuevoItem.cantidad,
+      this.state.importe
+      // nuevoImporte
+    );
+    // console.log("evento", `${e.target.name}:${e.target.value}`);
   };
 
   event = (e) => {
     e.preventDefault();
   };
- 
 
   render = () => {
     return (
       <tr key={this.props.index}>
         <td>{this.props.codigo}</td>
         <td>{this.props.descripcion}</td>
-        <td onSubmit={this.event}>
+        <td>
           <input
+            id="i-cantidad"
             style={{ backgroundColor: "#eee363" }}
             type="number"
             id="cantidad"
             name="cantidad"
-            placeholder="1"
-            // required
+            defaultValue={1}
+            min={1}
             value={this.state.item.cantidad}
-            onChange={this.handleChange.bind(this)}
+            onChange={this.handleChange}
             className="form-control"
           ></input>
         </td>
+        <td>${this.state.item.importe || this.state.importe}</td>
         <td>
-          {" "}
           {"  "}
           <Button
             color="info"
             size="btn-xs"
-            // onClick={handleEvent}
             onClick={() =>
               this.guardar(this.state.importe, this.props.productoId)
             }
           >
             <i className="fa fa-dot-circle-o">{""}</i>{" "}
           </Button>
-        
         </td>
-        {/* <Button
-            color="danger"
-            size="btn-xs"
-            // onClick={this.onClick}
-          >
-            <i className="cui-trash icons font-1xl d-block mt-1"></i>
-          </Button>{" "} */}
-        {/* &nbsp;&nbsp; */}
-        {/*   <td>{this.props.names}</td>
-       
-        {/* <th>Observaciones</th> */}
-        {/* <td>
-          <Button
-            color="danger"
-            size="btn-xs"
-            onClick={() => this.eliminarPedido(this.props.pedido.id)}
-          >
-            <i className="cui-trash icons font-1xl d-block mt-1"></i>
-          </Button>{" "}
-          &nbsp;&nbsp;
-          <Button
-            size="btn-xs"
-            className="btn #e65100 orange darken-4"
-            onClick={this.seleccionarPedido}
-          >
-            <i className="fa fa-dot-circle-o">{""}</i>
-          </Button> */}
-        {/* </td> */}
       </tr>
     );
   };

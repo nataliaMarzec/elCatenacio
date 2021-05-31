@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Input } from "reactstrap";
+import { Button, Input, Label } from "reactstrap";
 
 class PedidoItemsDos extends React.Component {
   constructor(props) {
@@ -14,34 +14,8 @@ class PedidoItemsDos extends React.Component {
       items: props.items,
       item: props.item,
     };
-    this.eliminarPedido = this.eliminarPedido.bind(this);
-    this.seleccionarPedido = this.seleccionarPedido.bind(this);
   }
 
-  eliminarPedido = (id) => {
-    fetch("http://localhost:8383/pedidos/" + id, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    }).then(this.props.actualizarAlEliminar(this.props.pedido));
-  };
-
-  editar() {
-    this.props.editarPedidoFetch(this.props.pedido);
-    this.props.toggle();
-  }
-
-  seleccionarPedido() {
-    this.props.selector(this.props.pedido);
-    this.props.toggle();
-  }
-
-  editCliente = () => {
-    this.props.editarCliente(this.props.pedido);
-    this.props.toogle();
-  };
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.pedidos !== this.props.pedidos) {
@@ -74,10 +48,10 @@ class PedidoItemsDos extends React.Component {
       this.setState({ precio: this.props.precio });
       console.log("precio---", this.props.precio);
     }
-    // if (nextProps.importe !== this.props.importe) {
-    //   this.setState({ importe: this.props.importe });
-    //   console.log("importe---", this.props.importe);
-    // }
+    if (nextProps.importe !== this.props.importe) {
+      this.setState({ importe: this.props.importe });
+      console.log("importe---", this.props.importe);
+    }
     if (nextProps.productos !== this.props.productos) {
       this.setState({ productos: this.props.productos });
     }
@@ -113,10 +87,12 @@ class PedidoItemsDos extends React.Component {
     e.preventDefault();
   };
 
+  getImporte() {
+    this.props.getImporte();
+  }
   render = () => {
     return (
       <tr key={this.props.index}>
-        <td>${this.props.importe}</td>
         <td key="observaciones" onSubmit={this.event}>
           <input
             style={{ backgroundColor: "#F5C765" }}
@@ -130,6 +106,7 @@ class PedidoItemsDos extends React.Component {
             className="form-control"
           ></input>
         </td>
+        <td>${this.state.item.importe}</td>
         <td>
           {"  "}
           <Button
@@ -140,36 +117,6 @@ class PedidoItemsDos extends React.Component {
             <i className="fa fa-dot-circle-o">{""}</i>
           </Button>
         </td>
-        {/* <td>{this.props.importe}</td> */}
-        {/* &nbsp;&nbsp; */}
-        {/* <Button
-            color="danger"
-            size="btn-xs"
-            // onClick={this.onClick}
-          >
-            <i className="cui-trash icons font-1xl d-block mt-1"></i>
-          </Button>{" "} */}
-        {/* &nbsp;&nbsp; */}
-        {/*   <td>{this.props.names}</td>
-       
-        {/* <th>Observaciones</th> */}
-        {/* <td>
-          <Button
-            color="danger"
-            size="btn-xs"
-            onClick={() => this.eliminarPedido(this.props.pedido.id)}
-          >
-            <i className="cui-trash icons font-1xl d-block mt-1"></i>
-          </Button>{" "}
-          &nbsp;&nbsp;
-          <Button
-            size="btn-xs"
-            className="btn #e65100 orange darken-4"
-            onClick={this.seleccionarPedido}
-          >
-            <i className="fa fa-dot-circle-o">{""}</i>
-          </Button> */}
-        {/* </td> */}
       </tr>
     );
   };

@@ -56,7 +56,6 @@ models.Pedido.hasMany(models.ItemsPedido, {
   as: "ItemsPedido",
   foreignKey: "pedidoId",
   sourceKey:"id",
-  // unique:false,
   constraints:false,
   onDelete: "CASCADE",
   onUpdate:"CASCADE"
@@ -67,7 +66,6 @@ models.ItemsPedido.belongsTo(models.Pedido, {
   foreignKey: "pedidoId",
   targetKey: "id",
   constraints:false,
-  // unique:false,
 });
 
 sequelize

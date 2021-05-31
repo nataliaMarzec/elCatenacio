@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import Pedido from "./Pedido";
-import { Table, CardHeader } from "reactstrap";
-
+import { Table} from "reactstrap";
 class TablaPedido extends React.Component {
   constructor(props) {
     super(props);
@@ -20,6 +19,7 @@ class TablaPedido extends React.Component {
       responsable: {},
       nombre: "",
       seleccionado: {},
+      codigoPedido:props.codigoPedido
     };
   }
 
@@ -74,7 +74,7 @@ class TablaPedido extends React.Component {
         <thead>
           <tr>
             <th>Código</th>
-            <th>Mesero</th>
+            <th>Responsable de mesa</th>
             <th>Sección</th>
             <th>Hora</th>
           </tr>
@@ -95,14 +95,18 @@ class TablaPedido extends React.Component {
 
   unPedido = (pedidos) => {
     const {crearPedido}=this.props;
+    const {toggle}=this.props;
     var unPedido = this.state.seleccionado;
+    // console.log("tbl_unPedido.seccion",unPedido.codigoPedido)
     return (
       <Pedido
         pedido={unPedido}
         pedidos={pedidos}
+        codigoPedido={this.state.codigoPedido}
         crearPedido={crearPedido}
         seleccionado={this.state.seleccionado}
         listadoPedidos={this.props.listadoPedidos}
+        toggle={toggle}
       />
     );
   };

@@ -7,12 +7,10 @@ class Cliente extends React.Component {
     this.state = {
       editar: false,
       toogle: this.props.toggle,
-      isMutableItem: props.isMutableItem,
     };
     this.eliminarCliente = this.eliminarCliente.bind(this);
     this.seleccionarCliente = this.seleccionarCliente.bind(this);
   }
-
 
   eliminarCliente = (id) => {
     // var answer = window.confirm(
@@ -29,11 +27,6 @@ class Cliente extends React.Component {
     // }
   };
 
-  // editar() {
-  //   this.props.editarClienteFetch(this.props.cliente);
-  //   this.props.toggle();
-  // }
-
   seleccionarCliente() {
     this.props.selector(this.props.cliente);
     console.log("seleccionar___", this.props.cliente);
@@ -44,17 +37,9 @@ class Cliente extends React.Component {
     this.props.clienteSeleccionado(this.props.cliente);
   };
 
- 
-  // editCliente = () => {
-  //   this.props.editarCliente(this.props.cliente);
-  //   this.props.toogle();
-  // };
-
-
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.clientes !== this.props.clientes) {
       this.setState({ clientes: this.props.clientes });
-      // console.log("clientes props", this.props.clientes, nextProps.clientes.values());
     }
     if (nextProps.cliente !== this.props.cliente) {
       this.setState({ cliente: nextProps.cliente });
@@ -71,7 +56,6 @@ class Cliente extends React.Component {
         <td>{this.props.cliente.direccion}</td>
         <td>{this.props.cliente.telefono}</td>
         <td>{this.props.cliente.email}</td>
-        
         <td>
           <Button
             color="danger"

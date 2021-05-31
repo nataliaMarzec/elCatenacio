@@ -22,12 +22,9 @@ module.exports = {
       seccion: {
         type: Sequelize.STRING,
       },
-      // indexes:[
-      //   {
-      //       unique: true,
-      //       fields: ['pedidoId']
-      //   },
-      // ]
+      observaciones: {
+        type: Sequelize.STRING,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {

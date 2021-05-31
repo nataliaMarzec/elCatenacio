@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "reactstrap";
+import { Button, Collapse } from "reactstrap";
 
 class Pedido extends React.Component {
   constructor(props) {
@@ -17,8 +17,8 @@ class Pedido extends React.Component {
       pedido: props.pedido,
       pedidos: props.pedidos,
       id: props.id,
+      codigoPedido: props.codigoPedido,
     };
-    this.eliminarPedido = this.eliminarPedido.bind(this);
   }
 
   componentWillMount = () => {
@@ -27,6 +27,19 @@ class Pedido extends React.Component {
       secciones: this.state.secciones,
       seccion: this.state.seccion,
       id: this.state.id,
+    });
+  };
+
+  // componentDidMount() {
+  //   this.setState(
+  //     { seccion: this.state.seccion },
+  //     console.log("didMountrow", this.state.seccion)
+  //   );
+  // }
+
+  toggle = () => {
+    this.setState({
+      modal: !this.state.modal,
     });
   };
   verDetallesResponsable(nombre) {
@@ -85,25 +98,6 @@ class Pedido extends React.Component {
         this.setState({ responsablesDeMesa: resps, responsable: {} })
       );
   };
-  eliminarPedido = (id) => {
-    fetch("http://localhost:8383/pedidos/" + id, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    }).then(this.props.actualizarAlEliminar(this.props.pedido));
-  };
-
-  editar() {
-    this.props.editarPedidoFetch(this.props.pedido);
-    this.props.toggle();
-  }
-
-  seleccionarPedido() {
-    this.props.selector(this.props.pedido);
-    this.props.toggle();
-  }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.pedidos !== this.props.pedidos) {
@@ -112,25 +106,32 @@ class Pedido extends React.Component {
     if (nextProps.pedido !== this.props.pedido) {
       this.setState({ pedido: nextProps.pedido });
     }
+    if (nextProps.codigoPedido !== this.props.codigoPedido) {
+      this.setState({ codigoPedido: nextProps.codigoPedido });
+    }
   }
 
   guardar = () => {
-    this.props.crearPedido();
-    // this.obtenerUltimoId(this.state.pedidos);
+    this.props.crearPedido(this.state.seccion);
+    // this.props.toggle();
   };
 
   limpiar = () => {
     document.getElementById("nombre").value = "";
     this.listadoResponsablesDeMesa();
-    this.setState({ seccion: "" });
+    document.getElementById("seccion").value = "";
+    this.setState({ seccion:"" });
     this.setState({ secciones: this.state.secciones });
+  };
+  event = (e) => {
+    e.preventDefault();
   };
 
   render = () => {
     let secciones = this.state.secciones;
     return (
       <tr>
-        <td>{this.state.pedido.id}</td>
+        <td>{this.state.codigoPedido}</td>
         <td>
           <input
             type="text"
@@ -151,14 +152,18 @@ class Pedido extends React.Component {
         <td>
           {" "}
           <input
+            key="seccion"
             type="text"
             id="seccion"
             name="seccion"
             value={this.state.seccion}
-            onChange={this.handleChangeSeccion.bind(this)}
+            onChange={this.handleChangeSeccion}
             list="secciones"
             placeholder="Elige sección"
             className="form-control"
+            autoComplete={true}
+            onSubmit={this.event}
+            // required={true}
           />
           <datalist id="secciones" autoComplete="on">
             {secciones.map((seccion, index) => {

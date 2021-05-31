@@ -21,7 +21,7 @@ function App() {
   // const {usuario,cargandoUsuario,login,signup,logout}=useUsuario()
   // style={{ backgroundColor: "#ac7c54" }}
   return (
-    <div className="App" style={{ backgroundColor: "#c09bcf" }}>
+    <div className="App" style={{ backgroundColor: "#72407d" }}>
     <Router >
  
       <main className="App-main">
@@ -34,6 +34,7 @@ function App() {
         <Route path="/" name="DefaultLayout" render={props => <DefaultLayout {...props}/>} />
         <Route exact path="/home" name="Home" render={props => <Home {...props}/>} />
         <Route exact path="/vistaDeProductosParaClientes" name="VistaDeProductosParaClientes" render={props => <VistaDeProductosParaClientes {...props}/>} />
+        {/* <Route component={NotFound}/> cuando hacen path a una ruta que no existe*/}
         </Switch>
       </React.Suspense>
       <Switch>

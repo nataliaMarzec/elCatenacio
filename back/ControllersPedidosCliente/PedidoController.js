@@ -5,76 +5,36 @@ const Producto = models.Producto;
 const ItemsPedido = models.ItemsPedido;
 const Pedido = models.Pedido;
 module.exports = {
-  //usado devuelve id
-  // create: async (req, res) => {
-  //   return Pedido.create({
-  //     codigoPedido: req.body.codigoPedido,
-  //     seccion: req.body.seccion,
-  //   }).then(function (pedido) {
-  //     console.log(pedido);
-  //     Pedido.findOne({ where: { id: pedido.id } }).then(function (result) {
-  //       console.log("id-----------------------", result);
-  //       var id = result.id;
-  //       return res.status(200).send({ id });
-  //     });
-  //   });
-  // },
+  //usado devuelve id y crea seccion
   create: async (req, res) => {
-    const { seccion } = req.body;
-    const { pedidoId } = req.body;
-    const { ItemsPedido } = req.body;
-    console.log("req.body", req.body);
+    console.log("req.body", req.body.seccion);
+    const seccion = req.body.seccion;
+    const codigoPedido = req.body.codigoPedido;
+
     const pedido = {
       seccion: seccion,
-      ItemsPedido: {},
+      codigoPedido: codigoPedido,
+      ItemsPedido: [],
     };
-    const PedidoItem = await Pedido.create(pedido);
-    // ItemsPedido.pedidoId = pedido.id;
-    // PedidoItem.ItemsPedido.push(ItemsPedido);
-    await PedidoItem.save();
-    // await ItemsPedido.save();
-    let id= PedidoItem.id
-    return res.json({
-      message: "se guardo el pedido ",
-      id
-    });
+    return await Pedido.create(pedido)
+      .then(function (pedido) {
+        console.log("pedido+++", pedido);
+        pedido.save();
+        let id = pedido.id;
+        let seccion = pedido.seccion;
+        let codigoPedido = pedido.codigoPedido;
+        return res.json({
+          message: "se guardo el pedido",
+          id,
+          seccion,
+          codigoPedido,
+        });
+      })
+      .catch(function (error) {
+        console.log("pedido", error);
+      });
   },
 
-  //prueba
-  // createPedidoConItem: async (req, res) => {
-  //   return Pedido.create({
-  //     codigoPedido: req.body.codigoPedido,
-  //     seccion: req.body.seccion,
-  //     include: [
-  //       {
-  //         model: ItemsPedido,
-  //         as: "ItemsPedido",
-  //         where: { pedidoId: Pedido.id },
-  //       },
-  //     ],
-  //   }).then(function (pedido) {
-  //     console.log(pedido);
-  //     Pedido.findOne({ where: { id: pedido.id } })
-  //       .then(function (result) {
-  //         console.log("id-----------------------", result);
-  //         var id = result.id;
-  //         return res.status(200).send({ id });
-  //       })
-  //       .then(function (pedido) {
-  //         console.log("idPedido", pedido);
-  //         var item = await ItemsPedido.create({
-  //           codigo: req.body.codigo,
-  //           pedidoId: pedido.id,
-  //           productoId: req.body.productoId,
-  //           cantidad: req.body.cantidad,
-  //           precioUnitario: req.body.precioUnitario,
-  //           importe: req.body.importe,
-  //           observaciones: req.body.observaciones,
-  //         });
-  //         return res.status(200).json(item);
-  //       });
-  //   });
-  // },
   //usado
   addPedidoItem: async (req, res) => {
     var pedido = await Pedido.findOne({

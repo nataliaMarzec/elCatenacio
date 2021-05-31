@@ -18,6 +18,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       codigoPedido: DataTypes.INTEGER,
       seccion: DataTypes.STRING,
+      observaciones:DataTypes.STRING
     },
 
     {
