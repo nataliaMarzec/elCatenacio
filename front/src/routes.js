@@ -35,6 +35,12 @@ const Pedidos = React.lazy(() =>
 const Pedido = React.lazy(() =>
   import("./ComponentesPedidosCliente/Pedidos/Pedido")
 );
+const PedidoItems=React.lazy(() =>
+import("./ComponentesPedidosCliente/Pedidos/PedidoItems")
+);
+const PedidoItemsDos=React.lazy(() =>
+import("./ComponentesPedidosCliente/Pedidos/PedidoItemsDos")
+);
 const CargarPedido = React.lazy(() =>
   import("./ComponentesPedidosCliente/Pedidos/CargarPedido")
 );
@@ -50,6 +56,17 @@ const UnPedidoRow = React.lazy(() =>
 const TablaPedido = React.lazy(() =>
   import("./ComponentesPedidosCliente/Pedidos/TablaPedido")
 );
+
+const PedidoItemsEditar=React.lazy(() =>
+import("./ComponentesPedidosCliente/Pedidos/EditarRows/PedidoItemsEditar")
+);
+const PedidoItemsDosEditar=React.lazy(() =>
+import("./ComponentesPedidosCliente/Pedidos/EditarRows/PedidoItemsDosEditar")
+);
+const PedidoEditar = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/EditarRows/PedidoEditar")
+);
+
 
 const Clientes = React.lazy(() =>
   import("./ComponentesClientes/Clientes/Clientes")
@@ -182,6 +199,21 @@ const routes = [
     component: Pedidos,
   },
   {
+    path: "/pedidoItems",
+    exact: false,
+    key: "#pedidoItems",
+    name: "PedidoItems",
+    component: PedidoItems,
+  },
+  {
+    path: "/pedidoItemsDos",
+    exact: false,
+    key: "#pedidoItemsDos",
+    name: "PedidoItemsDos",
+    component: PedidoItemsDos,
+  },
+
+  {
     path: "/cargarPedidos",
     exact: false,
     name: "CargarPedido",
@@ -208,6 +240,25 @@ const routes = [
   },
   { path: "./pedido", exact: false, name: "Pedido", component: Pedido },
   { path: "./tablaPedido", exact: false, name: "TablaPedido", component:TablaPedido },
+
+ 
+  {
+    path: "/pedidoItemsEditar",
+    exact: false,
+    key: "#pedidoItemsEditar",
+    name: "PedidoItemsEditar",
+    component: PedidoItemsEditar,
+  },
+  {
+    path: "/pedidoItemsDosEditar",
+    exact: false,
+    key: "#pedidoItemsDosEditar",
+    name: "PedidoItemsDosEditar",
+    component: PedidoItemsDosEditar,
+  },
+  { path: "./pedidoEditar", exact: false, name: "PedidoEditar", component: PedidoEditar },
+
+
 
   {
     path: "/clientes",

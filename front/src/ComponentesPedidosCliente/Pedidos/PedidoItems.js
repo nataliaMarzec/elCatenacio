@@ -7,18 +7,27 @@ class PedidoItems extends React.Component {
     this.state = {
       editar: false,
       toogle: props.toggle,
-      items: props.items,
-      item: props.item,
-      descripciones: props.descripciones,
-      cantidad: props.cantidad,
+      listaItems: props.listaItems,
+      unItem: props.unItem,
       precio: props.precio,
-      // importe: props.importe,
-      importe:props.precio,
+      id: props.id,
+      descripcion: props.descripcion,
+      importe: null,
+      cantidad: null,
+      productoId: props.productoId,
       pedido: props.pedido,
-      pedidoId: props.pedidoId,
-      name: "importe",
-      value: props.value,
+      index: props.key
     };
+    this.handleChange = this.handleChange.bind(this);
+  }
+  componentWillMount() {
+    this.setState({ listaItems: this.state.listaItems, index: this.props.key },
+       () => console.log("key", this.state.index))
+
+  }
+ 
+  listaItems() {
+    return this.state.listaItems;
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -31,25 +40,29 @@ class PedidoItems extends React.Component {
     }
     if (nextProps.pedidoId !== this.props.pedidoId) {
       this.setState({ pedidoId: nextProps.pedidoId });
-      console.log("Pedido id PROPS-------", this.props.pedidoId);
+      // console.log("Pedido id PROPS-------", this.props.pedidoId);
     }
-    if (nextProps.items !== this.props.items) {
-      this.setState({ items: this.props.items });
-      // console.log("Items props", this.props.items, nextProps.items.values());
+    if (nextProps.listaItems !== this.props.listaItems) {
+      this.setState({ listaItems: this.props.listaItems });
+      console.log("Items props", this.props.listaItems, nextProps.listaItems.values());
     }
-    if (nextProps.item !== this.props.item) {
-      this.setState({ item: nextProps.item });
+    if (nextProps.unItem !== this.props.unItem) {
+      this.setState({ unItem: nextProps.unItem });
     }
     if (nextProps.productoId !== this.props.productoId) {
       this.setState({ productoId: this.props.productoId });
       // console.log("productoId", this.props.productoId);
     }
-    if (nextProps.cantidad !== this.props.cantidad) {
-      this.setState({ cantidad: this.props.cantidad });
-      // console.log("cantidad---", this.props.cantidad);
-    }
+    // if (nextProps.cantidad !== this.props.cantidad) {
+    //   this.setState({ cantidad: this.props.cantidad });
+    //   // console.log("cantidad---", this.props.cantidad);
+    // }
     if (nextProps.precio !== this.props.precio) {
       this.setState({ precio: this.props.precio });
+      // console.log("precio---", this.props.precio);
+    }
+    if (nextProps.descripcion !== this.props.descripcion) {
+      this.setState({ descripcion: this.props.descripcion });
       // console.log("precio---", this.props.precio);
     }
     if (nextProps.importe !== this.props.importe) {
@@ -62,70 +75,10 @@ class PedidoItems extends React.Component {
     if (nextProps.producto !== this.props.producto) {
       this.setState({ producto: nextProps.producto });
     }
+    if (nextProps.key !== this.props.key) {
+      this.setState({ index: nextProps.key });
+    }
   }
-
-  updateCantidadItem = (productoId,cantidad) => {
-    const pedidoId = this.state.pedidoId;
-    fetch("http://localhost:8383/itemsPedidos/" + productoId, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(this.state.item, this.state.pedidoId),
-    })
-      .then((res) => this.props.listadoItemsPedido)
-      .then((item) =>
-        this.setState(
-          { pedidoId: this.state.pedidoId, cantidad: this.state.item.cantidad },
-          () => console.log("updatecantidad",this.state.pedidoId, this.state.cantidad)
-        )
-      );
-  };
-
-  updateImporteItem = (importeTotal, productoId) => {
-    fetch(
-      `http://localhost:8383/itemsPedidos/importe/${importeTotal}/${productoId}`,
-      {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      }
-    )
-      .then((res) => this.props.listadoItemsPedido())
-      .then((res) =>
-        this.setState(
-          {
-            item: { ...this.state.item, importe: importeTotal },
-          },
-          console.log("importe", importeTotal)
-        )
-      );
-  };
-
-  guardar(importeTotal, productoId) {
-    var precio = this.state.precio;
-    var pedidoId = this.state.pedidoId;
-    console.log("pedidoId%%%%%", pedidoId);
-    this.updateCantidadItem(productoId);
-    console.log("guarda%%%%%",this.state.cantidad);
-    // if (importeTotal == null) {
-    //   this.updateImporteItem(precio, productoId);
-    // } else {
-      this.updateImporteItem(importeTotal, productoId);
-    // }
-  }
-
-  // prueba(cantidad) {
-  //   var total = 0;
-  //   var cantidad = cantidad;
-  //   var precio = this.state.precio;
-  //   total = cantidad * precio;
-  //   this.setState({ precio: this.state.precio, importe: total });
-  //   return total;
-  // }
 
   searchFun(e) {
     if (e.target.value.length !== 0) {
@@ -139,70 +92,68 @@ class PedidoItems extends React.Component {
     }
   }
 
-  calcular = (item) => {
-    var cantidad = item.cantidad;
-    // var importe = item.importe;
-    var precio = this.state.precio;
-    let total = cantidad * precio;
-    this.setState({ precio: this.state.precio, importe: total,cantidad:cantidad });
-    console.log("importe",precio, this.state.importe);
-    return total;
-  };
-
-  handleChange = (e) => {
-    var nuevoItem = Object.assign({}, this.state.item);
-    console.log("nuevoItem", nuevoItem);
+  handleChange(e) {
+    let unItem = this.state.unItem
+    var nuevoItem = Object.assign({}, this.state.unItem);
     nuevoItem[e.target.name] = e.target.value;
-    this.setState({ item: nuevoItem }, () => this.calcular(nuevoItem));
-    // this.setState({ importe: this.state.item.importe });
-    console.log(
-      "item",
-      nuevoItem.cantidad,
-      this.state.importe
-      // nuevoImporte
+    unItem = nuevoItem
+    this.setState({ unItem: unItem, index: this.props.key }
+    ,() => console.log("nuevoItem/key", this.state.unItem, nuevoItem, this.props.key)
     );
+    this.props.calcular(unItem)
     // console.log("evento", `${e.target.name}:${e.target.value}`);
   };
 
-  event = (e) => {
-    e.preventDefault();
-  };
 
-  render = () => {
+  // handleChange = (e) => {
+  //   var nuevoItem = Object.assign({}, this.state.item);
+  //   console.log("nuevoItem", nuevoItem);
+  //   nuevoItem[e.target.name] = e.target.value;
+  //   console.log("nuevoItem2", nuevoItem);
+  //   this.setState(
+  //     { item: nuevoItem,cantidad:nuevoItem.cantidad},
+  //     // () => this.calcular(),
+  //     this.props.envioDeEstadoCantidad(
+  //       this.state.descripcion,
+  //       nuevoItem.cantidad
+  //     )
+  //   );
+  //   // this.setState({ importe: this.state.item.importe });
+  //   console.log(
+  //     "itemhandle",
+  //     nuevoItem.cantidad,
+  //   );
+  //   // console.log("evento", `${e.target.name}:${e.target.value}`);
+  // };
+
+  render() {
+    // return this.props.items.map((unItem, index) => {
     return (
-      <tr key={this.props.index}>
-        <td>{this.props.codigo}</td>
-        <td>{this.props.descripcion}</td>
+      <tr key={this.props.key}>
+        <td>{this.state.codigo}</td>
+        {/* <td>{this.props.key}</td> */}
+        <td>{this.state.unItem.descripcion}</td>
         <td>
           <input
-            id="i-cantidad"
+            key="cantidad"
+            id={this.props.key}
             style={{ backgroundColor: "#eee363" }}
             type="number"
             id="cantidad"
             name="cantidad"
-            defaultValue={1}
+            // defaultValue={1}
             min={1}
-            value={this.state.item.cantidad}
+            value={this.state.unItem.cantidad}
             onChange={this.handleChange}
             className="form-control"
           ></input>
         </td>
-        <td>${this.state.item.importe || this.state.importe}</td>
-        <td>
-          {"  "}
-          <Button
-            color="info"
-            size="btn-xs"
-            onClick={() =>
-              this.guardar(this.state.importe, this.props.productoId)
-            }
-          >
-            <i className="fa fa-dot-circle-o">{""}</i>{" "}
-          </Button>
-        </td>
+        {/* <td>
+          {this.props.children(this.settearProductoAItem)}
+        </td> */}
       </tr>
     );
-  };
+  }
 }
 
 export default PedidoItems;

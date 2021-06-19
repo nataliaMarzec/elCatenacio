@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Collapse } from "reactstrap";
-
+import { limpiar } from "./funciones"
 class Pedido extends React.Component {
   constructor(props) {
     super(props);
@@ -9,16 +9,20 @@ class Pedido extends React.Component {
       nombre: "",
       responsablesDeMesa: [],
       responsable: {},
-      secciones: [
-        { id: 1, name: "Abierta" },
-        { id: 2, name: "Carpa" },
-      ],
-      seccion: "",
+      // secciones: [
+      //   { id: 1, name: "Abierta" },
+      //   { id: 2, name: "Carpa" },
+      // ],
+      secciones:props.secciones,
+      // seccion:"",
       pedido: props.pedido,
       pedidos: props.pedidos,
-      id: props.id,
+      unPedido:props.unPedido,
       codigoPedido: props.codigoPedido,
+      // refSeccion: props.refSeccion,
     };
+    this.handleChangeSeccion = this.handleChangeSeccion.bind(this);
+    this.limpiar = this.limpiar.bind(this)
   }
 
   componentWillMount = () => {
@@ -26,16 +30,24 @@ class Pedido extends React.Component {
     this.setState({
       secciones: this.state.secciones,
       seccion: this.state.seccion,
-      id: this.state.id,
     });
+    // this.setState({ refSeccion: this.state.refSeccion })
   };
-
   // componentDidMount() {
-  //   this.setState(
-  //     { seccion: this.state.seccion },
-  //     console.log("didMountrow", this.state.seccion)
-  //   );
+    //  this.state.refSeccion.current.focus();
+    //  this.setState({refSeccion:this.state.refSeccion.current.value
+    //  ,confirmar:true},()=>console.log("refconvalue",this.state.refSeccion))
+    //  if(this.state.confirmar==true){
+    //    this.setState({seccion:""})
+    //  }
   // }
+  componentDidUpdate(prevProps) {
+    if (this.props.secciones !== prevProps.secciones) {
+      this.setState({secciones:this.props.secciones}
+        ,()=>console.log("updateSecciones",this.props.secciones));
+    }
+  }
+  
 
   toggle = () => {
     this.setState({
@@ -57,14 +69,45 @@ class Pedido extends React.Component {
     // console.log("responsable", this.state.responsable, value);
   };
 
-  handleChangeSeccion = (e) => {
-    var nuevoPedido = Object.assign({}, this.state.pedido);
+  limpiarSeccion(nuevoPedido){
+    if(this.props.confirmar == true){
+      this.props.limpiarSeccion(nuevoPedido)
+      }
+  }
+
+  handleChangeSeccion(e) {
+    let unPedido = this.state.unPedido
+    var nuevoPedido = Object.assign({}, this.state.unPedido);
     nuevoPedido[e.target.name] = e.target.value;
-    this.setState({
-      pedido: nuevoPedido,
-      seccion: nuevoPedido.seccion,
-    });
+    unPedido = nuevoPedido 
+    if(this.props.confirmar == true){
+      this.props.limpiarSeccion(nuevoPedido)
+      }
+    this.setState({ unPedido: unPedido }
+    ,() => console.log("nuevoPedido/handle", this.state.unPedido, nuevoPedido),
+    this.props.envioDePedido(nuevoPedido.seccion
+      , this.state.secciones)
+    );
+   
+    
+    // console.log("evento", `${e.target.name}:${e.target.value}`);
   };
+
+  // handleChangeSeccion = (e) => {
+  //   var nuevoPedido = Object.assign({}, this.state.unPedido);
+  //   nuevoPedido[e.target.name] = e.target.value;
+  //   this.setState(
+  //     {
+  //       pedido: nuevoPedido,
+  //       seccion: nuevoPedido.seccion,
+  //     },
+  //     ()=>console.log("handleEvent",this.state.seccion),
+  //     this.props.envioDePedido(nuevoPedido.seccion
+  //       , this.state.secciones)
+        
+  //   );
+  //   // this.props.handleEvent(e)
+  // };
 
   handleSubmitResponsable = (e) => {
     var busqueda;
@@ -103,34 +146,39 @@ class Pedido extends React.Component {
     if (nextProps.pedidos !== this.props.pedidos) {
       this.setState({ pedidos: this.props.pedidos });
     }
-    if (nextProps.pedido !== this.props.pedido) {
-      this.setState({ pedido: nextProps.pedido });
+    if (nextProps.unPedido !== this.props.unPedido) {
+      this.setState({ unPedido: nextProps.unPedido });
     }
     if (nextProps.codigoPedido !== this.props.codigoPedido) {
       this.setState({ codigoPedido: nextProps.codigoPedido });
     }
+    if (nextProps.secciones !== this.props.secciones) {
+      this.setState({ secciones: nextProps.secciones });
+    }
+
+    // if (nextProps.confirmar !== this.props.confirmar) {
+    //   this.setState({ confirmar: nextProps.confirmar });
+    // }
+    // if (nextProps.refSeccion !== this.props.refSeccion) {
+    //   this.setState({ refSeccion: nextProps.refSeccion });
+    // }
   }
 
-  guardar = () => {
-    this.props.crearPedido(this.state.seccion);
-    // this.props.toggle();
-  };
-
   limpiar = () => {
-    document.getElementById("nombre").value = "";
+    // if(this.state.seccion != null)
+    document.getElementById("nombre").value = ""
     this.listadoResponsablesDeMesa();
-    document.getElementById("seccion").value = "";
-    this.setState({ seccion:"" });
+    // this.setState({refSeccion:""})
+    // document.getElementById("seccion").value = ""
+    this.setState({ unPedido:{seccion:""}});
     this.setState({ secciones: this.state.secciones });
   };
-  event = (e) => {
-    e.preventDefault();
-  };
+
 
   render = () => {
     let secciones = this.state.secciones;
     return (
-      <tr>
+      <tr onSubmit={this.props.handleEvent}>
         <td>{this.state.codigoPedido}</td>
         <td>
           <input
@@ -156,14 +204,15 @@ class Pedido extends React.Component {
             type="text"
             id="seccion"
             name="seccion"
-            value={this.state.seccion}
+            value={this.state.unPedido.seccion}
+            // ref={this.state.refSeccion}
             onChange={this.handleChangeSeccion}
             list="secciones"
             placeholder="Elige sección"
             className="form-control"
-            autoComplete={true}
+            autoComplete="true"
             onSubmit={this.event}
-            // required={true}
+          // required={true}
           />
           <datalist id="secciones" autoComplete="on">
             {secciones.map((seccion, index) => {
@@ -176,20 +225,10 @@ class Pedido extends React.Component {
         <td>hora</td>
         {/* <td>{this.props.pedido.habilitado? "si":"no"}</td> */}
         <td>
-          <Button color="info" size="btn-xs" onClick={() => this.limpiar()}>
+          <Button color="danger" size="btn-xs" onClick={() => this.limpiar()}>
             <i className="cui-trash icons font-1xl d-block mt-1"></i>
           </Button>{" "}
           &nbsp;&nbsp;
-          <Button color="info" size="btn-xs" onClick={() => this.guardar()}>
-            <i className="fa fa-dot-circle-o">{""}</i>
-          </Button>{" "}
-          {/* <Button
-            color="info"
-            size="btn-xs"
-            onClick={() => this.obtenerIdPedido(this.state.id)}
-          >
-            <i className="fa fa-dot-circle-o">{""} ID</i>
-          </Button>{" "} */}
         </td>
       </tr>
     );

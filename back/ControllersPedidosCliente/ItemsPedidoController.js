@@ -1,5 +1,4 @@
 var { Sequelize, Op } = require("sequelize");
-const Producto = require("../HomePedidosCliente/Producto");
 const { models } = require("../SequelizeConnection");
 const ItemsPedido = models.ItemsPedido;
 const Productos = models.Producto;
@@ -74,6 +73,7 @@ module.exports = {
     }
   },
 
+
   //bien no tocar
   addProducto: async (req, res) => {
     var item = await ItemsPedido.findOne({
@@ -94,9 +94,30 @@ module.exports = {
       return res.status(200).json({ err: "item ya tiene producto", item });
     }
   },
-
   //usado
-  addProductoAItem: async (req, res) => {
+  buscarDescripcion: async (req, res) => {
+    return await Productos.findOne({
+      where: { descripcion: req.params.descripcion },
+    })
+      .then((producto) => {
+        var idp = producto.id;
+        if (producto) {
+          return res.status(200).send({
+            message: "idp",
+            idp,
+          });
+        }
+      })
+      .catch((error) =>
+        res.status(400).send({error,message: " no existe descripcion" })
+      );
+  },
+  //usado 2
+  getProductoAItem: async (req, res) => {
+    var pedido = await Pedidos.findOne({
+      where: { id: req.params.id },
+    });
+    var idPedido=pedido.id;
     var producto = await Productos.findOne({
       where: { descripcion: req.params.descripcion },
     });
@@ -104,7 +125,7 @@ module.exports = {
     return ItemsPedido.create(
       {
         codigo: req.body.codigo,
-        pedidoId: req.body.pedidoId,
+        pedidoId:pedido.id,
         productoId: producto.id,
         cantidad: req.body.cantidad,
         precioUnitario: req.body.precioUnitario,
@@ -113,6 +134,7 @@ module.exports = {
       },
       {
         include: [
+          
           {
             model: Productos,
             as: "Productos",
@@ -132,9 +154,21 @@ module.exports = {
       cantidad: req.body.cantidad,
       pedidoId: req.body.pedidoId,
     });
-    console.log("cantidad", itemCantidad.cantidad, "item", item,item.pedidoId);
+    console.log("cantidad", itemCantidad.cantidad, "item", item, item.pedidoId);
     return res.status(200).json(itemCantidad);
   },
+  // updateCantidadItem: async (req, res) => {
+  //     var item = await ItemsPedido.findOne({
+  //       where: { productoId: req.params.productoId },
+  //     });
+  //     var itemCantidad = await item.update({
+  //       cantidad: req.body.cantidad,
+  //       pedidoId: req.body.pedidoId,
+  //     });
+  //     console.log("cantidad", itemCantidad.cantidad, "item", item,item.pedidoId);
+  //     return res.status(200).json(itemCantidad);
+  //   },
+
   //usado
   updateImporteItem: async (req, res) => {
     var item = await ItemsPedido.findOne({

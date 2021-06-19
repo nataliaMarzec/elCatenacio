@@ -1,48 +1,38 @@
 import React from "react";
 import { Button, Input, Label } from "reactstrap";
-
+// import {prueba} from "./PedidoItems"
 class PedidoItemsDos extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      editar: false,
-      toogle: props.toggle,
-      cantidad: props.cantidad,
+      listaItems: props.listaItems,
+      unItem:props.unItem,
       importe: props.importe,
-      descripciones: props.descripciones,
       precio: props.precio,
-      items: props.items,
-      item: props.item,
+      observaciones: null,
     };
+    this.handleChange = this.handleChange.bind(this);
+    this.observaciones = this.observaciones.bind(this);
   }
 
+  componentWillMount() {
+    this.setState({ listaItems: this.state.listaItems},
+      () => console.log("willListaItems", this.state.listaItems))
+    // this.observaciones(this.state.observaciones)
+  }
+ 
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.pedidos !== this.props.pedidos) {
-      this.setState({ pedidos: this.props.pedidos });
-      // console.log(
-      //   "pedidos props",
-      //   this.props.pedidos,
-      //   nextProps.pedidos.values()
-      // );
+    if (nextProps.unItem !== this.props.unItem) {
+      this.setState({ unItem: nextProps.unItem });
     }
-    if (nextProps.pedido !== this.props.pedido) {
-      this.setState({ pedido: nextProps.pedido });
-    }
-    if (nextProps.items !== this.props.items) {
-      this.setState({ items: this.props.items });
+    if (nextProps.listaItems !== this.props.listaItems) {
+      this.setState({ listaItems: this.props.listaItems });
       // console.log("Items props", this.props.items, nextProps.items.values());
-    }
-    if (nextProps.item !== this.props.item) {
-      this.setState({ item: nextProps.item });
     }
     if (nextProps.productoId !== this.props.productoId) {
       this.setState({ productoId: this.props.productoId });
       // console.log("productoId", this.props.productoId);
-    }
-    if (nextProps.cantidad !== this.props.cantidad) {
-      this.setState({ cantidad: this.props.cantidad });
-      // console.log("cantidad---", this.props.cantidad);
     }
     if (nextProps.precio !== this.props.precio) {
       this.setState({ precio: this.props.precio });
@@ -52,44 +42,48 @@ class PedidoItemsDos extends React.Component {
       this.setState({ importe: this.props.importe });
       console.log("importe---", this.props.importe);
     }
-    if (nextProps.productos !== this.props.productos) {
-      this.setState({ productos: this.props.productos });
-    }
-    if (nextProps.producto !== this.props.producto) {
-      this.setState({ producto: nextProps.producto });
-    }
   }
 
-  updateObservacionesItem = (productoId) => {
-    fetch("http://localhost:8383/itemObservaciones/" + productoId, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(this.state.item),
-    })
-      .then((res) => this.props.listadoItemsPedido)
-      .then((res) => this.setState({ item: { ...this.state.item } }));
+  observaciones = (value) => {
+     if (value === '' || value === null || value === undefined) {
+      this.setState({observaciones:null})
+      this.props.envioDeEstadoObservaciones(null);
+    } 
+      this.props.envioDeEstadoObservaciones(value);
+    
   };
 
-  guardar(productoId) {
-    this.updateObservacionesItem(productoId);
-  }
-
-  handleChange = (e) => {
-    var nuevoItem = Object.assign({}, this.state.item);
+  // handleChange = (e) => {
+  //   const target = e.target;
+  //   const value = target.value;
+  //   const name = target.name;
+  //   this.setState(
+  //     { [name]: value},
+  //     this.observaciones(value)
+  //   );
+  // };
+  handleChange(e) {
+    let unItem = this.state.unItem
+    var nuevoItem = Object.assign({}, this.state.unItem);
     nuevoItem[e.target.name] = e.target.value;
-    this.setState({ item: nuevoItem });
+    unItem = nuevoItem
+    this.setState({ unItem: unItem},
+      ()=>this.props.envioDeEstadoObservaciones(nuevoItem)
+    ,() => console.log("nuevoItem/key", this.state.unItem, nuevoItem),
+   
+    ); 
+    // console.log("evento", `${e.target.name}:${e.target.value}`);
   };
 
   event = (e) => {
     e.preventDefault();
   };
+  
+  eliminar = () => {
+    this.props.handleRemoveRow();
+    console.log("eliminar");
+  };
 
-  getImporte() {
-    this.props.getImporte();
-  }
   render = () => {
     return (
       <tr key={this.props.index}>
@@ -97,25 +91,21 @@ class PedidoItemsDos extends React.Component {
           <input
             style={{ backgroundColor: "#F5C765" }}
             type="text"
-            id={this.state.item.observaciones}
+            id={this.state.observaciones}
             name="observaciones"
             placeholder="observaciones"
-            // required
-            value={this.state.item.observaciones}
-            onChange={this.handleChange.bind(this)}
+            value={this.state.unItem.observaciones}
+            // defaultValue="Sin observaciones"
+            onChange={this.handleChange}
             className="form-control"
           ></input>
         </td>
-        <td>${this.state.item.importe}</td>
+        <td>${this.props.importe}</td>
         <td>
           {"  "}
-          <Button
-            color="info"
-            size="btn-xs"
-            onClick={() => this.guardar(this.props.productoId)}
-          >
-            <i className="fa fa-dot-circle-o">{""}</i>
-          </Button>
+          <Button color="danger" size="btn-xs" onClick={() => this.eliminar()}>
+            <i className="cui-trash icons font-1xl d-block mt-1"></i>
+          </Button>{" "}
         </td>
       </tr>
     );

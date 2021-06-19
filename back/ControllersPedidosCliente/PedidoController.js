@@ -7,27 +7,33 @@ const Pedido = models.Pedido;
 module.exports = {
   //usado devuelve id y crea seccion
   create: async (req, res) => {
-    console.log("req.body", req.body.seccion);
+    console.log("req.body", req.body.observaciones);
     const seccion = req.body.seccion;
     const codigoPedido = req.body.codigoPedido;
+    const observaciones = req.body.observaciones;
 
     const pedido = {
       seccion: seccion,
       codigoPedido: codigoPedido,
+      observaciones: observaciones,
       ItemsPedido: [],
     };
     return await Pedido.create(pedido)
       .then(function (pedido) {
-        console.log("pedido+++", pedido);
+        console.log("pedido+++", pedido.observaciones);
         pedido.save();
         let id = pedido.id;
         let seccion = pedido.seccion;
+        let observaciones = pedido.observaciones;
         let codigoPedido = pedido.codigoPedido;
+
         return res.json({
           message: "se guardo el pedido",
           id,
           seccion,
+          observaciones,
           codigoPedido,
+
         });
       })
       .catch(function (error) {
@@ -35,25 +41,54 @@ module.exports = {
       });
   },
 
-  //usado
-  addPedidoItem: async (req, res) => {
-    var pedido = await Pedido.findOne({
-      where: { id: req.params.id },
-    });
-    console.log("id", pedido.id);
+  //usado no tiene que buscar solo seetear el id sacar var pedido
+  // settearPedidoYProductoAItem: async (req, res) => {
+  //   var pedido = await Pedido.findOne({
+  //     where: { id: req.params.id },
+  //   });
+  //   console.log("id", pedido.id);
+  //   var producto = await Producto.findOne({
+  //     where: { descripcion: req.params.descripcion },
+  //   });
+  //   var item = await ItemsPedido.create({
+  //     codigo: req.body.codigo,
+  //     pedidoId: pedido.id,
+  //     productoId: producto.id,
+  //     cantidad: req.body.cantidad,
+  //     precioUnitario: req.body.precioUnitario,
+  //     importe: req.body.importe,
+  //     observaciones: req.body.observaciones,
+  //   });
+  //   return res.status(200).json(item);
+  // },
+  //usado en tabla pedido
+  settearPedidoYProductoAItem: async (req, res) => {
+    let id = req.params.id
+    console.log("id", id);
     var producto = await Producto.findOne({
       where: { descripcion: req.params.descripcion },
     });
-    var item = await ItemsPedido.create({
+    const item = {
       codigo: req.body.codigo,
-      pedidoId: pedido.id,
+      pedidoId: id,
       productoId: producto.id,
       cantidad: req.body.cantidad,
       precioUnitario: req.body.precioUnitario,
       importe: req.body.importe,
       observaciones: req.body.observaciones,
-    });
-    return res.status(200).json(item);
+    };
+    return await ItemsPedido.create(item)
+      .then(function (item) {
+        console.log("item+++", item);
+        item.save();
+        return res.status(200).json({
+          message: "se guardo el item",
+          item,
+        });
+      })
+      .catch(function (error) {
+        console.log("item", error);
+      });
   },
   //usado revisar
   guardarPedidoId: async (req, res) => {
@@ -174,6 +209,7 @@ module.exports = {
       return res.status(200).json(pedidosConItems);
     }
   },
+  //bien usado
   getIdPedido: async (req, res) => {
     var pedido = await Pedido.findOne({
       where: { id: req.params.id },
