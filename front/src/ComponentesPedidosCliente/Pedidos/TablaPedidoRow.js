@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Collapse } from "reactstrap";
 import { limpiar } from "./funciones"
-class Pedido extends React.Component {
+class TablaPedidoRow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -14,7 +14,7 @@ class Pedido extends React.Component {
       //   { id: 2, name: "Carpa" },
       // ],
       secciones:props.secciones,
-      // seccion:"",
+      seccion:props.seccion,
       pedido: props.pedido,
       pedidos: props.pedidos,
       unPedido:props.unPedido,
@@ -23,6 +23,8 @@ class Pedido extends React.Component {
     };
     this.handleChangeSeccion = this.handleChangeSeccion.bind(this);
     this.limpiar = this.limpiar.bind(this)
+    this.seccionesComponent=React.createRef()
+
   }
 
   componentWillMount = () => {
@@ -80,9 +82,9 @@ class Pedido extends React.Component {
     var nuevoPedido = Object.assign({}, this.state.unPedido);
     nuevoPedido[e.target.name] = e.target.value;
     unPedido = nuevoPedido 
-    if(this.props.confirmar == true){
+    // if(this.props.confirmar == true){
       this.props.limpiarSeccion(nuevoPedido)
-      }
+      // }
     this.setState({ unPedido: unPedido }
     ,() => console.log("nuevoPedido/handle", this.state.unPedido, nuevoPedido),
     this.props.envioDePedido(nuevoPedido.seccion
@@ -179,7 +181,6 @@ class Pedido extends React.Component {
     let secciones = this.state.secciones;
     return (
       <tr onSubmit={this.props.handleEvent}>
-        <td>{this.state.codigoPedido}</td>
         <td>
           <input
             type="text"
@@ -204,7 +205,7 @@ class Pedido extends React.Component {
             type="text"
             id="seccion"
             name="seccion"
-            value={this.state.unPedido.seccion}
+            value={this.state.seccion}
             // ref={this.state.refSeccion}
             onChange={this.handleChangeSeccion}
             list="secciones"
@@ -214,7 +215,7 @@ class Pedido extends React.Component {
             onSubmit={this.event}
           // required={true}
           />
-          <datalist id="secciones" autoComplete="on">
+          <datalist ref={this.seccionesComponent} value={this.state.seccion} id="secciones" autoComplete="on">
             {secciones.map((seccion, index) => {
               return (
                 <option key={index} id={seccion.id} value={seccion.name} />
@@ -222,7 +223,6 @@ class Pedido extends React.Component {
             })}
           </datalist>
         </td>
-        <td>hora</td>
         {/* <td>{this.props.pedido.habilitado? "si":"no"}</td> */}
         <td>
           <Button color="danger" size="btn-xs" onClick={() => this.limpiar()}>
@@ -235,4 +235,4 @@ class Pedido extends React.Component {
   };
 }
 
-export default Pedido;
+export default TablaPedidoRow;

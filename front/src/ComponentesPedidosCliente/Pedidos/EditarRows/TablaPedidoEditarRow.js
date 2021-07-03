@@ -1,11 +1,10 @@
 import React from "react";
 import { Button, Collapse } from "reactstrap";
 import { limpiar } from "../funciones"
-class PedidoEditar extends React.Component {
+class TablaPedidoEditarRow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      toogle: this.props.toggle,
       nombre: "",
       responsablesDeMesa: [],
       responsable: {},
@@ -14,27 +13,34 @@ class PedidoEditar extends React.Component {
         { id: 2, name: "Carpa" },
       ],
       seccion: "",
-      pedido: props.pedido,
+      pedido: props.pedido || {},
       pedidos: props.pedidos,
-      codigoPedido: props.codigoPedido,
+      nuevoPedido:props.nuevoPedido
     };
-    this.handleChangeSeccion = this.handleChangeSeccion.bind(this);
+    this.input = React.createRef();
     this.limpiar = this.limpiar.bind(this)
   }
 
   componentWillMount = () => {
     this.listadoResponsablesDeMesa();
     this.setState({
+      pedido:this.state.pedido,
       secciones: this.state.secciones,
       seccion: this.state.seccion,
     });
   };
 
-  toggle = () => {
-    this.setState({
-      modal: !this.state.modal,
-    });
-  };
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (nextProps.pedidos !== this.props.pedidos) {
+      this.setState({ pedidos: this.props.pedidos });
+    }
+    if (nextProps.pedido !== this.props.pedido) {
+      this.setState({ pedido: nextProps.pedido });
+    }
+ 
+  }
+
+
   verDetallesResponsable(nombre) {
     var listaActualizada = this.state.responsablesDeMesa.filter(
       (item) => nombre == item.nombre
@@ -56,11 +62,25 @@ class PedidoEditar extends React.Component {
     this.setState(
       {
         pedido: nuevoPedido,
-        seccion: nuevoPedido.seccion,
+        seccion:nuevoPedido.seccion
       },
-      this.props.envioDePedido(nuevoPedido.seccion, this.state.secciones)
     );
-
+  };
+  handleChangeObservaciones = (e) => {
+    var nuevoPedido = Object.assign({}, this.state.pedido);
+    nuevoPedido[e.target.name] = e.target.value;
+    this.setState(
+      {
+        pedido: nuevoPedido,
+        observaciones:nuevoPedido.observaciones
+      },
+    );
+  };
+  handleChange = (e) => {
+    const target = e.target;
+    const value = target.value;
+    const name = target.name;
+    // this.setState({ [name]: value });
   };
 
   handleSubmitResponsable = (e) => {
@@ -96,17 +116,7 @@ class PedidoEditar extends React.Component {
       );
   };
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.pedidos !== this.props.pedidos) {
-      this.setState({ pedidos: this.props.pedidos });
-    }
-    if (nextProps.pedido !== this.props.pedido) {
-      this.setState({ pedido: nextProps.pedido });
-    }
-    if (nextProps.codigoPedido !== this.props.codigoPedido) {
-      this.setState({ codigoPedido: nextProps.codigoPedido });
-    }
-  }
+ 
 
   limpiar = () => {
     document.getElementById("nombre").value = "";
@@ -121,21 +131,11 @@ class PedidoEditar extends React.Component {
     return (
       <tr>
         <td><input
-          key="codigoPedido"
-          type="text"
-          id="codigoPedido"
-          name="codigoPedido"
-          value={this.state.codigoPedido}
-          // onChange={this.handleChange}
-          className="form-control"
-          autoComplete="true"
-        /></td>
-        <td><input
           key="responsableDeMesa"
           type="text"
           id="responsableDeMesa"
           name="responsableDeMesa"
-          value={this.state.responsableDeMesa}
+          value={this.state.responsablesDeMesa}
           // onChange={this.handleChange}
           className="form-control"
           autoComplete="true"
@@ -145,13 +145,24 @@ class PedidoEditar extends React.Component {
           type="text"
           id="seccion"
           name="seccion"
-          value={this.state.seccion}
-          onChange={this.handleChangeSeccion}
+          value={this.props.pedido.seccion}
+          ref={this.input}
+          defaultValue={this.props.pedido.seccion}
+          onChange={this.handleChange}
           className="form-control"
-          autoComplete="true"
         /></td>
-        <td>hora</td>
-        {/* <td>{this.props.pedido.habilitado? "si":"no"}</td> */}
+        <td><input
+          key="observaciones"
+          type="text"
+          id="observaciones"
+          name="observaciones"
+          value={this.props.pedido.observaciones}
+          ref={this.input}
+          defaultValue={this.props.pedido.observaciones}
+          onChange={this.handleChangeObservaciones}
+          className="form-control"
+        /></td>
+       
         <td>
           <Button color="danger" size="btn-xs" onClick={() => this.limpiar()}>
             <i className="cui-trash icons font-1xl d-block mt-1"></i>
@@ -163,4 +174,4 @@ class PedidoEditar extends React.Component {
   };
 }
 
-export default PedidoEditar;
+export default TablaPedidoEditarRow;

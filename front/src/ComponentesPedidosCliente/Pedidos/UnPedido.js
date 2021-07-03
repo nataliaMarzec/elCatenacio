@@ -1,5 +1,5 @@
 import React from "react";
-import Pedido from "./Pedido";
+import TablaPedidoRow from "./TablaPedidoRow";
 import CargarUnPedido from "./CargarUnPedido";
 import {
   Table,
@@ -170,7 +170,7 @@ class UnPedido extends React.Component {
     var unPedido = this.state.seleccionado;
     console.log("renderRows", unPedido);
     return (
-      <Pedido
+      <TablaPedidoRow
         key={unPedido.id}
         pedido={unPedido}
         pedidoSeleccionado={this.pedidoSeleccionado}

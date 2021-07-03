@@ -18,6 +18,11 @@ export default {
       icon: "icon-people",
     },
     {
+      name: "PedidosLista",
+      url: "/pedidosLista",
+      icon: "icon-people",
+    },
+    {
       name: "Pedidos",
       url: "/pedidos",
       icon: "icon-people",
@@ -27,6 +32,7 @@ export default {
       url: "/unPedido",
       icon: "icon-people",
     },
+
    
 
     // {

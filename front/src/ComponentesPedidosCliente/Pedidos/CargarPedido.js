@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Pedido from "./Pedido";
 import {
   Button,
   Card,
@@ -71,12 +70,10 @@ class CargarPedido extends React.Component {
   //   });
   // };
 
-  componentDidMount() {
-    this.props.listadoPedidos();
-    
-  }
 
   componentWillMount() {
+    this.props.listadoPedidos();
+    this.props.listadoItemsPedido();
     this.props.listadoProductos();
   }
   handleSubmit = (e) => {

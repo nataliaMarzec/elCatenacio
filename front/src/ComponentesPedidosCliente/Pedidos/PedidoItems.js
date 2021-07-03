@@ -26,9 +26,6 @@ class PedidoItems extends React.Component {
 
   }
  
-  listaItems() {
-    return this.state.listaItems;
-  }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.pedidos !== this.props.pedidos) {
@@ -44,7 +41,7 @@ class PedidoItems extends React.Component {
     }
     if (nextProps.listaItems !== this.props.listaItems) {
       this.setState({ listaItems: this.props.listaItems });
-      console.log("Items props", this.props.listaItems, nextProps.listaItems.values());
+      console.log("ListaItemsprops1", this.props.listaItems, nextProps.listaItems.values());
     }
     if (nextProps.unItem !== this.props.unItem) {
       this.setState({ unItem: nextProps.unItem });
@@ -97,8 +94,8 @@ class PedidoItems extends React.Component {
     var nuevoItem = Object.assign({}, this.state.unItem);
     nuevoItem[e.target.name] = e.target.value;
     unItem = nuevoItem
-    this.setState({ unItem: unItem, index: this.props.key }
-    ,() => console.log("nuevoItem/key", this.state.unItem, nuevoItem, this.props.key)
+    this.setState({ unItem: unItem}
+    ,() => console.log("nuevoItem/key", this.state.unItem, nuevoItem)
     );
     this.props.calcular(unItem)
     // console.log("evento", `${e.target.name}:${e.target.value}`);
@@ -130,8 +127,7 @@ class PedidoItems extends React.Component {
     // return this.props.items.map((unItem, index) => {
     return (
       <tr key={this.props.key}>
-        <td>{this.state.codigo}</td>
-        {/* <td>{this.props.key}</td> */}
+        {/* <td>{this.state.codigo}</td> */}
         <td>{this.state.unItem.descripcion}</td>
         <td>
           <input

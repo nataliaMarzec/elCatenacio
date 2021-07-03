@@ -1,6 +1,7 @@
 "use strict";
 
 const { Pedido } = require("../SequelizeConnection");
+var moment = require('moment');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -25,6 +26,19 @@ module.exports = {
       observaciones: {
         type: Sequelize.STRING,
       },
+      entregado:Sequelize.BOOLEAN,
+      fecha:{
+        type:Sequelize.DATE,
+        get() {
+          return moment(this.getDataValue('fecha')).format('DD/MM/YYYY');
+      }
+      },
+      hora:{
+        type:Sequelize.DATE,
+        get() {
+          return moment(this.getDataValue('hora')).format('HH:mm');
+      }
+      }
     });
   },
   down: async (queryInterface, Sequelize) => {

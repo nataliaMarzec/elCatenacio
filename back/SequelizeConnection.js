@@ -1,4 +1,7 @@
 "use strict";
+const timezone = 'America/Argentina/Buenos_Aires';
+require('moment').tz.setDefault(timezone)
+
 
 require("dotenv").config();
 const Sequelize = require("sequelize");
@@ -21,10 +24,12 @@ const sequelize = process.env.DB_URL
         acquire: 30000,
         idle: 10000,
       },
+     
       tableOptions: {
         ENGINE: 'innodb',
-         // SET FOREIGN_KEY_CHECKS=0;
-      }
+      },
+      timezone: timezone
+      
      
     });
 

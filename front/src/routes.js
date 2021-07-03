@@ -32,14 +32,12 @@ const NuevoUsuario = React.lazy(() => import("./views/Usuarios/NuevoUsuario"));
 const Pedidos = React.lazy(() =>
   import("./ComponentesPedidosCliente/Pedidos/Pedidos")
 );
-const Pedido = React.lazy(() =>
-  import("./ComponentesPedidosCliente/Pedidos/Pedido")
+
+const PedidoItems = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/PedidoItems")
 );
-const PedidoItems=React.lazy(() =>
-import("./ComponentesPedidosCliente/Pedidos/PedidoItems")
-);
-const PedidoItemsDos=React.lazy(() =>
-import("./ComponentesPedidosCliente/Pedidos/PedidoItemsDos")
+const PedidoItemsDos = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/PedidoItemsDos")
 );
 const CargarPedido = React.lazy(() =>
   import("./ComponentesPedidosCliente/Pedidos/CargarPedido")
@@ -56,18 +54,29 @@ const UnPedidoRow = React.lazy(() =>
 const TablaPedido = React.lazy(() =>
   import("./ComponentesPedidosCliente/Pedidos/TablaPedido")
 );
-
-const PedidoItemsEditar=React.lazy(() =>
-import("./ComponentesPedidosCliente/Pedidos/EditarRows/PedidoItemsEditar")
-);
-const PedidoItemsDosEditar=React.lazy(() =>
-import("./ComponentesPedidosCliente/Pedidos/EditarRows/PedidoItemsDosEditar")
-);
-const PedidoEditar = React.lazy(() =>
-  import("./ComponentesPedidosCliente/Pedidos/EditarRows/PedidoEditar")
+const TablaPedidoRow = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/TablaPedidoRow")
 );
 
+const PedidoItemsEditar = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/EditarRows/PedidoItemsEditar")
+);
+const PedidoItemsDosEditar = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/EditarRows/PedidoItemsDosEditar")
+);
+const TablaPedidoEditarRow = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/EditarRows/TablaPedidoEditarRow")
+);
+const PlantillaPedido = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/PlantillaPedido")
+);
 
+const PedidosLista = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/PedidosLista")
+);
+const PedidosListaRow = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/PedidosListaRow")
+);
 const Clientes = React.lazy(() =>
   import("./ComponentesClientes/Clientes/Clientes")
 );
@@ -212,7 +221,6 @@ const routes = [
     name: "PedidoItemsDos",
     component: PedidoItemsDos,
   },
-
   {
     path: "/cargarPedidos",
     exact: false,
@@ -231,17 +239,14 @@ const routes = [
     name: "UnPedidoRow",
     component: UnPedidoRow,
   },
-
   {
     path: "/cargarUnPedido",
     exact: false,
     name: "CargarUnPedido",
     component: CargarUnPedido,
   },
-  { path: "./pedido", exact: false, name: "Pedido", component: Pedido },
-  { path: "./tablaPedido", exact: false, name: "TablaPedido", component:TablaPedido },
-
- 
+  { path: "./tablaPedido", exact: false, name: "TablaPedido", component: TablaPedido },
+  { path: "./tablaPedidoRow", exact: false, name: "TablaPedidoRow", component: TablaPedidoRow },
   {
     path: "/pedidoItemsEditar",
     exact: false,
@@ -256,8 +261,28 @@ const routes = [
     name: "PedidoItemsDosEditar",
     component: PedidoItemsDosEditar,
   },
-  { path: "./pedidoEditar", exact: false, name: "PedidoEditar", component: PedidoEditar },
-
+  { path: "./tablaPedidoEditarRow", exact: false, name: "TablaPedidoEditarRow", component: TablaPedidoEditarRow },
+  {
+    path: "/plantillaPedido",
+    exact: false,
+    key: "#plantillaPedido",
+    name: "PlantillaPedido",
+    component: PlantillaPedido,
+  },
+  {
+    path: "/pedidosLista",
+    exact: true,
+    key: "#pedidosLista",
+    name: "PedidosLista",
+    component: PedidosLista,
+  },
+  {
+    path: "/pedidosListaRow",
+    exact: false,
+    key: "#pedidosListaRow",
+    name: "PedidosListaRow",
+    component: PedidosListaRow,
+  },
 
 
   {

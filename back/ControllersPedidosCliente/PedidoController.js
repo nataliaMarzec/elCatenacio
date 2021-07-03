@@ -7,15 +7,20 @@ const Pedido = models.Pedido;
 module.exports = {
   //usado devuelve id y crea seccion
   create: async (req, res) => {
-    console.log("req.body", req.body.observaciones);
+    console.log("req.body", req.body.entregado,req.body.fecha);
     const seccion = req.body.seccion;
     const codigoPedido = req.body.codigoPedido;
     const observaciones = req.body.observaciones;
-
+    const entregado = req.body.entregado;
+    const fecha = req.body.fecha;
+    const hora = req.body.hora;
     const pedido = {
       seccion: seccion,
       codigoPedido: codigoPedido,
       observaciones: observaciones,
+      entregado: entregado,
+      fecha: fecha,
+      hora: hora,
       ItemsPedido: [],
     };
     return await Pedido.create(pedido)
@@ -26,13 +31,18 @@ module.exports = {
         let seccion = pedido.seccion;
         let observaciones = pedido.observaciones;
         let codigoPedido = pedido.codigoPedido;
-
+        let entregado = pedido.entregado;
+        let fecha = pedido.fecha;
+        let hora = pedido.hora;
         return res.json({
           message: "se guardo el pedido",
           id,
           seccion,
           observaciones,
           codigoPedido,
+          entregado,
+          fecha,
+          hora
 
         });
       })
@@ -126,13 +136,17 @@ module.exports = {
   },
 
   //probando
-  addConItems(req, res) {
-    let pedido = Pedido.create({
-      id: req.body.id,
-      codigoPedido: req.body.codigoPedido,
-      seccion: req.body.seccion,
-    }).save({ id: pedido.id });
-    let Id = pedido.id;
+  // addConItems(req, res) {
+  //   let pedido = Pedido.create({
+  //     id: req.body.id,
+  //     codigoPedido: req.body.codigoPedido,
+  //     seccion: req.body.seccion,
+  //     observaciones:req.body.observaciones,
+  //     entregado:req.body.entregado,
+  //     fecha = req.body.fecha,
+  //     hora = req.body.hora,
+  //   }).save({ id: pedido.id });
+  //   let Id = pedido.id;
     // let Id = Pedido.findOne({ id: pedido.id });
     //  items = ItemsPedido.findAll({
     //   where: { pedidoId: pedido.id },
@@ -163,12 +177,12 @@ module.exports = {
     //     ],
     //   } );
     // });
-    console.log("id", Id);
-    return res.status(200).json(Id);
+  //   console.log("id", Id);
+  //   return res.status(200).json(Id);
 
-    // .then((pedido) => res.status(201).send(pedido))
-    // .catch((error) => res.status(400).send(error));
-  },
+  //   // .then((pedido) => res.status(201).send(pedido))
+  //   // .catch((error) => res.status(400).send(error));
+  // },
 
   //funciona!
   encontrarPedidoConItems: async (req, res) => {
@@ -267,6 +281,10 @@ module.exports = {
               id: req.body.id || pedido.id,
               codigoPedido: req.body.codigoPedido || pedido.codigoPedido,
               seccion: req.body.seccion || pedido.seccion,
+              observaciones: req.body.observaciones || pedido.observaciones,
+              entregado: req.body.entregado || pedido.entregado,
+              fecha: req.body.fecha || pedido.fecha,
+              hora: req.body.hora || pedido.hora,
               ItemsPedido: req.body.ItemsPedido || pedido.ItemsPedido,
             },
             {
@@ -284,10 +302,10 @@ module.exports = {
             res.status(400).send(error);
           });
       })
-      .catch((error) => {
-        console.log(error);
-        res.status(400).send(error);
-      });
+      // .catch((error) => {
+      //   console.log(error);
+      //   res.status(400).send(error);
+      // });
   },
 
   delete: async (req, res) => {
@@ -372,15 +390,20 @@ module.exports = {
     }
   },
 
+  //falta actualizar hora y fecha
   update: async (req, res) => {
     const pedido = await Pedido.findByPk(req.params.id);
-    const { id, codigoPedido, seccion } = await pedido.update(req.body);
+    const { id, codigoPedido, seccion,observaciones,entregado,fecha,hora } = await pedido.update(req.body);
 
     return res
       .json({
         id,
         codigoPedido,
         seccion,
+        observaciones,
+        entregado,
+        fecha,
+        hora
       })
       .res.send(200, "pedido editado");
   },

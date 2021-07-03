@@ -12,17 +12,29 @@ class PedidoItemsDos extends React.Component {
       observaciones: null,
     };
     this.handleChange = this.handleChange.bind(this);
-    this.observaciones = this.observaciones.bind(this);
+    // this.observaciones = this.observaciones.bind(this);
   }
 
-  componentWillMount() {
-    this.setState({ listaItems: this.state.listaItems},
-      () => console.log("willListaItems", this.state.listaItems))
-    // this.observaciones(this.state.observaciones)
-  }
+  // componentWillMount() {
+  //   this.setState({ listaItems: this.state.listaItems}
+  //     ,()=>this.forceUpdate()
+  //     ,() => console.log("willListaItems2", this.state.listaItems)
+  //     )
+  //   // this.observaciones(this.state.observaciones)
+  // }
+  // componentDidUpdate(nextProps){
+  //   if(this.props.listaItems!== nextProps.listaItems){
+  //     this.setState({listaItems:this.props.listaItems}
+  //       ,console.log("updateListaItems2",this.props.listaItems,nextProps.listaItems,this.state.listaItems))
+  //   }
+  // }
  
 
   UNSAFE_componentWillReceiveProps(nextProps) {
+    if (nextProps.listaItems !== this.props.listaItems) {
+      this.setState({ listaItems:this.props.listaItems });
+      console.log("ListaITEMS2props", this.props.listaItems, nextProps.listaItems.values());
+    }
     if (nextProps.unItem !== this.props.unItem) {
       this.setState({ unItem: nextProps.unItem });
     }
@@ -44,34 +56,15 @@ class PedidoItemsDos extends React.Component {
     }
   }
 
-  observaciones = (value) => {
-     if (value === '' || value === null || value === undefined) {
-      this.setState({observaciones:null})
-      this.props.envioDeEstadoObservaciones(null);
-    } 
-      this.props.envioDeEstadoObservaciones(value);
-    
-  };
-
-  // handleChange = (e) => {
-  //   const target = e.target;
-  //   const value = target.value;
-  //   const name = target.name;
-  //   this.setState(
-  //     { [name]: value},
-  //     this.observaciones(value)
-  //   );
-  // };
   handleChange(e) {
     let unItem = this.state.unItem
     var nuevoItem = Object.assign({}, this.state.unItem);
     nuevoItem[e.target.name] = e.target.value;
     unItem = nuevoItem
-    this.setState({ unItem: unItem},
-      ()=>this.props.envioDeEstadoObservaciones(nuevoItem)
-    ,() => console.log("nuevoItem/key", this.state.unItem, nuevoItem),
-   
-    ); 
+    this.setState({ unItem: unItem}
+    ,() => console.log("nuevoItem/key", this.state.unItem, nuevoItem)
+    );
+    this.props.envioDeEstadoObservaciones(unItem) 
     // console.log("evento", `${e.target.name}:${e.target.value}`);
   };
 
@@ -79,8 +72,8 @@ class PedidoItemsDos extends React.Component {
     e.preventDefault();
   };
   
-  eliminar = () => {
-    this.props.handleRemoveRow();
+  eliminar = (unItem) => {
+    this.props.handleRemoveRow(unItem);
     console.log("eliminar");
   };
 
@@ -103,7 +96,7 @@ class PedidoItemsDos extends React.Component {
         <td>${this.props.importe}</td>
         <td>
           {"  "}
-          <Button color="danger" size="btn-xs" onClick={() => this.eliminar()}>
+          <Button color="danger" size="btn-xs" onClick={() => this.eliminar(this.state.unItem)}>
             <i className="cui-trash icons font-1xl d-block mt-1"></i>
           </Button>{" "}
         </td>
