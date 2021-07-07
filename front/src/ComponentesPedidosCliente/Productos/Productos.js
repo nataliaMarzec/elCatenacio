@@ -22,6 +22,7 @@ class Productos extends React.Component {
       modal: false,
       editable: false,
       titulo: "Nuevo",
+      mostrarTabla: false,
     };
   }
 
@@ -80,9 +81,8 @@ class Productos extends React.Component {
   //       );
   //   };
 
- 
-
   render(props) {
+    let mostrarTabla = this.state.mostrarTabla;
     return (
       <div className="container">
         <div></div>
@@ -108,25 +108,29 @@ class Productos extends React.Component {
           <Row>&nbsp;</Row>
         </Container>
         <div className="animated fadeIn">
-          <Row>
-            <Col xs="12" lg="12">
-              <Card>
-                <CardBody>
-                  <Table responsive bordered size="sm">
-                    <thead>
-                      <tr>
-                        <th>codigo</th>
-                        <th>descripcion</th>
-                        <th>precio</th>
-                        <th>habilitado</th>
-                      </tr>
-                    </thead>
-                    <tbody>{this.renderRows()}</tbody>
-                  </Table>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
+          {/* {Boolean(
+            this.state.productos.length>1 && ( */}
+              <Row>
+                <Col xs="12" lg="12">
+                  <Card>
+                    <CardBody>
+                      <Table responsive bordered size="sm">
+                        <thead>
+                          <tr>
+                            <th>codigo</th>
+                            <th>descripcion</th>
+                            <th>precio</th>
+                            <th>habilitado</th>
+                          </tr>
+                        </thead>
+                        <tbody>{this.renderRows()}</tbody>
+                      </Table>
+                    </CardBody>
+                  </Card>
+                </Col>
+              </Row>
+            {/* )
+          )} */}
         </div>
       </div>
     );

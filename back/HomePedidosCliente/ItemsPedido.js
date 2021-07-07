@@ -6,7 +6,7 @@ module.exports = function (sequelize, DataTypes) {
   const ItemsPedido = sequelize.define(
     "ItemsPedido",
     {
-      id: {
+      codigo: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
@@ -17,6 +17,7 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         foreignKey: true,
         type: DataTypes.INTEGER,
+        references: { model: "Pedidos", key: "id", constraints:false, },
       },
       productoId: {
         allowNull: true,
@@ -25,16 +26,11 @@ module.exports = function (sequelize, DataTypes) {
         references: { model: "Productos", key: "id" },
         onDelete: "CASCADE",
       },
-      cantidad:DataTypes.INTEGER,
-      importeTotal: DataTypes.INTEGER,
-      montoCobrado: DataTypes.INTEGER,
-      pagado: DataTypes.STRING,
-      //   status: {
-      //     type: DataTypes.ENUM('activo', 'inactivo'),
-      //     defaultValue: 'inactivo',
-      //     allowNull: false
-      // }
-      estado: DataTypes.STRING,
+      cantidad: {
+        type: DataTypes.INTEGER,
+      },
+      importe: DataTypes.INTEGER,
+      observaciones: DataTypes.STRING,
     },
 
     {

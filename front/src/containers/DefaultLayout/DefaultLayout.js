@@ -35,22 +35,22 @@ class DefaultLayout extends Component {
 
   render() {
     return (
-      <div className="app">
-        <AppHeader fixed>
-            <DefaultHeader onLogout={e=>this.signOut(e)}/>
+      <div className="app"  >
+        <AppHeader style={{ backgroundColor: "#441f4c" }} fixed>
+            <DefaultHeader  onLogout={e=>this.signOut(e)}/>
         </AppHeader>
-        <div className="app-body">
-          <AppSidebar fixed display="lg">
-            <AppSidebarHeader />
-            <AppSidebarForm />
-            <AppSidebarNav navConfig={navigation} {...this.props} router={router}/>
+        <div className="app-body" >
+          <AppSidebar style={{ backgroundColor: "#441f4c" }} fixed display="lg">
+            <AppSidebarHeader style={{ backgroundColor: "#441f4c" }} />
+            <AppSidebarForm style={{ backgroundColor: "#441f4c" }}/>
+            <AppSidebarNav style={{ backgroundColor: "#441f4c" }} navConfig={navigation} {...this.props} router={router}/>
             <AppSidebarFooter />
-            <AppSidebarMinimizer />
+            <AppSidebarMinimizer style={{ backgroundColor: "#ed1106" }} />
           </AppSidebar>
           <main className="main">
-            <AppBreadcrumb appRoutes={routes} router={router}/>
-            <Container fluid>
-                <Switch>
+            <AppBreadcrumb style={{ backgroundColor: "#ac7c54" }}  appRoutes={routes} router={router}/>
+            <Container  fluid>
+                <Switch >
                   {routes.map((route, idx) => {
                     return route.component ? (
                       <Route
@@ -67,11 +67,11 @@ class DefaultLayout extends Component {
                 </Switch>
             </Container>
           </main>
-          <AppAside fixed>
-              <DefaultAside />
+          <AppAside style={{ backgroundColor: "#9d6e47" }} fixed>
+              <DefaultAside     style={{ backgroundColor: "#ac7c54" }} />
           </AppAside>
         </div>
-        <AppFooter>
+        <AppFooter style={{ backgroundColor: "#a18065" }}>
             <DefaultFooter />
         </AppFooter>
       </div>

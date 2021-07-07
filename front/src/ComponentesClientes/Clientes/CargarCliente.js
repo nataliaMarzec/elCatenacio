@@ -34,6 +34,10 @@ class CargarCliente extends React.Component {
       },
     });
   };
+  componentDidMount(){
+    this.props.listadoClientes();
+    console.log("CLIENTES",this.state.clientes)
+  }
 
   handleSubmit = (event) => {
     const id = this.state.cliente.id;

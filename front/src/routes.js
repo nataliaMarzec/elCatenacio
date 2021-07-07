@@ -32,8 +32,12 @@ const NuevoUsuario = React.lazy(() => import("./views/Usuarios/NuevoUsuario"));
 const Pedidos = React.lazy(() =>
   import("./ComponentesPedidosCliente/Pedidos/Pedidos")
 );
-const Pedido = React.lazy(() =>
-  import("./ComponentesPedidosCliente/Pedidos/Pedido")
+
+const PedidoItems = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/PedidoItems")
+);
+const PedidoItemsDos = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/PedidoItemsDos")
 );
 const CargarPedido = React.lazy(() =>
   import("./ComponentesPedidosCliente/Pedidos/CargarPedido")
@@ -47,7 +51,32 @@ const UnPedido = React.lazy(() =>
 const UnPedidoRow = React.lazy(() =>
   import("./ComponentesPedidosCliente/Pedidos/UnPedidoRow")
 );
+const TablaPedido = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/TablaPedido")
+);
+const TablaPedidoRow = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/TablaPedidoRow")
+);
 
+const PedidoItemsEditar = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/EditarRows/PedidoItemsEditar")
+);
+const PedidoItemsDosEditar = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/EditarRows/PedidoItemsDosEditar")
+);
+const TablaPedidoEditarRow = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/EditarRows/TablaPedidoEditarRow")
+);
+const PlantillaPedido = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/PlantillaPedido")
+);
+
+const PedidosLista = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/PedidosLista")
+);
+const PedidosListaRow = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/PedidosListaRow")
+);
 const Clientes = React.lazy(() =>
   import("./ComponentesClientes/Clientes/Clientes")
 );
@@ -179,6 +208,20 @@ const routes = [
     component: Pedidos,
   },
   {
+    path: "/pedidoItems",
+    exact: false,
+    key: "#pedidoItems",
+    name: "PedidoItems",
+    component: PedidoItems,
+  },
+  {
+    path: "/pedidoItemsDos",
+    exact: false,
+    key: "#pedidoItemsDos",
+    name: "PedidoItemsDos",
+    component: PedidoItemsDos,
+  },
+  {
     path: "/cargarPedidos",
     exact: false,
     name: "CargarPedido",
@@ -188,21 +231,59 @@ const routes = [
     path: "/unPedido",
     exact: true,
     name: "UnPedido",
-    component:UnPedido,
-  },  
+    component: UnPedido,
+  },
   {
     path: "/unPedidoRow",
     exact: false,
     name: "UnPedidoRow",
-    component:UnPedidoRow,
-  },  
-{
+    component: UnPedidoRow,
+  },
+  {
     path: "/cargarUnPedido",
     exact: false,
     name: "CargarUnPedido",
     component: CargarUnPedido,
-  },  
-  { path: "./pedido", exact: false, name: "Pedido", component: Pedido },
+  },
+  { path: "./tablaPedido", exact: false, name: "TablaPedido", component: TablaPedido },
+  { path: "./tablaPedidoRow", exact: false, name: "TablaPedidoRow", component: TablaPedidoRow },
+  {
+    path: "/pedidoItemsEditar",
+    exact: false,
+    key: "#pedidoItemsEditar",
+    name: "PedidoItemsEditar",
+    component: PedidoItemsEditar,
+  },
+  {
+    path: "/pedidoItemsDosEditar",
+    exact: false,
+    key: "#pedidoItemsDosEditar",
+    name: "PedidoItemsDosEditar",
+    component: PedidoItemsDosEditar,
+  },
+  { path: "./tablaPedidoEditarRow", exact: false, name: "TablaPedidoEditarRow", component: TablaPedidoEditarRow },
+  {
+    path: "/plantillaPedido",
+    exact: false,
+    key: "#plantillaPedido",
+    name: "PlantillaPedido",
+    component: PlantillaPedido,
+  },
+  {
+    path: "/pedidosLista",
+    exact: true,
+    key: "#pedidosLista",
+    name: "PedidosLista",
+    component: PedidosLista,
+  },
+  {
+    path: "/pedidosListaRow",
+    exact: false,
+    key: "#pedidosListaRow",
+    name: "PedidosListaRow",
+    component: PedidosListaRow,
+  },
+
 
   {
     path: "/clientes",

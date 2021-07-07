@@ -15,7 +15,7 @@ class DefaultFooter extends Component {
 
     return (
       <React.Fragment>
-        <span className="ml-auto">Powered by <a href="https://github.com/nataliaMarzec/combapp8">Combapp TTIP</a></span>
+        <span className="ml-auto">Powered by <a href="https://github.com/nataliaMarzec/elCatenacio">El Catenacio TTIP</a></span>
       </React.Fragment>
     );
   }

@@ -136,7 +136,8 @@ class Clientes extends React.Component {
         </div>
       );
     });
-   
+    console.log("listaCuitCliente", listaCuitCliente);
+
     return (
       <div className="container">
         <div></div>
@@ -160,73 +161,77 @@ class Clientes extends React.Component {
           <Row>&nbsp;</Row>
         </Container>
         <div className="animated fadeIn">
-          <Row>
-            <Col xs="12" lg="12">
-              <Card>
-                <CardHeader>
-                  <i className="fa fa-align-justify"></i> Clientes Lista
-                </CardHeader>
-                <CardHeader>
-                  <Form onSubmit={this.handleSubmit} id="formulario">
-                    <FormGroup row>
-                      <Col xs="12" md="9">
-                        <Input
-                          type="number"
-                          id="cuit"
-                          name="cuit"
-                          placeholder="Elegir cuit"
-                          onChange={this.handleChange}
-                          list="cliente"
-                        />
-                      </Col>
-                      <datalist id="cliente">{listaCuitCliente}</datalist>
-                    </FormGroup>
-                    <div className="row">
-                      <div className="input-field col s12 m12">
-                        <Button
-                          type="button"
-                          style={{ margin: "2px" }}
-                          color="info"
-                          outline
-                          onClick={() =>
-                            this.verDetallesCliente(this.state.cuit)
-                          }
-                        >
-                          <i className="fa fa-dot-circle-o"></i>Ver detalles de
-                          cliente
-                        </Button>
-                        <Button
-                          type="button"
-                          style={{ margin: "2px" }}
-                          color="success"
-                          outline
-                          onClick={this.limpiarTabla}
-                        >
-                          <i className="fa fa-dot-circle-o"></i>Ver clientes
-                        </Button>
-                      </div>
-                    </div>
-                  </Form>
-                </CardHeader>
-                <CardBody>
-                  <Table responsive bordered size="sm">
-                    <thead>
-                      <tr>
-                        <th>ID</th>
-                        <th>cuit</th>
-                        <th>nombre</th>
-                        <th>apellido</th>
-                        <th>dirección</th>
-                        <th>telefono</th>
-                        <th>email</th>
-                      </tr>
-                    </thead>
-                    <tbody>{this.renderRows()}</tbody>
-                  </Table>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
+          {/* {Boolean(
+            this.state.clientes.length ? */}
+              <Row>
+                <Col xs="12" lg="12">
+                  <Card>
+                    <CardHeader>
+                      <i className="fa fa-align-justify"></i> Clientes Lista
+                    </CardHeader>
+                    <CardHeader>
+                      <Form onSubmit={this.handleSubmit} id="formulario">
+                        <FormGroup row>
+                          <Col xs="12" md="9">
+                            <Input
+                              type="number"
+                              id="cuit"
+                              name="cuit"
+                              placeholder="Elegir cuit"
+                              onChange={this.handleChange}
+                              list="cliente"
+                            />
+                          </Col>
+                          <datalist id="cliente">{listaCuitCliente}</datalist>
+                        </FormGroup>
+                        <div className="row">
+                          <div className="input-field col s12 m12">
+                            <Button
+                              type="button"
+                              style={{ margin: "2px" }}
+                              color="info"
+                              outline
+                              onClick={() =>
+                                this.verDetallesCliente(this.state.cuit)
+                              }
+                            >
+                              <i className="fa fa-dot-circle-o"></i>Ver detalles
+                              de cliente
+                            </Button>
+                            <Button
+                              type="button"
+                              style={{ margin: "2px" }}
+                              color="success"
+                              outline
+                              onClick={this.limpiarTabla}
+                            >
+                              <i className="fa fa-dot-circle-o"></i>Ver clientes
+                            </Button>
+                          </div>
+                        </div>
+                      </Form>
+                    </CardHeader>
+                    <CardBody>
+                      <Table responsive bordered size="sm">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>cuit</th>
+                            <th>nombre</th>
+                            <th>apellido</th>
+                            <th>dirección</th>
+                            <th>telefono</th>
+                            <th>email</th>
+                          </tr>
+                        </thead>
+                        <tbody>{this.renderRows()}</tbody>
+                      </Table>
+                    </CardBody>
+                  </Card>
+                </Col>
+              </Row>
+            {/* :<h1>hola</h1>
+          )} */}
         </div>
       </div>
     );

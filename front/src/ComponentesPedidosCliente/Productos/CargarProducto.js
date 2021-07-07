@@ -122,6 +122,7 @@ class CargarProducto extends React.Component {
                     <CardText></CardText>
                   </CardBody>
                 </Card>
+                
 
                 <CardBody>
                   <FormGroup row>
@@ -136,6 +137,22 @@ class CargarProducto extends React.Component {
                         placeholder="Completa Código..."
                         required={true}
                         value={this.state.producto.codigo}
+                        onChange={this.handleChange}
+                      />
+                    </Col>
+                  </FormGroup>
+                  <FormGroup row>
+                    <Col md="3">
+                      <Label for="descripcion">Descripción</Label>
+                    </Col>
+                    <Col xs="12" md="9">
+                      <Input
+                        type="text"
+                        id="descripcion"
+                        name="descripcion"
+                        placeholder="Completa descripción..."
+                        required={false}
+                        value={this.state.producto.descripcion}
                         onChange={this.handleChange}
                       />
                     </Col>

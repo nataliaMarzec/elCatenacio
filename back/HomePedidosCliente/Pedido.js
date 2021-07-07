@@ -1,5 +1,6 @@
 "use strict";
 const { models } = require("../SequelizeConnection");
+var moment = require('moment');
 
 module.exports = function (sequelize, DataTypes) {
   const Pedido = sequelize.define(
@@ -10,15 +11,29 @@ module.exports = function (sequelize, DataTypes) {
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
-        unique:true,
+
       },
-      clienteId_pedido: {
+      clienteId: {
         foreignKey: true,
         type: DataTypes.INTEGER,
       },
       codigoPedido: DataTypes.INTEGER,
-      mesero: DataTypes.STRING,
       seccion: DataTypes.STRING,
+      observaciones: DataTypes.STRING,
+      entregado: DataTypes.BOOLEAN,
+      fecha: {
+        type: DataTypes.DATE,
+        get() {
+          return moment(this.getDataValue('fecha')).format('DD/MM/YYYY');
+        }
+      },
+      hora: {
+        type: DataTypes.DATE,
+        get() {
+          return moment(this.getDataValue('hora')).format('HH:mm');
+        }
+      }
+
     },
 
     {
@@ -26,15 +41,6 @@ module.exports = function (sequelize, DataTypes) {
       modelName: "Pedidos",
     }
   );
-  Pedido.associate = () => {
-    Pedido.belongsTo(models.Cliente);
-
-    // Pedido.belongsToMany(models.Producto, {
-    //   through: "RegistroPedidoProducto",
-    //   as: "productos",
-    //   foreignKey: "productoFk"
-    // });
-  };
 
   return Pedido;
 };

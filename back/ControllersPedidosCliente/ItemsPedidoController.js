@@ -8,14 +8,13 @@ module.exports = {
   //bien
   create: (async = (req, res) => {
     return ItemsPedido.create({
-      id: req.body.id,
+      codigo: req.body.codigo,
       pedidoId: req.body.pedidoId,
       productoId: req.body.productoId,
       cantidad: req.body.cantidad,
       precioUnitario: req.body.precioUnitario,
-      importeTotal: req.body.importeTotal,
-      montoCobrado: req.body.montoCobrado,
-      pagado: req.body.pagado,
+      importe: req.body.importe,
+      observaciones: req.body.observaciones,
     })
       .then((item) => res.status(201).send(item))
       .catch((error) => res.status(400).send(error));
@@ -24,23 +23,21 @@ module.exports = {
   addConProducto(req, res) {
     return ItemsPedido.create(
       {
-      id: req.body.id,
-      pedidoId: req.body.pedidoId,
-      productoId: req.body.productoId,
-      cantidad: req.body.cantidad,
-      precioUnitario: req.body.precioUnitario,
-      importeTotal: req.body.importeTotal,
-      montoCobrado: req.body.montoCobrado,
-      pagado: req.body.pagado,
-      Productos: req.body.Productos,
- 
+        codigo: req.body.codigo,
+        pedidoId: req.body.pedidoId,
+        productoId: req.body.productoId,
+        cantidad: req.body.cantidad,
+        precioUnitario: req.body.precioUnitario,
+        importe: req.body.importe,
+        observaciones: req.body.observaciones,
+        Productos: req.body.Productos,
       },
       {
         include: [
           {
-            model:Productos,
+            model: Productos,
             as: "Productos",
-            where: { productoId:ItemsPedido.productoId },
+            where: { productoId: ItemsPedido.productoId },
           },
         ],
       }
@@ -52,7 +49,7 @@ module.exports = {
   //bien
   encontrarItemPorId: async (req, res) => {
     var item = await ItemsPedido.findOne({
-      where: { id: req.params.id },
+      where: { codigo: req.params.codigo },
       include: ["Productos"],
     });
     if (![req.body.values]) {
@@ -76,10 +73,11 @@ module.exports = {
     }
   },
 
+
   //bien no tocar
   addProducto: async (req, res) => {
     var item = await ItemsPedido.findOne({
-      where: { id: req.params.id },
+      where: { codigo: req.params.codigo },
       include: ["Productos"],
     });
     var prod = await item.Productos;
@@ -95,11 +93,106 @@ module.exports = {
     } else {
       return res.status(200).json({ err: "item ya tiene producto", item });
     }
+  },
+  //usado
+  buscarDescripcion: async (req, res) => {
+    return await Productos.findOne({
+      where: { descripcion: req.params.descripcion },
+    })
+      .then((producto) => {
+        var idp = producto.id;
+        if (producto) {
+          return res.status(200).send({
+            message: "idp",
+            idp,
+          });
+        }
+      })
+      .catch((error) =>
+        res.status(400).send({error,message: " no existe descripcion" })
+      );
+  },
+  //usado 2
+  getProductoAItem: async (req, res) => {
+    var pedido = await Pedidos.findOne({
+      where: { id: req.params.id },
+    });
+    var idPedido=pedido.id;
+    var producto = await Productos.findOne({
+      where: { descripcion: req.params.descripcion },
+    });
+    var idp = producto.id;
+    return ItemsPedido.create(
+      {
+        codigo: req.body.codigo,
+        pedidoId:pedido.id,
+        productoId: producto.id,
+        cantidad: req.body.cantidad,
+        precioUnitario: req.body.precioUnitario,
+        importe: req.body.importe,
+        observaciones: req.body.observaciones,
+      },
+      {
+        include: [
+          
+          {
+            model: Productos,
+            as: "Productos",
+          },
+        ],
+      }
+    )
+      .then((item) => res.status(201).send(item))
+      .catch((error) => res.status(400).send(error));
+  },
+  //usado
+  updateCantidadItem: async (req, res) => {
+    var item = await ItemsPedido.findOne({
+      where: { productoId: req.params.productoId },
+    });
+    var itemCantidad = await item.update({
+      cantidad: req.body.cantidad,
+      pedidoId: req.body.pedidoId,
+    });
+    console.log("cantidad", itemCantidad.cantidad, "item", item, item.pedidoId);
+    return res.status(200).json(itemCantidad);
+  },
+  // updateCantidadItem: async (req, res) => {
+  //     var item = await ItemsPedido.findOne({
+  //       where: { productoId: req.params.productoId },
+  //     });
+  //     var itemCantidad = await item.update({
+  //       cantidad: req.body.cantidad,
+  //       pedidoId: req.body.pedidoId,
+  //     });
+  //     console.log("cantidad", itemCantidad.cantidad, "item", item,item.pedidoId);
+  //     return res.status(200).json(itemCantidad);
+  //   },
+
+  //usado
+  updateImporteItem: async (req, res) => {
+    var item = await ItemsPedido.findOne({
+      where: { productoId: req.params.productoId },
+    });
+    var itemImporte = await item.update({ importe: req.params.importe });
+    console.log("importe", itemImporte.importe, "item", item);
+    return res.status(200).json(itemImporte);
+  },
+  //usado
+  updateObservaciones: async (req, res) => {
+    var item = await ItemsPedido.findOne({
+      where: { productoId: req.params.productoId },
+    });
+    var itemObservaciones = await item.update({
+      observaciones: req.body.observaciones,
+    });
+    console.log("observaciones", itemObservaciones.observaciones, "item", item);
+    return res.status(200).json(itemObservaciones);
   },
 
   updateProducto: async (req, res) => {
     var item = await ItemsPedido.findOne({
-      where: { id: req.params.id },
+      where: { codigo: req.params.codigo },
       include: ["Productos"],
     });
     var prod = await item.Productos;
@@ -117,8 +210,7 @@ module.exports = {
     }
   },
 
-
-  //bien
+  //usado
   todosLosItems(req, res) {
     return ItemsPedido.findAll({
       include: [
@@ -151,37 +243,35 @@ module.exports = {
 
   //bien con onUpdate=SET NULL
   update: async (req, res) => {
-    const item = await ItemsPedido.findByPk(req.params.id, {
+    const item = await ItemsPedido.findOne(req.params.codigo, {
       include: ["Pedidos", "Productos"],
     });
     const {
-      id,
+      codigo,
       pedidoId,
       productoId,
       cantidad,
       precioUnitario,
-      importeTotal,
-      montoCobrado,
-      pagado,
+      importe,
+      observaciones,
     } = await item.update(req.body);
 
     return res
       .json({
-        id,
+        codigo,
         pedidoId,
         productoId,
         cantidad,
         precioUnitario,
-        importeTotal,
-        montoCobrado,
-        pagado,
+        importe,
+        observaciones,
       })
       .res.send(200, "item editado");
   },
   //bien
   updatePorId(req, res) {
     return ItemsPedido.findOne(
-      { where: { id: req.params.id } },
+      { where: { codigo: req.params.codigo } },
       {
         include: [
           {
@@ -199,14 +289,13 @@ module.exports = {
         }
         return item
           .update({
-            id: req.body.id,
+            codigo: req.body.codigo,
             pedidoId: req.body.pedidoId,
             productoId: req.body.productoId,
             cantidad: req.body.cantidad,
             precioUnitario: req.body.precioUnitario,
-            importeTotal: req.body.importeTotal,
-            montoCobrado: req.body.montoCobrado,
-            pagado: req.body.pagado,
+            importe: req.body.importe,
+            observaciones: req.body.observaciones,
           })
           .then(() => res.status(200).send(item))
           .catch((error) => res.status(400).send(error));
@@ -215,7 +304,10 @@ module.exports = {
   },
 
   delete(req, res) {
-    return ItemsPedido.findOne({ where: { id: req.params.id },include:["Productos"] })
+    return ItemsPedido.findOne({
+      where: { codigo: req.params.codigo },
+      include: ["Productos"],
+    })
       .then((item) => {
         if (!item) {
           return res.status(400).send({

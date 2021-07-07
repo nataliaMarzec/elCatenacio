@@ -28,8 +28,6 @@ class Producto extends React.Component {
     this.props.toggle();
   }
 
-
-
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.productos !== this.props.productos) {
       this.setState({ productos: this.props.productos });
@@ -66,7 +64,6 @@ class Producto extends React.Component {
           </Button>
           &nbsp;&nbsp;
           <Button
-            className="btn #e65100 orange darken-4"
             // onClick={}
             color="info"
           >

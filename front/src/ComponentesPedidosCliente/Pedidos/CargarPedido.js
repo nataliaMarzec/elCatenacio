@@ -1,5 +1,4 @@
-import React from "react";
-import Pedido from "./Pedido";
+import React, { useState } from "react";
 import {
   Button,
   Card,
@@ -17,7 +16,9 @@ import {
   ModalFooter,
   Row,
 } from "reactstrap";
+
 import { AppSwitch } from "@coreui/react";
+
 // import logo from "../assets/img/brand/logo.svg";
 class CargarPedido extends React.Component {
   constructor(props) {
@@ -25,84 +26,83 @@ class CargarPedido extends React.Component {
     this.state = {
       pedido: props.pedido || {},
       pedidos: props.pedidos || [],
-      productos: props.productos || [],
+      productos: props.productos||[],
       producto: props.producto || {},
+      listaProductosEnPedido:props.listaProductosEnPedido,
       cliente: props.cliente || {},
       modal: false,
       codigo: "",
-      menus: props.menus || [],
       descripcion: "",
-      items:[],
-      id:"",
+      items: [],
+      id: "",
     };
-    this.onSeleccion = this.onSeleccion.bind(this);
   }
 
   estadoInicial = () => {
     this.setState({
       pedido: {
+        clienteId: null,
         codigoPedido: "",
         mesero: "",
         seccion: "",
+        ItemsPedido: [
+          {
+            cantidad: 1,
+            importeTotal: 0,
+            observaciones:"",
+            Productos: {
+              descripcion: "",
+              precioUnitario: 0,
+            },
+          },
+        ],
       },
     });
   };
-
-  estadoInicialProducto = () => {
-    this.setState({
-      producto: {
-        codigo: "",
-        descripcion: "",
-        precio: 0,
-      },
-    });
-  };
-
-  componentDidMount() {
-    this.listadoProductos();
-  }
-
-  // componentWillMount() {
-  //   this.props.getDescripciones();
-  //   console.log("descripciones",this.state.menus)
-  // }
-
-  listadoProductos = () => {
-    fetch(`http://localhost:8383/productos`)
-      .then((res) => res.json())
-      .then(
-        (prods) => this.setState({ productos: prods, producto: {}, menus: [] }),
-        console.log("productoEnviado", this.state.productos, this.state.menus)
-      );
-  };
-  
-
  
+  // estadoInicial = () => {
+  //   this.setState({
+  //     pedido: {
+  //       codigoPedido: "",
+  //       mesero: "",
+  //       seccion: "",
+  //     },
+  //   });
+  // };
 
 
-  onSeleccion(e) {
-    let { name, value } = e.target;
-    let productos = [...this.state.productos];
-    let indice = productos.findIndex((el) => el.descripcion == name);
-    productos[indice].check = !productos[indice].check;
-    this.setState({
-      productos: [...productos],
-    });
+  componentWillMount() {
+    this.props.listadoPedidos();
+    this.props.listadoItemsPedido();
+    this.props.listadoProductos();
   }
+  handleSubmit = (e) => {
+    // const id = this.state.pedido.id;
+    // if (id) {
+    //   this.editarPedido(id);
+    // } else {
+    this.crearPedido();
+    // }
+    e.preventDefault(e);
+  };
+
+  crearPedido = () => {
+    fetch("http://localhost:8383/pedidos/", {
+      method: "post",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(this.state.pedido),
+    })
+      .then((res) => this.props.listadoPedidos())
+      .then((res) => this.estadoInicial());
+    console.log("CREARRRR", this.state.pedido);
+  };
 
   getPrecio = () => {
     var precio = this.state.pedido.precioUnitario;
     return precio;
-  };
-
-  handleSubmit = (e) => {
-    const id = this.state.pedido.id;
-    if (id) {
-      this.editarPedido(id);
-    } else {
-      this.crearPedido();  
-    }
-    e.preventDefault(e);
   };
 
   handleSubmitProducto = (e) => {
@@ -139,36 +139,10 @@ class CargarPedido extends React.Component {
     if (pedidoId) {
       fetch(`http://localhost:8383/itemsDePedido` + pedidoId)
         .then((res) => res.json())
-        .then((prods) => this.setState({id:pedidoId,items:prods }));
+        .then((prods) => this.setState({ id: pedidoId, items: prods }));
     }
-
   };
 
-
-  crearPedido = () => {
-    fetch("http://localhost:8383/pedidos/nuevo", {
-      method: "post",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(this.state.pedido),
-    })
-      .then((res) => this.props.listadoPedidos())
-      .then((res) => this.estadoInicial());
-      console.log("CREARRRR",this.state.pedido)
-  };
-
-  // agregarProductoAPedidos = (id) =>{
-  //   fetch(`http://localhost:8383/pedidos/producto/` +id, {
-  //     method: "PUT",
-  //     body: JSON.stringify(this.state.producto),
-  //     headers: {
-  //       Accept: "application/json",
-  //       "Content-Type": "application/json"
-  //     }
-  //   })
-  // }
 
   editarPedido = (id) => {
     fetch("http://localhost:8383/pedidos/" + id, {
@@ -183,21 +157,9 @@ class CargarPedido extends React.Component {
       .then(this.estadoInicial());
   };
 
+  
+ 
   render() {
-    var listaProductos = this.state.productos.map((producto) => {
-      return (
-        <div>
-          <option value={producto.codigo} />
-        </div>
-      );
-    });
-    var listaDescripciones = this.state.productos.map((producto) => {
-      return (
-        <div>
-          <options value={producto.descripcion} key={producto.descripcion} />
-        </div>
-      );
-    });
 
     return (
       <Col xs="12" md="12">
@@ -228,7 +190,7 @@ class CargarPedido extends React.Component {
                 <CardBody>
                   <FormGroup row>
                     <Col md="3">
-                      <Label for="codigoPedido">Código</Label>
+                      <Label for="codigoPedido">codigo</Label>
                     </Col>
                     <Col xs="12" md="9">
                       <Input
@@ -307,7 +269,7 @@ class CargarPedido extends React.Component {
                           list="producto"
                         />
                       </Col>
-                      <datalist id="producto">{listaProductos}</datalist>
+                      <datalist id="producto">{this.state.listaProductosEnPedido}</datalist>
                     </FormGroup>
                     <div className="row">
                       <div className="input-field col s12 m12">
@@ -351,7 +313,7 @@ class CargarPedido extends React.Component {
                         name="precioUnitario"
                         placeholder="Precio p/un. ..."
                         // required
-                        value={this.state.producto.precio}
+                        value={this.state.pedido.precio}
                         onChange={this.handleChangeProducto}
                       />
                     </Col>
@@ -441,7 +403,8 @@ class CargarPedido extends React.Component {
     nuevoPedido[e.target.name] =
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
     this.setState({ pedido: nuevoPedido });
-    console.log("item handle change",this.state.pedido.ItemsPedido)
+    console.log("item handle change", this.state.pedido.ItemsPedido);
+    console.log("productos", this.state.productos);
   };
 
   handleChangeProducto = (e) => {

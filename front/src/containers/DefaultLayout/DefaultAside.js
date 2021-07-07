@@ -35,8 +35,8 @@ class DefaultAside extends Component {
     const { children, ...attributes } = this.props;
 
     return (
-      <React.Fragment>
-        <Nav tabs>
+      <React.Fragment >
+        <Nav tabs >
           <NavItem>
             <NavLink className={classNames({ active: this.state.activeTab === '1' })}
                      onClick={() => {

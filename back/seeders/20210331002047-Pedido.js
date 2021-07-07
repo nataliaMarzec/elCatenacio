@@ -1,6 +1,7 @@
 "use strict";
 
 const { Pedido } = require("../SequelizeConnection");
+let date=new Date();
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -8,26 +9,33 @@ module.exports = {
       "Pedidos",
       [
         {
-          // pedidoId:60,
           codigoPedido: 123,
-          mesero:"Oscar Lopez",
-          seccion:"carpa",
+          seccion: "carpa",
+          observaciones: "cambio de domicilio",
+          entregado: true,
+          fecha: new Date("06/01/2021"),
+          hora: new Date(date.setHours(16,43)),
           createdAt: new Date(),
           updatedAt: new Date(),
+
         },
         {
-          // pedidoId:61,
           codigoPedido: 124,
-          mesero:"Sofia Escudero",
-          seccion:"carpa",
+          seccion: "carpa",
+          observaciones: "nueva dirección",
+          entregado: false,
+          fecha: new Date("06/05/2021"),
+          hora: new Date(date.setHours(14,24)),
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
-          // pedidoId:62,
           codigoPedido: 125,
-          mesero:"David Escudero",
-          seccion:"carpa",
+          seccion: "carpa",
+          observaciones: "horario 22 hs",
+          entregado: true,
+          fecha: new Date("06/10/2021"),
+          hora: new Date(date.getHours(),date.getMinutes()),
           createdAt: new Date(),
           updatedAt: new Date(),
         },
