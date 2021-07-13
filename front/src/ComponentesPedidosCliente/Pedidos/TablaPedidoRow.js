@@ -5,95 +5,109 @@ class TablaPedidoRow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      toogle: this.props.toggle,
-      nombre: "",
-      responsablesDeMesa: [],
-      responsable: {},
-      // secciones: [
-      //   { id: 1, name: "Abierta" },
-      //   { id: 2, name: "Carpa" },
-      // ],
-      secciones:props.secciones,
-      seccion:props.seccion,
+      responsablesDeMesa: props.responsablesDeMesa,
+      responsable: props.responsable,
+      secciones: props.secciones,
+      seccion: props.seccion,
       pedido: props.pedido,
       pedidos: props.pedidos,
-      unPedido:props.unPedido,
-      codigoPedido: props.codigoPedido,
-      // refSeccion: props.refSeccion,
+      unPedido: props.unPedido,
+      nombre: props.nombre,
     };
     this.handleChangeSeccion = this.handleChangeSeccion.bind(this);
     this.limpiar = this.limpiar.bind(this)
-    this.seccionesComponent=React.createRef()
+    this.handleChangeResponsable = this.handleChangeResponsable.bind(this)
+    this.listaResponsables=this.listaResponsables.bind(this)
+    this.seccionesComponent = React.createRef()
 
   }
 
   componentWillMount = () => {
-    this.listadoResponsablesDeMesa();
+    this.props.listadoResponsables();
+    this.listaResponsables()
     this.setState({
+      responsablesDeMesa:this.state.responsablesDeMesa,
       secciones: this.state.secciones,
       seccion: this.state.seccion,
+      nombre: this.state.nombre,
+      id: this.state.id,
+      nomb: this.state.nomb,
     });
     // this.setState({ refSeccion: this.state.refSeccion })
   };
+  listadoResponsables = () => {
+    fetch(`http://localhost:8383/responsables`)
+      .then((res) => res.json())
+      .then((res) =>
+        this.setState({
+          responsablesDeMesa: res,
+          responsable: {},
+        })
+      );
+  };
   // componentDidMount() {
-    //  this.state.refSeccion.current.focus();
-    //  this.setState({refSeccion:this.state.refSeccion.current.value
-    //  ,confirmar:true},()=>console.log("refconvalue",this.state.refSeccion))
-    //  if(this.state.confirmar==true){
-    //    this.setState({seccion:""})
-    //  }
+  //  this.state.refSeccion.current.focus();
+  //  this.setState({refSeccion:this.state.refSeccion.current.value
+  //  ,confirmar:true},()=>console.log("refconvalue",this.state.refSeccion))
+  //  if(this.state.confirmar==true){
+  //    this.setState({seccion:""})
+  //  }
   // }
-  componentDidUpdate(prevProps) {
-    if (this.props.secciones !== prevProps.secciones) {
-      this.setState({secciones:this.props.secciones}
-        ,()=>console.log("updateSecciones",this.props.secciones));
-    }
-  }
   
 
-  toggle = () => {
-    this.setState({
-      modal: !this.state.modal,
-    });
-  };
+
   verDetallesResponsable(nombre) {
     var listaActualizada = this.state.responsablesDeMesa.filter(
-      (item) => nombre == item.nombre
+      (resp) => nombre == resp.nombre
     );
     this.setState({ responsablesDeMesa: listaActualizada });
   }
+
   handleChangeResponsable = (e) => {
     const target = e.target;
     const value = target.value;
     const name = target.name;
     this.setState({ [name]: value });
-    this.setState({ responsable: value });
-    // console.log("responsable", this.state.responsable, value);
+    this.setState({ nombre: value });
+    this.props.envioDeEstadoResponsable(value)
+    // console.log("responsable", this.state.nombre, value);
   };
-
-  limpiarSeccion(nuevoPedido){
-    if(this.props.confirmar == true){
-      this.props.limpiarSeccion(nuevoPedido)
-      }
-  }
 
   handleChangeSeccion(e) {
     let unPedido = this.state.unPedido
     var nuevoPedido = Object.assign({}, this.state.unPedido);
     nuevoPedido[e.target.name] = e.target.value;
-    unPedido = nuevoPedido 
-    // if(this.props.confirmar == true){
-      this.props.limpiarSeccion(nuevoPedido)
-      // }
+    unPedido = nuevoPedido
+    // this.props.limpiarSeccion(nuevoPedido)
     this.setState({ unPedido: unPedido }
-    ,() => console.log("nuevoPedido/handle", this.state.unPedido, nuevoPedido),
-    this.props.envioDePedido(nuevoPedido.seccion
-      , this.state.secciones)
+      , () => console.log("nuevoseccion/handle", this.state.unPedido, nuevoPedido),
+      this.props.envioDePedido(nuevoPedido.seccion)
     );
-   
-    
     // console.log("evento", `${e.target.name}:${e.target.value}`);
   };
+
+  limpiarSeccion(nuevoPedido) {
+    if (this.props.confirmar == true) {
+      this.props.limpiarSeccion(nuevoPedido)
+    }
+  }
+
+  componentDidUpdate(nextProps){
+    if(nextProps.responsablesDeMesa != this.props.responsablesDeMesa){
+      this.setState({responsablesDeMesa:nextProps.responsablesDeMesa})
+    }
+    if(nextProps.responsable != this.props.responsable){
+      this.setState({responsable:nextProps.responsable})
+    }
+    if (nextProps.secciones !== this.props.secciones) {
+      this.setState({ secciones: nextProps.secciones }
+        , () => console.log("updateSecciones",nextProps.secciones));
+    }
+    if (nextProps.unPedido !== this.props.unPedido) {
+      this.setState({ unPedido: nextProps.unPedido }
+        , () => console.log("updateunPedido",nextProps.unPedido));
+    }
+  }
 
   // handleChangeSeccion = (e) => {
   //   var nuevoPedido = Object.assign({}, this.state.unPedido);
@@ -106,7 +120,7 @@ class TablaPedidoRow extends React.Component {
   //     ()=>console.log("handleEvent",this.state.seccion),
   //     this.props.envioDePedido(nuevoPedido.seccion
   //       , this.state.secciones)
-        
+
   //   );
   //   // this.props.handleEvent(e)
   // };
@@ -136,7 +150,7 @@ class TablaPedidoRow extends React.Component {
     }
   };
 
-  listadoResponsablesDeMesa = () => {
+  listadoResponsables = () => {
     fetch(`http://localhost:8383/responsables`)
       .then((res) => res.json())
       .then((resps) =>
@@ -157,7 +171,13 @@ class TablaPedidoRow extends React.Component {
     if (nextProps.secciones !== this.props.secciones) {
       this.setState({ secciones: nextProps.secciones });
     }
-
+    if (nextProps.responsablesDeMesa !== this.props.responsablesDeMesa) {
+      this.setState({ responsablesDeMesa: nextProps.responsablesDeMesa },
+        console.log("respDeMesa", this.props.responsablesDeMesa));
+    }
+    if (nextProps.nombre !== this.props.nombre) {
+      this.setState({ nombre: nextProps.nombre });
+    }
     // if (nextProps.confirmar !== this.props.confirmar) {
     //   this.setState({ confirmar: nextProps.confirmar });
     // }
@@ -169,16 +189,37 @@ class TablaPedidoRow extends React.Component {
   limpiar = () => {
     // if(this.state.seccion != null)
     document.getElementById("nombre").value = ""
-    this.listadoResponsablesDeMesa();
+    this.listadoResponsables();
     // this.setState({refSeccion:""})
-    // document.getElementById("seccion").value = ""
-    this.setState({ unPedido:{seccion:""}});
+    document.getElementById("seccion").value = ""
+    this.setState({ unPedido: { seccion: "" } });
     this.setState({ secciones: this.state.secciones });
   };
 
+  obtenerResponsable(resp) {
+    console.log("respObtener", resp)
+    return resp
+  }
 
+  listaResponsables(){
+    console.log("listaResponsables",this.props.responsablesDeMesa)
+    var listaResponsables = this.props.responsablesDeMesa.map((responsable) => {
+      return (
+        <div>
+          <option value={responsable.nombre} />
+        </div>
+      );
+    });
+    return listaResponsables;
+  }
+  
   render = () => {
     let secciones = this.state.secciones;
+    let resp = this.state.resp
+    let id = this.state.id
+    let nomb = this.state.nomb
+  
+    console.log("listarResponsablesMap", this.state.listaResponsables);
     return (
       <tr onSubmit={this.props.handleEvent}>
         <td>
@@ -191,21 +232,16 @@ class TablaPedidoRow extends React.Component {
             placeholder="Elige responsable"
             className="form-control"
           />
-
-          <datalist id="responsable" autoComplete="on">
-            {this.state.responsablesDeMesa.map((responsable, index) => {
-              return <option key={index} value={responsable.nombre} />;
-            })}
-          </datalist>
+          <datalist id="responsable">{this.listaResponsables()}</datalist>
         </td>
         <td>
           {" "}
           <input
-            key="seccion"
             type="text"
             id="seccion"
             name="seccion"
-            value={this.state.seccion}
+            ref="seccion"
+            // value={this.state.seccion}
             // ref={this.state.refSeccion}
             onChange={this.handleChangeSeccion}
             list="secciones"
@@ -215,7 +251,8 @@ class TablaPedidoRow extends React.Component {
             onSubmit={this.event}
           // required={true}
           />
-          <datalist ref={this.seccionesComponent} value={this.state.seccion} id="secciones" autoComplete="on">
+          {/* <datalist ref={this.seccionesComponent} value={this.state.seccion} id="secciones" autoComplete="on"> */}
+          <datalist ref={this.seccionesComponent} id="secciones" autoComplete="on">
             {secciones.map((seccion, index) => {
               return (
                 <option key={index} id={seccion.id} value={seccion.name} />

@@ -4,13 +4,13 @@ module.exports = {
     await queryInterface.createTable(
       "Clientes",
       {
-        id: {
+        id_cliente: {
           allowNull: false,
           autoIncrement: true,
           primaryKey: true,
           type: Sequelize.INTEGER,
         },
-        cuit: {
+        dni: {
           type: Sequelize.STRING,
           allowNull: false,
         },

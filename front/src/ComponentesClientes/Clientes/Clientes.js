@@ -28,7 +28,7 @@ class Clientes extends React.Component {
       pagosDeCliente: [],
       modal: false,
       editable: false,
-      cuit: "",
+      dni: "",
     };
   }
 
@@ -38,9 +38,9 @@ class Clientes extends React.Component {
     });
   };
 
-  verDetallesCliente(cuit) {
+  verDetallesCliente(dni) {
     var listaActualizada = this.state.clientes.filter(
-      (item) => cuit == item.cuit
+      (item) => dni == item.dni
     );
     this.setState({ clientes: listaActualizada });
   }
@@ -80,17 +80,17 @@ class Clientes extends React.Component {
   };
 
   limpiarTabla = () => {
-    document.getElementById("cuit").value = "";
+    document.getElementById("dni").value = "";
     this.listadoClientes();
   };
 
   handleSubmit = (e) => {
     var busqueda;
-    if (this.state.cuit === "") {
+    if (this.state.dni === "") {
       this.listadoBusqueda(busqueda);
     }
-    if (this.state.cuit !== "") {
-      busqueda = '?busqueda=cuit=="' + this.state.cuit + '"';
+    if (this.state.dni !== "") {
+      busqueda = '?busqueda=dni=="' + this.state.dni + '"';
       this.listadoBusqueda(busqueda);
     }
     e.preventDefault(e);
@@ -132,7 +132,7 @@ class Clientes extends React.Component {
     var listaCuitCliente = this.state.clientes.map((cliente) => {
       return (
         <div>
-          <option value={cliente.cuit} />
+          <option value={cliente.dni} />
         </div>
       );
     });
@@ -175,9 +175,9 @@ class Clientes extends React.Component {
                           <Col xs="12" md="9">
                             <Input
                               type="number"
-                              id="cuit"
-                              name="cuit"
-                              placeholder="Elegir cuit"
+                              id="dni"
+                              name="dni"
+                              placeholder="Elegir dni"
                               onChange={this.handleChange}
                               list="cliente"
                             />
@@ -192,7 +192,7 @@ class Clientes extends React.Component {
                               color="info"
                               outline
                               onClick={() =>
-                                this.verDetallesCliente(this.state.cuit)
+                                this.verDetallesCliente(this.state.dni)
                               }
                             >
                               <i className="fa fa-dot-circle-o"></i>Ver detalles
@@ -216,12 +216,12 @@ class Clientes extends React.Component {
                         <thead>
                           <tr>
                             <th>ID</th>
-                            <th>cuit</th>
-                            <th>nombre</th>
-                            <th>apellido</th>
-                            <th>dirección</th>
-                            <th>telefono</th>
-                            <th>email</th>
+                            <th>DNI</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Dirección</th>
+                            <th>Telefono</th>
+                            <th>Email</th>
                           </tr>
                         </thead>
                         <tbody>{this.renderRows()}</tbody>

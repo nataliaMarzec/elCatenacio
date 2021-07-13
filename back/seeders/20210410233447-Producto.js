@@ -1,7 +1,10 @@
 "use strict";
+const { models } = require("../SequelizeConnection");
+const Producto = models.Producto;
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    if(Producto.length !== 3){
     await queryInterface.bulkInsert(
       "Productos",
       [
@@ -32,6 +35,7 @@ module.exports = {
       ],
       {}
     );
+    }
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("Productos");

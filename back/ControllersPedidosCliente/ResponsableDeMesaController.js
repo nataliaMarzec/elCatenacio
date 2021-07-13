@@ -4,7 +4,7 @@ const ResponsableDeMesa = models.ResponsableDeMesa;
 const Pedidos = models.Pedido;
 
 module.exports = {
-  create: (async = (req, res) => {
+  create: async = (req, res) => {
     return ResponsableDeMesa.create({
       id: req.body.id,
       nombre: req.body.nombre,
@@ -12,7 +12,7 @@ module.exports = {
     })
       .then((responsable) => res.status(201).send(responsable))
       .catch((error) => res.status(400).send(error));
-  }),
+  },
 
   todosLosResponsablesDeMesa(req, res) {
     return ResponsableDeMesa.findAll({})

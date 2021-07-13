@@ -49,10 +49,12 @@ class CargarProducto extends React.Component {
       this.editarProducto(id);
     } else {
       this.crearProducto();
+      
     }
     event.preventDefault(event);
   };
 
+  
  
 
   listadoBusqueda = (busqueda) => {
@@ -77,6 +79,7 @@ class CargarProducto extends React.Component {
       },
       body: JSON.stringify(this.state.producto),
     })
+       
       .then(this.props.listadoProductos)
       .then(this.estadoInicial());
   };

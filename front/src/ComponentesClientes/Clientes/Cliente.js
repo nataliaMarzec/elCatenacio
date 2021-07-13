@@ -49,8 +49,8 @@ class Cliente extends React.Component {
   render = () => {
     return (
       <tr>
-        <td>{this.props.cliente.id}</td>
-        <td>{this.props.cliente.cuit}</td>
+        <td>{this.props.cliente.id_cliente}</td>
+        <td>{this.props.cliente.dni}</td>
         <td>{this.props.cliente.nombre}</td>
         <td>{this.props.cliente.apellido}</td>
         <td>{this.props.cliente.direccion}</td>
@@ -60,7 +60,7 @@ class Cliente extends React.Component {
           <Button
             color="danger"
             size="btn-xs"
-            onClick={() => this.eliminarCliente(this.props.cliente.id)}
+            onClick={() => this.eliminarCliente(this.props.cliente.id_cliente)}
           >
             {/* <Col xs="10" sm="8" md="4" xl="1"> */}
             <i className="cui-trash icons font-1xl d-block mt-1"></i>

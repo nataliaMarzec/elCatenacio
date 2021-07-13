@@ -14,8 +14,16 @@ module.exports = function (sequelize, DataTypes) {
 
       },
       clienteId: {
+        allowNull: true,
         foreignKey: true,
         type: DataTypes.INTEGER,
+        references: { model: "Clientes", key: "id_cliente", constraints:false, },
+      },
+      responsableId: {
+        allowNull: true,
+        foreignKey: true,
+        type: DataTypes.INTEGER,
+        references: { model: "ResponsableDeMesa", key: "id_responsable", constraints:false, },
       },
       codigoPedido: DataTypes.INTEGER,
       seccion: DataTypes.STRING,

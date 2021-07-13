@@ -38,11 +38,13 @@ models.Sequelize = Sequelize;
 models.sequelize = sequelize;
 
 models.Producto = ProductoModel(sequelize, Sequelize);
+models.ResponsableDeMesa=ResponsableDeMesaModel(sequelize,Sequelize)
 models.ItemsPedido = ItemsPedidoModel(sequelize, Sequelize);
 models.Pedido = PedidoModel(sequelize, Sequelize);
 models.Cliente = ClienteModel(sequelize, Sequelize);
 models.Pago= PagoModel(sequelize,Sequelize)
-models.ResponsableDeMesa=ResponsableDeMesaModel(sequelize,Sequelize)
+
+
 
 models.Producto.hasOne(models.ItemsPedido, {
   foreignKey: "productoId",
@@ -72,6 +74,41 @@ models.ItemsPedido.belongsTo(models.Pedido, {
   targetKey: "id",
   constraints:false,
 });
+
+models.ResponsableDeMesa.hasMany(models.Pedido, {
+  as: "Pedidos",
+  foreignKey: "responsableId",
+  sourceKey:"id_responsable",
+  constraints:false,
+  onDelete: "CASCADE",
+  onUpdate:"CASCADE"
+
+});
+models.Pedido.belongsTo(models.ResponsableDeMesa, {
+  as: "ResponsableDeMesa",
+  foreignKey: "responsableId",
+  targetKey: "id_responsable",
+  constraints:false,
+});
+
+models.Cliente.hasMany(models.Pedido, {
+  as: "Pedidos",
+  foreignKey: "clienteId",
+  sourceKey:"id_cliente",
+  constraints:false,
+  onDelete: "CASCADE",
+  onUpdate:"CASCADE"
+
+});
+models.Pedido.belongsTo(models.Cliente, {
+  as: "Clientes",
+  foreignKey: "clienteId",
+  targetKey: "id_cliente",
+  constraints:false,
+});
+
+
+
 
 sequelize
   .authenticate()

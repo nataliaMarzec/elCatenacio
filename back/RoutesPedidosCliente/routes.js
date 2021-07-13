@@ -6,12 +6,13 @@ const controllerItemsPedido = require("../ControllersPedidosCliente/ItemsPedidoC
 const controllerPago = require("../ControllersPedidosCliente/PagoController");
 const controllerResponsableDeMesa = require("../ControllersPedidosCliente/ResponsableDeMesaController");
 
-router.put("/pedidos/nuevo", controllerPedido.create);
+router.put("/pedidos/nuevo/:nombre", controllerPedido.create);
 router.get("/pedido/busqueda/:id",controllerPedido.getIdPedido)
 router.put("/pedidos/items/pedido/:id/producto/:descripcion",controllerPedido.settearPedidoYProductoAItem)
 // router.get("/pedidosTodos", controllerPedido.encontrarPedidoConItems);
 // router.get("/pedidos/:id", controllerPedido.getPedidoId);
 router.put("/pedidos/items/:id", controllerPedido.updateConItems);
+router.get("/pedidos/entregado/:id/", controllerPedido.updatePedidoEntregado);
 router.delete("/pedidos/:id", controllerPedido.delete);
 
 router.get("/pedidos", controllerPedido.getPedidos);

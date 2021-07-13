@@ -11,10 +11,10 @@ class PlantillaPedido extends React.Component {
       hora: props.hora,
       listaItems: props.listaItems,
       unPedido: props.unPedido,
-      nuevaListaDescripciones: props.nuevaListaDescripciones
-
+      nuevaListaDescripciones: props.nuevaListaDescripciones,
+      selectedValues:props.selectedValues,
     };
-    // this.encontrarItemsIdPedido=this.encontrarItemsIdPedido.bind(this)
+    this.guardar=this.guardar.bind(this)
 
   }
 
@@ -23,6 +23,7 @@ class PlantillaPedido extends React.Component {
       listaItems: this.state.listaItems, unPedido: this.state.unPedido
       , fecha: this.state.fecha, hora: this.state.hora
       , nuevaListaDescripciones: this.state.nuevaListaDescripciones,
+      selectedValues:this.state.selectedValues
     }
       , () => console.log("listaItemsWill", this.state.fecha, this.state.hora))
   }
@@ -99,6 +100,12 @@ class PlantillaPedido extends React.Component {
         // , () => console.log("pedidoPlantilla", nextProps.pedido)
       );
     }
+    if (nextProps.selectedValues !== this.props.selectedValues) {
+      this.setState({ selectedValues: nextProps.selectedValues }
+        // , () => console.log("pedidoPlantilla", nextProps.pedido)
+      );
+    }
+
 
   }
 
@@ -110,11 +117,16 @@ class PlantillaPedido extends React.Component {
     return total;
   };
 
-  guardar() {
+  guardar(listaItems) {
+    let lista=listaItems
+    lista=[]
+    this.setState({listaItems:lista})
+    // this.props.crearPedido()
+    // this.setState({selectedValues:this.state.selectedValues},()=>console.log("GUARDAR",this.state.selectedValues))
     this.props.crearPedido()
-    // this.props.resetValues()
-    this.props.actualizarEstadosAlGuardar([],[],[],false)
+    this.props.actualizarEstadosAlGuardar([],[])
     this.props.vistaPrevia(false)
+    // this.props.resetValues()
 
   }
 
@@ -193,7 +205,7 @@ class PlantillaPedido extends React.Component {
               Cerrar
             </Button>
             <Button color="success" size="lg" block
-              onClick={() => this.guardar()}
+              onClick={() => this.guardar(this.state.listaItems)}
             >
               Guardar
             </Button>

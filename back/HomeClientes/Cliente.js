@@ -3,15 +3,15 @@ const { Sequelize, Op, Model } = require("sequelize");
 const { Pedido } = require("../SequelizeConnection");
 module.exports = function (sequelize, DataTypes) {
   const Cliente = sequelize.define(
-    "Cliente",
+    "Clientes",
     {
-      id: {
+      id_cliente: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      cuit: {
+      dni: {
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -42,16 +42,10 @@ module.exports = function (sequelize, DataTypes) {
 
     {
       tableName: "Clientes",
-      modelName: "Cliente",
+      modelName: "Clientes",
     }
   );
 
-  Cliente.associate = (models) => {
-    Cliente.hasMany(models.Pedido, {
-      foreignKey: "clienteId_pedido",
-      as: "Pedidos",
-    });
-  };
 
   return Cliente;
 };

@@ -17,15 +17,14 @@ class CargarCliente extends React.Component {
       cliente: props.cliente || {},
       clientes: props.clientes || [],
       modal: false,
-      unCuit: {},
-      cuitCreado: {},
+      dniCreado: {},
     };
   }
 
   estadoInicial = () => {
     this.setState({
       cliente: {
-        cuit: "",
+        dni: "",
         nombre: "",
         apellido: "",
         direccion: "",
@@ -40,7 +39,7 @@ class CargarCliente extends React.Component {
   }
 
   handleSubmit = (event) => {
-    const id = this.state.cliente.id;
+    const id = this.state.cliente.id_cliente;
     if (id) {
       this.editarcliente(id);
     } else {
@@ -53,7 +52,7 @@ class CargarCliente extends React.Component {
   };
 
   encontrarCliente = (cliente) => {
-    console.log("cuitEncontrar", cliente.nombre, cliente);
+    console.log("dniEncontrar", cliente.nombre, cliente);
     fetch("http://localhost:8383/clientes/busqueda/:" + cliente.nombre)
       .then((res) => res.json())
       .then((unCliente) =>
@@ -66,7 +65,7 @@ class CargarCliente extends React.Component {
     // .catch((error) =>
     //   this.setState({
     //     error: "no encontrado",
-    //     cuitCreado: false,
+    //     dniCreado: false,
     //   })
     // );
   };
@@ -104,16 +103,16 @@ class CargarCliente extends React.Component {
           <Form className="form-horizontal">
             <FormGroup row>
               <Col md="3">
-                <Label for="cuit">Cuit</Label>
+                <Label for="dni">DNI</Label>
               </Col>
               <Col xs="12" md="9">
                 <Input
                   type="number"
-                  id="cuit"
-                  name="cuit"
-                  placeholder="Completa Cuit..."
+                  id="dni"
+                  name="dni"
+                  placeholder="Completa Dni..."
                   required={true}
-                  value={this.state.cliente.cuit}
+                  value={this.state.cliente.dni}
                   onChange={this.handleChange}
                 />
               </Col>

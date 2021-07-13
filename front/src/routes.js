@@ -77,6 +77,20 @@ const PedidosLista = React.lazy(() =>
 const PedidosListaRow = React.lazy(() =>
   import("./ComponentesPedidosCliente/Pedidos/PedidosListaRow")
 );
+
+const CocinaDetalles = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/Cocina/CocinaDetalles")
+);
+const CocinaDetallesController = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/Cocina/CocinaDetallesController")
+);
+const CocinaDetallesRow = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/Cocina/CocinaDetallesRow")
+);
+const VistaDePedidosParaCocinaRow = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/Cocina/VistaDePedidosParaCocinaRow")
+);
+
 const Clientes = React.lazy(() =>
   import("./ComponentesClientes/Clientes/Clientes")
 );
@@ -282,6 +296,34 @@ const routes = [
     key: "#pedidosListaRow",
     name: "PedidosListaRow",
     component: PedidosListaRow,
+  },
+  {
+    path: "/cocinaDetalles",
+    exact: true,
+    key: "#cocinaDetalles",
+    name: "CocinaDetalles",
+    component: CocinaDetalles,
+  },
+  {
+    path: "/cocinaDetallesController",
+    exact: false,
+    key: "#cocinaDetallesController",
+    name: "CocinaDetallesController",
+    component: CocinaDetallesController,
+  },
+  {
+    path: "/cocinaDetallesRow",
+    exact: false,
+    key: "#cocinaDetallesRow",
+    name: "CocinaDetallesRow",
+    component: CocinaDetallesRow,
+  },
+  {
+    path: "/vistaDePedidosParaCocinaRow",
+    exact: false,
+    key: "#vistaDePedidosParaCocinaRow",
+    name: "VistaDePedidosParaCocinaRow",
+    component: VistaDePedidosParaCocinaRow,
   },
 
 

@@ -6,7 +6,7 @@ module.exports = function (sequelize, DataTypes) {
   const ResponsableDeMesa = sequelize.define(
     "ResponsableDeMesa",
     {
-      id: {
+      id_responsable: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
@@ -19,7 +19,7 @@ module.exports = function (sequelize, DataTypes) {
     },
 
     {
-      tableName: "ResponsablesDeMesa",
+      tableName: "ResponsableDeMesa",
       modelName: "ResponsableDeMesa",
     }
   );

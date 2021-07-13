@@ -7,7 +7,7 @@ module.exports = {
       "Clientes",
       [
         {
-        cuit: "27350268263",
+        dni: "35026826",
         nombre: "Brandon",
         apellido: "Adam",
         direccion: "Jujuy 245",
@@ -17,7 +17,7 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        cuit: "27308887773",
+        dni: "30888777",
         nombre: "Samira",
         apellido: "Stone",
         direccion: "Rivadavia 675",
@@ -27,7 +27,7 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        cuit: "23308887771",
+        dni: "30888777",
         nombre: "Diego",
         apellido: "Lopez",
         direccion: "Jose Marmol 543",

@@ -4,45 +4,58 @@ const { models } = require("../SequelizeConnection");
 const Producto = models.Producto;
 const ItemsPedido = models.ItemsPedido;
 const Pedido = models.Pedido;
+const Responsable = models.ResponsableDeMesa
+
 module.exports = {
   //usado devuelve id y crea seccion
   create: async (req, res) => {
-    console.log("req.body", req.body.entregado,req.body.fecha);
-    const seccion = req.body.seccion;
-    const codigoPedido = req.body.codigoPedido;
-    const observaciones = req.body.observaciones;
-    const entregado = req.body.entregado;
-    const fecha = req.body.fecha;
-    const hora = req.body.hora;
+    console.log("req.body", req.params.id_responsable);
+    var responsable = await Responsable.findOne({
+      where: { nombre: req.params.nombre },
+    });
+    // var responsableId = responsable.id_responsable;
+    // let responsableId = req.params.id_responsable
+    // const seccion = req.body.seccion;
+    // const codigoPedido = req.body.codigoPedido;
+    // const observaciones = req.body.observaciones;
+    // const entregado = false;
+    // const fecha = req.body.fecha;
+    // const hora = req.body.hora;
+
     const pedido = {
-      seccion: seccion,
-      codigoPedido: codigoPedido,
-      observaciones: observaciones,
-      entregado: entregado,
-      fecha: fecha,
-      hora: hora,
+      responsableId:responsable.id_responsable,
+      seccion: req.body.seccion,
+      codigoPedido:req.body.codigoPedido,
+      observaciones:req.body.observaciones,
+      entregado:req.body.entregado,
+      fecha:req.body.fecha,
+      hora:req.body.hora,
       ItemsPedido: [],
     };
     return await Pedido.create(pedido)
       .then(function (pedido) {
-        console.log("pedido+++", pedido.observaciones);
+        console.log("pedido+++", pedido.responsableId);
         pedido.save();
-        let id = pedido.id;
-        let seccion = pedido.seccion;
-        let observaciones = pedido.observaciones;
-        let codigoPedido = pedido.codigoPedido;
-        let entregado = pedido.entregado;
-        let fecha = pedido.fecha;
-        let hora = pedido.hora;
+        // let id = pedido.id;
+        // let responsableId = pedido.responsableId;
+        // let seccion = pedido.seccion;
+        // let observaciones = pedido.observaciones;
+        // let codigoPedido = pedido.codigoPedido;
+        // let entregado = pedido.entregado;
+        // let fecha = pedido.fecha;
+        // let hora = pedido.hora;
+
         return res.json({
           message: "se guardo el pedido",
-          id,
-          seccion,
-          observaciones,
-          codigoPedido,
-          entregado,
-          fecha,
-          hora
+          pedido,
+          // id,
+          // responsableId,
+          // seccion,
+          // observaciones,
+          // codigoPedido,
+          // entregado,
+          // fecha,
+          // hora
 
         });
       })
@@ -71,7 +84,8 @@ module.exports = {
   //   });
   //   return res.status(200).json(item);
   // },
-  //usado en tabla pedido
+
+  //usado 
   settearPedidoYProductoAItem: async (req, res) => {
     let id = req.params.id
     console.log("id", id);
@@ -99,6 +113,47 @@ module.exports = {
       .catch(function (error) {
         console.log("item", error);
       });
+  },
+
+
+  //actualiza el pedido pero no el item
+  updatePedidoEntregado(req, res) {
+    console.log(req.body, "items", Pedido.entregado);
+    return Pedido.findByPk(req.params.id, req.params.entregado, {
+      include: [
+        {
+          model: ItemsPedido,
+          as: "ItemsPedido",
+        },
+      ],
+    })
+      .then((pedido) => {
+        if (!pedido) {
+          return res.status(404).send({
+            message: "Pedido no encontrado",
+          });
+        }
+        return pedido
+          .update(
+            {
+              entregado: true,
+              ItemsPedido: req.body.ItemsPedido || pedido.ItemsPedido,
+            },
+            {
+              include: [
+                {
+                  model: ItemsPedido,
+                  as: "ItemsPedido",
+                },
+              ],
+            }
+          )
+          .then(() => res.status(200).send(pedido))
+          .catch((error) => {
+            console.log(error);
+            res.status(400).send(error);
+          });
+      })
   },
   //usado revisar
   guardarPedidoId: async (req, res) => {
@@ -147,36 +202,36 @@ module.exports = {
   //     hora = req.body.hora,
   //   }).save({ id: pedido.id });
   //   let Id = pedido.id;
-    // let Id = Pedido.findOne({ id: pedido.id });
-    //  items = ItemsPedido.findAll({
-    //   where: { pedidoId: pedido.id },
-    //   include: [
-    //     {
-    //       model: Producto,
-    //       as: "Productos",
-    //       where: { productoId: ItemsPedido.productoId },
-    //     },
-    //   ],
-    // });
-    // let pedidoUpdate= items.forEach((i) => {
-    //   i.save({ pedidoId: pedidoId });
-    //   Pedidolet.update({ ItemsPedido: req.body.ItemsPedido,
-    //     include: [
-    //       {
-    //         model: ItemsPedido,
-    //         as: "ItemsPedido",
-    //         where: { pedidoId: Pedido.id },
-    //         include: [
-    //           {
-    //             model: Producto,
-    //             as: "Productos",
-    //             where: { productoId: ItemsPedido.productoId },
-    //           },
-    //         ],
-    //       },
-    //     ],
-    //   } );
-    // });
+  // let Id = Pedido.findOne({ id: pedido.id });
+  //  items = ItemsPedido.findAll({
+  //   where: { pedidoId: pedido.id },
+  //   include: [
+  //     {
+  //       model: Producto,
+  //       as: "Productos",
+  //       where: { productoId: ItemsPedido.productoId },
+  //     },
+  //   ],
+  // });
+  // let pedidoUpdate= items.forEach((i) => {
+  //   i.save({ pedidoId: pedidoId });
+  //   Pedidolet.update({ ItemsPedido: req.body.ItemsPedido,
+  //     include: [
+  //       {
+  //         model: ItemsPedido,
+  //         as: "ItemsPedido",
+  //         where: { pedidoId: Pedido.id },
+  //         include: [
+  //           {
+  //             model: Producto,
+  //             as: "Productos",
+  //             where: { productoId: ItemsPedido.productoId },
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //   } );
+  // });
   //   console.log("id", Id);
   //   return res.status(200).json(Id);
 
@@ -278,7 +333,6 @@ module.exports = {
         return pedido
           .update(
             {
-              id: req.body.id || pedido.id,
               codigoPedido: req.body.codigoPedido || pedido.codigoPedido,
               seccion: req.body.seccion || pedido.seccion,
               observaciones: req.body.observaciones || pedido.observaciones,
@@ -302,10 +356,10 @@ module.exports = {
             res.status(400).send(error);
           });
       })
-      // .catch((error) => {
-      //   console.log(error);
-      //   res.status(400).send(error);
-      // });
+    // .catch((error) => {
+    //   console.log(error);
+    //   res.status(400).send(error);
+    // });
   },
 
   delete: async (req, res) => {
@@ -393,7 +447,7 @@ module.exports = {
   //falta actualizar hora y fecha
   update: async (req, res) => {
     const pedido = await Pedido.findByPk(req.params.id);
-    const { id, codigoPedido, seccion,observaciones,entregado,fecha,hora } = await pedido.update(req.body);
+    const { id, codigoPedido, seccion, observaciones, entregado, fecha, hora } = await pedido.update(req.body);
 
     return res
       .json({

@@ -24,6 +24,7 @@ class Productos extends React.Component {
       titulo: "Nuevo",
       mostrarTabla: false,
     };
+    this.listadoProductos=this.listadoProductos.bind(this)
   }
 
   toggle = () => {

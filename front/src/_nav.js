@@ -33,6 +33,12 @@ export default {
       icon: "icon-people",
     },
 
+    {
+      name: "CocinaDetalles",
+      url: "/cocinaDetalles",
+      icon: "icon-people",
+    },
+
    
 
     // {

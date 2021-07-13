@@ -33,22 +33,32 @@ class Pedidos extends React.Component {
     this.state = {
       pedido: props.pedido,
       pedidos: [],
-      producto: {},
+      producto: props.producto,
       productos: [],
+      // listaProductosEnPedido:[this.props.productos.map((p) => ({
+      //   name: p.descripcion + "",
+      //   id: p.id,
+      //   precio: "$" + p.precioUnitario,
+      //   descripcion: p.descripcion,
+      //   precioUnitario: p.precioUnitario,
+      //   cantidad: 0,
+      //   importe: 0,
+      // }))],
       modal: false,
       editable: false,
       unPedido: {},
+      unResponsable:{nombre:""},
       precioUnitario: [],
       selectedValues: null,
       SelectedItem: null,
-      options: null,
+      options: [],
       items: [],
       unItem: {
         descripcion: null,
         cantidad: null, importe: null
       },
       itemsPedido: [],
-      unPedido: { seccion: "", observaciones: ""},
+      unPedido: { seccion: "", observaciones: "" },
       productoId: props.productoId,
       selector: {},
       mostrarTabla: false,
@@ -60,7 +70,11 @@ class Pedidos extends React.Component {
         { id: 2, name: "Carpa" },
         { id: 3, name: "" },
       ],
-      seccion: props.seccion,
+      seccion:"",
+      nombreResponsable:null,
+      responsablesDeMesa:[],
+      responsable:{},
+      nombre:"",
       // fecha: new Date().toLocaleDateString(),
       fecha: new Date().toString(),
       hora: new Date(),
@@ -88,17 +102,20 @@ class Pedidos extends React.Component {
       verPlantilla: false,
       itemsSeleccionado: 0,
       encontrado: false,
-      vistaPrevia:false
+      vistaPrevia: false
 
 
     };
     this.listadoPedidos = this.listadoPedidos.bind(this)
     this.listadoItemsPedido = this.listadoItemsPedido.bind(this);
+    this.listadoResponsables=this.listadoResponsables.bind(this)
+    this.listaProductosEnPedido = this.listaProductosEnPedido.bind(this);
     this.envioDePedido = this.envioDePedido.bind(this);
     this.envioDeEstadoObservaciones =
       this.envioDeEstadoObservaciones.bind(this);
     this.envioDeEstadoLimpiarPedido =
       this.envioDeEstadoLimpiarPedido.bind(this);
+    this.envioDeEstadoResponsable=this.envioDeEstadoResponsable.bind(this)
     this.crearPedido = this.crearPedido.bind(this);
     this.settearPedidoYProductoAItem =
       this.settearPedidoYProductoAItem.bind(this);
@@ -107,10 +124,11 @@ class Pedidos extends React.Component {
     this.limpiarSeccion = this.limpiarSeccion.bind(this)
     this.calcular = this.calcular.bind(this)
     this.multiselectRef = React.createRef();
-    this.vistaPrevia=this.vistaPrevia.bind(this)
-    this.actualizarEstadosAlGuardar=this.actualizarEstadosAlGuardar.bind(this)   
-    this.selectedItems=this.selectedItems.bind(this) 
-    // this.resetValues=this.resetValues.bind(this)
+    this.vistaPrevia = this.vistaPrevia.bind(this)
+    this.actualizarEstadosAlGuardar = this.actualizarEstadosAlGuardar.bind(this)
+    this.selectedItems = this.selectedItems.bind(this)
+    this.resetValues = this.resetValues.bind(this)
+    this.selectedItems = this.selectedItems.bind(this)
     // this.verPlantilla=this.verPlantilla(this)
     // this.limpiar=this.limpiar.bind(this)
   }
@@ -147,7 +165,7 @@ class Pedidos extends React.Component {
     this.setState({ editable: boolean })
 
     if (modal == false && boolean.value == false) {
-      this.setState({ editable: false, itemsPedido: [],vistaPrevia:false}
+      this.setState({ editable: false, itemsPedido: [], vistaPrevia: false }
         , () => console.log("NOboolean", this.state.editable, boolean.value))
       // this.setState({ codigoPedido: this.state.codigoPedido }, () =>
       //   this.uniqueCodigo(idPedido)
@@ -169,17 +187,15 @@ class Pedidos extends React.Component {
 
   componentWillReceiveProps(props) {
     this.setState({ producto: props.producto });
-    this.setState({ productos: props.productos });
+    this.setState({ productos: props.productos }, () => console.log("Productos++++", props.productos));
     this.setState({ pedido: props.pedido });
-    this.setState({ seccion: props.seccion });
+    // this.setState({ seccion: props.seccion });
     this.setState({ importe: props.importe });
     this.setState({ observaciones: props.observaciones });
     this.setState({ cantidad: props.cantidad });
     this.setState({ productoId: props.productoId });
     this.setState({ descripcion: props.descripcion });
     this.setState({ id: props.id });
-    // this.setState({ valueSeccion: props.valueSeccion });
-    // this.setState({ idSeccion: props.idSeccion })
     // this.setState({ refSeccion: props.refSeccion })
   }
 
@@ -188,18 +204,38 @@ class Pedidos extends React.Component {
     this.listadoProductos();
     this.listadoItemsPedido();
     this.listaProductosEnPedido();
+
     // this.setState({ options: this.listaProductosEnPedido() })
     this.setState((currentState) => ({ cantidad: currentState.cantidad }));
-    this.setState({ secciones: this.state.secciones, itemsSeleccionado: 0 }
+    this.setState({
+      secciones: this.state.secciones, itemsSeleccionado: 0
+      , SelectedItem: {}, selectedValues: [], listaItems: []
+    }
       // , () => console.log("willsecciones", this.state.secciones)
     )
     this.setState({ confirmar: false, fecha: this.state.fecha, hora: this.state.hora, verPlantilla: this.state.verPlantilla }
       , () => console.log("confirmarwillverPlantilla", this.state.verPlantilla))
-    this.setState((currentState) => ({ listaItems: currentState.listaItems }
-      // , () => console.log("listaItemswill", currentState.listaItems)
-    )
-    )
+    // this.setState((currentState) => ({ listaItems: currentState.listaItems }
+    //   // , () => console.log("listaItemswill", currentState.listaItems)
+    // )
+    // )
   }
+  // componentDidUpdate(nextState) {
+  //   let optionsN = this.state.productos.map((p) => ({
+  //     name: p.descripcion + "",
+  //     id: p.id,
+  //     precio: "$" + p.precioUnitario,
+  //     descripcion: p.descripcion,
+  //     precioUnitario: p.precioUnitario,
+  //     cantidad: 0,
+  //     importe: 0,
+  //   }))
+  //   if(nextState.options !=this.state.options){
+  //   this.setState({options:optionsN})
+
+  //   }
+  //   return this.state.options
+  // }
 
   listadoPedidos = () => {
     fetch(`http://localhost:8383/pedidos`)
@@ -222,7 +258,16 @@ class Pedidos extends React.Component {
         })
       );
   };
-
+  listadoResponsables = () => {
+    fetch(`http://localhost:8383/responsables`)
+      .then((res) => res.json())
+      .then((res) =>
+        this.setState({
+          responsablesDeMesa: res,
+          responsable: {},
+        })
+      );
+  };
   listadoItemsPedido = () => {
     fetch(`http://localhost:8383/itemsTodos`)
       .then((res) => res.json())
@@ -233,6 +278,21 @@ class Pedidos extends React.Component {
         })
       );
   };
+
+  listaProductosEnPedido() {
+    let listaProductosEnPedido =
+      this.state.productos.map((p) => ({
+        name: p.descripcion + "",
+        id: p.id,
+        precio: "$" + p.precioUnitario,
+        descripcion: p.descripcion,
+        precioUnitario: p.precioUnitario,
+        cantidad: 0,
+        importe: 0,
+      }));
+
+    return listaProductosEnPedido
+  }
 
   // componentDidMount() {
   //   this.timerID = setInterval(
@@ -272,16 +332,15 @@ class Pedidos extends React.Component {
 
 
   handleAddRow = (SelectedItem) => {
-    let unItem = this.state.unItem;
     this.setState((prevState, props) => {
       const row = {
         descripcion: SelectedItem.descripcion, cantidad: 1,
         importe: SelectedItem.precioUnitario, observaciones: ""
 
       };
-      return { unItem: row, listaItems: [...prevState.listaItems, row] };
+      return { unItem: row, listaItems: [...this.state.listaItems, row] };
     }
-      , () => console.log("listaItemsADD", this.state.listaItems)
+      , () => console.log("listaItemsADD", this.state.listaItems, SelectedItem)
     );
   };
 
@@ -290,6 +349,7 @@ class Pedidos extends React.Component {
     this.setState(
       { selectedValues: selectedValues, SelectedItem: SelectedItem },
       this.handleAddRow(SelectedItem),
+      // this.resetValues(),
       nuevaListaDescripciones.push(SelectedItem.descripcion),
     );
     // console.log("nuevaListaDescripciones", nuevaListaDescripciones);
@@ -298,7 +358,7 @@ class Pedidos extends React.Component {
     // var SelectedItem = this.state.SelectedItem
     var selectedValues = this.state.selectedValues
     let listaItems = this.state.listaItems
-
+    this.selectedItems()
     this.setState({ selectedValues: selectedValues })
     var listaActualizadaSeleccionados = selectedValues.filter(
       (item) => unItem.descripcion !== item.name,
@@ -306,18 +366,25 @@ class Pedidos extends React.Component {
     selectedValues = listaActualizadaSeleccionados
 
     this.setState({ listaItems: listaItems }, () => this.forceUpdate()
-    ,()=>console.log("listaItems",this.state.listaItems))
+      , () => console.log("listaItems", this.state.listaItems))
     var listaActualizada = this.state.listaItems.filter(
       (item) => unItem !== item
     );
     listaItems = listaActualizada
-    console.log("listaActualizada",this.state.listaItems)
+    console.log("listaActualizada", this.state.listaItems)
     this.setState({ listaItems: listaItems, unItem: {} }
-      ,()=>console.log("nuevaLista",this.state.listaItems))
+      , () => console.log("nuevaLista", this.state.listaItems))
     this.setState({ selectedValues: selectedValues, SelectedItem: {} })
     this.state.nuevaListaDescripciones.pop(1)
     this.resetValues();
   };
+
+  getOptions() {
+    let options =
+      this.multiselectRef.current.props.options.values
+    console.log("options", options)
+    return options
+  }
 
   resetValues() {
     this.multiselectRef.current.resetSelectedValues();
@@ -338,6 +405,11 @@ class Pedidos extends React.Component {
     listaItems = listaActualizada
     this.setState({ listaItems: listaItems, unItem: {} })
     this.state.nuevaListaDescripciones.pop(SelectedItem.descripcion)
+    // if(this.state.vistaPrevia==false){
+    //   this.vistaPrevia(false)
+    //   this.setState({ SelectedItem: SelectedItem })
+    //   this.resetValues()
+    // }
   };
 
   event = (event) => {
@@ -405,25 +477,26 @@ class Pedidos extends React.Component {
     }
     e.preventDefault(e);
   };
-
+  //agregar responsableid
   crearPedido() {
+    let nombre = this.state.nombre
     let seccion = this.state.seccion;
     let observaciones = this.state.unPedido.observaciones;
     let fecha = this.state.fecha;
     let hora = this.state.hora
     let horaFormato = moment(hora).format('HH-mm');
     let listaItems = this.state.listaItems
-    console.log("crearFecha", horaFormato)
-    fetch("http://localhost:8383/pedidos/nuevo", {
+    // console.log("nombreResponsable",nombre,nombreResponsable,nombreFind,responsableId)
+    fetch(`http://localhost:8383/pedidos/nuevo/${nombre}`, {
       method: "put",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ seccion, observaciones, fecha, hora }),
+      body: JSON.stringify({seccion, observaciones, fecha, hora }),
     })
       .then((res) => res.json())
-      .then((res) => this.setState({ idPedido: res.id, pedido: res }
+      .then((res) => this.setState({ idPedido: res.id, pedido: res}
         , () => console.log("PEDIDOCreado", res, this.state.pedido)))
       .then((res) => listaItems.map(i => this.settearPedidoYProductoAItem(this.state.idPedido,
         i.descripcion, i.cantidad, i.importe, i.observaciones)))
@@ -485,11 +558,11 @@ class Pedidos extends React.Component {
   //   this.setState({ secciones: this.state.secciones });
   // }
 
-  verPlantilla = () => {
-    return (
-      <PlantillaPedido></PlantillaPedido>
-    )
-  }
+  // verPlantilla = () => {
+  //   return (
+  //     <PlantillaPedido></PlantillaPedido>
+  //   )
+  // }
 
 
   render() {
@@ -500,7 +573,7 @@ class Pedidos extends React.Component {
     // let hoy = new Date();
     let codigoPedido = this.state.codigoPedido;
     let listaItems = this.state.listaItems
-    console.log("listaProductosEnPedido$$", listaItems);
+    console.log("listaProductosEnPedido$$", this.state.responsablesDeMesa);
     // var listaIdsPedidos = this.state.pedidos.map((pedido) => {
     //   return (
     //     <div>
@@ -513,40 +586,40 @@ class Pedidos extends React.Component {
       <div className="container">
         <Row className="align-items-center">
           <Col col="2" className="mb-3 mb-xl-0 text-center">
-          <React.Fragment> {this.state.vistaPrevia==false &&
-          <div>
-            <Button
-              style={{
-                marginRight: "1rem",
-                backgroundColor: "#63c2de",
-                color: "#5c6873",
-              }}
-              size="lg"
-              onClick={() => this.getCollapse(this.state.idPedido, false)}
-            >
-              Nuevo pedido
-            </Button>
+            <React.Fragment> {this.state.vistaPrevia === false &&
+              <div>
+                <Button
+                  style={{
+                    marginRight: "1rem",
+                    backgroundColor: "#63c2de",
+                    color: "#5c6873",
+                  }}
+                  size="lg"
+                  onClick={() => this.getCollapse(this.state.idPedido, false)}
+                >
+                  Nuevo pedido
+                </Button>
 
-            <Button
-              style={{
-                marginRight: "1rem",
-                backgroundColor: "#4dbd74",
-                color: "#5c6873",
-              }}
-              size="lg"
-              onClick={() => this.getCollapse(this.state.idPedido, true)}
-            // href="./Editar/EditarPedido"
-            // name="EditarPedido"
-            // render={(props) => <EditarPedido {...props} />}
-            >
-              Editar pedido
-            </Button>
-            </div>   }
+                <Button
+                  style={{
+                    marginRight: "1rem",
+                    backgroundColor: "#4dbd74",
+                    color: "#5c6873",
+                  }}
+                  size="lg"
+                  onClick={() => this.getCollapse(this.state.idPedido, true)}
+                // href="./Editar/EditarPedido"
+                // name="EditarPedido"
+                // render={(props) => <EditarPedido {...props} />}
+                >
+                  Editar pedido
+                </Button>
+              </div>}
             </React.Fragment>
             <React.Fragment>
               {/* {this.state.modal == false &&
                 this.state.pedido != undefined && this.state.pedidoId != undefined && */}
-                {listaItems.length && this.state.vistaPrevia == true &&
+              {listaItems.length > 0 && this.state.vistaPrevia == true &&
                 <PlantillaPedido
                   encontrarItemsIdPedido={this.encontrarItemsIdPedido}
                   unPedido={this.state.unPedido}
@@ -561,255 +634,263 @@ class Pedidos extends React.Component {
                   actualizarEstadosAlGuardar={this.actualizarEstadosAlGuardar}
                   selectedItems={this.selectedItems}
                   resetValues={this.resetValues}
+                  selectedValues={this.state.selectedValues}
+                  ref={this.multiselectRef}
                 >
                 </PlantillaPedido>}
             </React.Fragment>
           </Col>
         </Row>
-        <React.Fragment>{this.state.vistaPrevia==false && (
-        <Collapse
-          isOpen={this.state.modal}
-          toggle={this.toggle}
-          className={this.props.className}
-        > <React.Fragment>{this.state.editable==false &&
-          <CardHeader align="left" style={{ backgroundColor: "#eedc0a" }}>
-            <h4>Nuevo pedido</h4>
-          </CardHeader>
-        }
-          </React.Fragment>
-          <React.Fragment>
-          {this.state.editable==true &&
-          <CardHeader align="left" style={{ backgroundColor: "#eedc0a" }}>
-            <h4>Editar pedido</h4>
-          </CardHeader>
+        <React.Fragment>{this.state.vistaPrevia == false && (
+          <Collapse
+            isOpen={this.state.modal}
+            toggle={this.toggle}
+            className={this.props.className}
+          > <React.Fragment>{this.state.editable == false &&
+            <CardHeader align="left" style={{ backgroundColor: "#eedc0a" }}>
+              <h4>Nuevo pedido</h4>
+            </CardHeader>
           }
-          </React.Fragment>
-          <div className="animated fadeIn">
-            <Container style={{ backgroundColor: "#f1f1f1" }}>
-              <Card>
-                <CardHeader>
-                  <Row>
-                  {/* aca iba listaIdsPedidos buscador */}
-                    <Col align="left"><b>Fecha: </b>{moment(this.state.fecha).format('DD-MM-YYYY')}{"    "}
-                      <b>Hora:</b>{this.state.hora.toLocaleTimeString()}.</Col>
-                  </Row>
+            </React.Fragment>
+            <React.Fragment>
+              {this.state.editable == true &&
+                <CardHeader align="left" style={{ backgroundColor: "#eedc0a" }}>
+                  <h4>Editar pedido</h4>
                 </CardHeader>
-                <TablaPedido
-                  editable={this.state.editable}
-                  envioDePedido={this.envioDePedido}
-                  envioDeEstadoLimpiarPedido={this.envioDeEstadoLimpiarPedido}
-                  pedidos={this.state.pedidos}
-                  pedido={this.state.pedido}
-                  unPedido={this.state.unPedido}
-                  secciones={this.state.secciones}
-                  items={this.state.items}
-                  itemsPedido={this.state.itemsPedido}
-                  pedidoId={this.state.pedidoId}
-                  listadoItemsPedido={this.listadoItemsPedido}
-                  // listaProductosEnPedido={listaProductosEnPedido}
-                  listadoPedidos={this.listadoPedidos}
-                  listadoProductos={this.listadoProductos}
-                  obtenerId={this.obtenerId}
-                  crearPedido={this.crearPedido}
-                  codigoPedido={codigoPedido}
-                  handleChangeSeccion={this.handleChangeSeccion}
-                  limpiarSeccion={this.limpiarSeccion}
-                  // limpiar={this.limpiar}
-                  confirmar={this.state.confirmar}
-                  // refSeccion={this.state.refSeccion}
-                  // confirmarMetodo={this.confirmar}
-                  // handleEvent={this.handleEvent}
-                  toggle={this.toggle}
-                ></TablaPedido>
-                <React.Fragment>{editable == false && (
-                  <CardBody>
+              }
+            </React.Fragment>
+            <div className="animated fadeIn">
+              <Container style={{ backgroundColor: "#f1f1f1" }}>
+                <Card>
+                  <CardHeader>
                     <Row>
-                      &nbsp;
-                      <FormGroup onSubmit={this.event}>
-                        <Multiselect
-                          id="descripcion"
-                          options={this.listaProductosEnPedido()}
-                          ref={this.multiselectRef}
-                          selectedValues={this.state.selectedValues}
-                          SelectedItem={this.state.SelectedItem}
-                          onSelect={this.settingDescripciones}
-                          onRemove={this.onRemove}
-                          groupBy="precio"
-                          closeIcon="circle2"
-                          hidePlaceholder={true}
-                          loading={false}
-                          placeholder="Seleccione un producto"
-                          displayValue="name"
-                          emptyRecordMsg="No hay más productos para seleccionar"
-                          style={{
-                            chips: { background: "#9D1212" },
-                            searchBox: {
-                              background: "white",
-                              borderBottom: "1px solid #9D1212",
-                              borderRadius: "10px",
-                              // "border": "none",
-                            },
-                          }}
-                        />
-                        {/* <div className="column">
+                      {/* aca iba listaIdsPedidos buscador */}
+                      <Col align="left"><b>Fecha: </b>{moment(this.state.fecha).format('DD-MM-YYYY')}{"    "}
+                        <b>Hora:</b>{this.state.hora.toLocaleTimeString()}.</Col>
+                    </Row>
+                  </CardHeader>
+                  <TablaPedido
+                    editable={this.state.editable}
+                    envioDePedido={this.envioDePedido}
+                    envioDeEstadoLimpiarPedido={this.envioDeEstadoLimpiarPedido}
+                    envioDeEstadoResponsable={this.envioDeEstadoResponsable}
+                    pedidos={this.state.pedidos}
+                    pedido={this.state.pedido}
+                    unPedido={this.state.unPedido}
+                    responsablesDeMesa={this.state.responsablesDeMesa}
+                    responsable={this.state.responsable}
+                    nombre={this.state.nombre}
+                    unResponsable={this.state.unResponsable}
+                    secciones={this.state.secciones}
+                    items={this.state.items}
+                    itemsPedido={this.state.itemsPedido}
+                    pedidoId={this.state.pedidoId}
+                    listadoItemsPedido={this.listadoItemsPedido}
+                    // listaProductosEnPedido={listaProductosEnPedido}
+                    listadoPedidos={this.listadoPedidos}
+                    listadoProductos={this.listadoProductos}
+                    listadoResponsables={this.listadoResponsables}
+                    obtenerId={this.obtenerId}
+                    crearPedido={this.crearPedido}
+                    codigoPedido={codigoPedido}
+                    handleChangeSeccion={this.handleChangeSeccion}
+                    limpiarSeccion={this.limpiarSeccion}
+                    // limpiar={this.limpiar}
+                    confirmar={this.state.confirmar}
+                    // refSeccion={this.state.refSeccion}
+                    // confirmarMetodo={this.confirmar}
+                    // handleEvent={this.handleEvent}
+                    toggle={this.toggle}
+                  ></TablaPedido>
+                  <React.Fragment>{editable == false && (
+                    <CardBody>
+                      <Row>
+                        &nbsp;
+                        <FormGroup onSubmit={this.event}>
+                          <Multiselect
+                            id="descripcion"
+                            options={this.listaProductosEnPedido()}
+                            ref={this.multiselectRef}
+                            selectedValues={this.state.selectedValues}
+                            SelectedItem={this.state.SelectedItem}
+                            onSelect={this.settingDescripciones}
+                            onRemove={this.onRemove}
+                            groupBy="precio"
+                            closeIcon="circle2"
+                            hidePlaceholder={true}
+                            loading={false}
+                            placeholder="Seleccione un producto"
+                            displayValue="name"
+                            emptyRecordMsg="No hay más productos para seleccionar"
+                            style={{
+                              chips: { background: "#9D1212" },
+                              searchBox: {
+                                background: "white",
+                                borderBottom: "1px solid #9D1212",
+                                borderRadius: "10px",
+                                // "border": "none",
+                              },
+                            }}
+                          />
+                          {/* <div className="column">
                           {React.cloneElement(this.props.children, {
                             selectedItem: this.state.selectedItem,
                           })}
                         </div> */}
 
-                      </FormGroup>
-                    </Row>
-                  </CardBody>
-                )}</React.Fragment>
-
-                <React.Fragment>
-                  {nuevaListaDescripciones.length > 0 && editable == false && (
-                    <Container style={{ backgroundColor: "#f1f1f1" }}>
-                      <Row>
-                        <Col class="col-lg-4">
-                          <Table style={{ backgroundColor: "#eee363" }}>
-                            <thead>
-                              <tr>
-                                <th>Productos</th>
-                                <th>Cantidad</th>
-                                <th></th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {this.renderItems(listaItems, this.state.SelectedItem)}
-                            </tbody>
-                          </Table>
-                        </Col>
-                        <Col class="col-lg-4">
-                          <Table
-                            style={{ backgroundColor: "#F5C765" }}
-                            importe={this.state.importe}
-                          >
-                            <thead>
-                              <tr>
-                                <th>Observaciones</th>
-                                <th>Importe</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {this.renderItemsDos(listaItems)}
-                            </tbody>
-                          </Table>
-                        </Col>
+                        </FormGroup>
                       </Row>
-                      <CardFooter>
-                        <CardText align="right" style={{ marginRight: "3rem" }}>
-                          <b> Importe total $ </b>
-                          {this.sumar()}
-                        </CardText>
-                      </CardFooter>
-                      <CardFooter>
-                        <CardText align="left">Observaciones: <Input
-                          key="observaciones"
-                          style={{ backgroundColor: "#eee363" }}
-                          type="textarea"
-                          id="observaciones"
-                          name="observaciones"
-                          placeholder="Observaciones generales"
-                          value={this.state.unPedido.observaciones}
-                          onChange={this.handleChangeObservaciones}
-                          className="form-control"
-                        ></Input></CardText>
-                      </CardFooter>
-                    </Container>
-                  )}
-                  {nuevaListaDescripciones == 0 && editable == false && (
-                    <div>
-                      <Container>
-                        <Row className="align-items-center">
-                          <CardText>Por favor seleccione productos</CardText>
+                    </CardBody>
+                  )}</React.Fragment>
+
+                  <React.Fragment>
+                    {nuevaListaDescripciones.length > 0 && editable == false && (
+                      <Container style={{ backgroundColor: "#f1f1f1" }}>
+                        <Row>
+                          <Col class="col-lg-4">
+                            <Table style={{ backgroundColor: "#eee363" }}>
+                              <thead>
+                                <tr>
+                                  <th>Productos</th>
+                                  <th>Cantidad</th>
+                                  <th></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {this.renderItems(listaItems, this.state.SelectedItem)}
+                              </tbody>
+                            </Table>
+                          </Col>
+                          <Col class="col-lg-4">
+                            <Table
+                              style={{ backgroundColor: "#F5C765" }}
+                              importe={this.state.importe}
+                            >
+                              <thead>
+                                <tr>
+                                  <th>Observaciones</th>
+                                  <th>Importe</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {this.renderItemsDos(listaItems)}
+                              </tbody>
+                            </Table>
+                          </Col>
                         </Row>
+                        <CardFooter>
+                          <CardText align="right" style={{ marginRight: "3rem" }}>
+                            <b> Importe total $ </b>
+                            {this.sumar()}
+                          </CardText>
+                        </CardFooter>
+                        <CardFooter>
+                          <CardText align="left">Observaciones: <Input
+                            key="observaciones"
+                            style={{ backgroundColor: "#eee363" }}
+                            type="textarea"
+                            id="observaciones"
+                            name="observaciones"
+                            placeholder="Observaciones generales"
+                            value={this.state.unPedido.observaciones}
+                            onChange={this.handleChangeObservaciones}
+                            className="form-control"
+                          ></Input></CardText>
+                        </CardFooter>
                       </Container>
-                    </div>
-                  )}
-                </React.Fragment>
+                    )}
+                    {nuevaListaDescripciones == 0 && editable == false && (
+                      <div>
+                        <Container>
+                          <Row className="align-items-center">
+                            <CardText>Por favor seleccione productos</CardText>
+                          </Row>
+                        </Container>
+                      </div>
+                    )}
+                  </React.Fragment>
 
-                <React.Fragment>
-                  {editable == true && (
-                    <Container style={{ backgroundColor: "#f1f1f1" }}>
-                      <Row>
-                        <Col class="col-lg-4">
-                          <Table style={{ backgroundColor: "#eee363" }}>
-                            <thead>
-                              <tr>
-                                <th>Código</th>
-                                <th>Productos</th>
-                                <th>Cantidad</th>
-                                <th>importe</th>
-                                <th></th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {this.renderItemsUnoEditable(
-                                this.state.SelectedItem
-                              )}
-                            </tbody>
+                  <React.Fragment>
+                    {editable == true && (
+                      <Container style={{ backgroundColor: "#f1f1f1" }}>
+                        <Row>
+                          <Col class="col-lg-4">
+                            <Table style={{ backgroundColor: "#eee363" }}>
+                              <thead>
+                                <tr>
+                                  <th>Código</th>
+                                  <th>Productos</th>
+                                  <th>Cantidad</th>
+                                  <th>importe</th>
+                                  <th></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {this.renderItemsUnoEditable(
+                                  this.state.SelectedItem
+                                )}
+                              </tbody>
 
-                          </Table>
-                        </Col>
-                        <Col class="col-lg-4">
-                          <Table
-                            style={{ backgroundColor: "#F5C765" }}
-                            importe={this.state.importe}
-                          >
-                            <thead>
-                              <tr>
-                                <th>Observaciones</th>
-                                <th>Importe</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {this.renderItemsDosEditable()}
-                            </tbody>
-                          </Table>
-                        </Col>
-                      </Row>
-                      <CardFooter>
-                        <CardText align="right" style={{ marginRight: "3rem" }}>
-                          <b>Importe total $:</b>
-                          {this.sumar()}
-                        </CardText>
-                      </CardFooter>
-                      <CardFooter>
-                        <CardText align="left">Observaciones: <input
-                          key="observaciones"
-                          style={{ backgroundColor: "#eee363" }}
-                          type="textarea"
-                          id="observaciones"
-                          name="observaciones"
-                          placeholder="Observaciones generales"
-                          value={this.state.unPedido.observaciones}
-                          onChange={this.handleChangeObservaciones}
-                          className="form-control"
-                        ></input></CardText>
-                      </CardFooter>
-                    </Container>
-                  )}
-                </React.Fragment>
+                            </Table>
+                          </Col>
+                          <Col class="col-lg-4">
+                            <Table
+                              style={{ backgroundColor: "#F5C765" }}
+                              importe={this.state.importe}
+                            >
+                              <thead>
+                                <tr>
+                                  <th>Observaciones</th>
+                                  <th>Importe</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {this.renderItemsDosEditable()}
+                              </tbody>
+                            </Table>
+                          </Col>
+                        </Row>
+                        <CardFooter>
+                          <CardText align="right" style={{ marginRight: "3rem" }}>
+                            <b>Importe total $:</b>
+                            {this.sumar()}
+                          </CardText>
+                        </CardFooter>
+                        <CardFooter>
+                          <CardText align="left">Observaciones: <input
+                            key="observaciones"
+                            style={{ backgroundColor: "#eee363" }}
+                            type="textarea"
+                            id="observaciones"
+                            name="observaciones"
+                            placeholder="Observaciones generales"
+                            value={this.state.unPedido.observaciones}
+                            onChange={this.handleChangeObservaciones}
+                            className="form-control"
+                          ></input></CardText>
+                        </CardFooter>
+                      </Container>
+                    )}
+                  </React.Fragment>
 
-                <CardFooter>
-                  <Row>
-                    <Col xs="12" md="6" onSubmit={this.event}>
-                      <Button
-                        color="success"
-                        size="lg"
-                        block
-                        // onSubmit={this.handleEvent} FocusEvent
-                        onClick={() => this.confirmarPedido(this.state.idPedido)
-                          // ,()=>this.verDetallesItems(this.state.idPedido)
-                        }
-                      // onClick={() => this.handleEvent, () => this.confirmarPedido()}
-                      >
-                        Confirmar
-                      </Button>
-                    </Col>
-                    <Col xs="12" md="6">
-                      {/* <Button
+                  <CardFooter>
+                    <Row>
+                      <Col xs="12" md="6" onSubmit={this.event}>
+                        <Button
+                          color="success"
+                          size="lg"
+                          block
+                          // onSubmit={this.handleEvent} FocusEvent
+                          onClick={() => this.confirmarPedido(this.state.idPedido)
+                            // ,()=>this.verDetallesItems(this.state.idPedido)
+                          }
+                        // onClick={() => this.handleEvent, () => this.confirmarPedido()}
+                        >
+                          Confirmar
+                        </Button>
+                      </Col>
+                      <Col xs="12" md="6">
+                        {/* <Button
                         activeClassName="button-confirmar"
                         path="./Pedido"
                         name="Pedido"
@@ -817,41 +898,29 @@ class Pedidos extends React.Component {
                       >
                         Confirmar props
                       </Button> */}
-                      <React.Fragment>{this.state.listaItems.length > 0 &&
-                      <Button color="primary" size="lg" block
-                       onClick={() => this.vistaPrevia(true)}
-                      >
-                        Vista previa
-                      </Button>
-                      }
-                      </React.Fragment>
-                    </Col>
-                  </Row>
-                </CardFooter>
-              </Card>
-            </Container>
-          </div>
-       
-        </Collapse>
-          )}
-          </React.Fragment> 
+                        <React.Fragment>{this.state.listaItems.length > 0 &&
+                          <Button color="primary" size="lg" block
+                            onClick={() => this.vistaPrevia(true)}
+                          >
+                            Vista previa
+                          </Button>
+                        }
+                        </React.Fragment>
+                      </Col>
+                    </Row>
+                  </CardFooter>
+                </Card>
+              </Container>
+            </div>
+
+          </Collapse>
+        )}
+        </React.Fragment>
       </div>
     );
   }
 
-  listaProductosEnPedido() {
-    let listaProductosEnPedido =
-      this.state.productos.map((p) => ({
-        name: p.descripcion + "",
-        id: p.id,
-        precio: "$" + p.precioUnitario,
-        descripcion: p.descripcion,
-        precioUnitario: p.precioUnitario,
-        cantidad: 0,
-        importe: 0,
-      }));
-    return listaProductosEnPedido
-  }
+
 
   limpiarSeccion(nuevoPedido) {
     this.setState(function (state, props) {
@@ -892,28 +961,51 @@ class Pedidos extends React.Component {
   //   }
   // }
 
- 
-  actualizarEstadosAlCrear(){
+
+  actualizarEstadosAlCrear() {
     this.setState({
       listaItems: [], nuevaListaDescripciones: [], modal: true, confirmar: true,
-      idPedido:this.state.idPedido, selectedValues: [], verPlantilla: true
+      idPedido: this.state.idPedido, selectedValues: [], verPlantilla: true
     }, () => console.log("listaItemsCOnfirmar", this.state.confirmar)
     );
   }
 
-  actualizarEstadosAlGuardar(listaItems,nuevaListaDescripciones,verPlantilla){
+  actualizarEstadosAlGuardar(listaItems, nuevaListaDescripciones) {
     this.setState({
-      listaItems:listaItems, nuevaListaDescripciones:nuevaListaDescripciones
-      ,verPlantilla:verPlantilla
-    }, () => console.log("listaItemsCOnfirmar", this.state.confirmar)
+      selectedValues: this.state.selectedValues
+      , SelectedItem: this.state.SelectedItem
+    })
+    // this.handleRemoveRow(this.state.SelectedItem)
+    this.setState({
+      listaItems: [], nuevaListaDescripciones: [],
+      selectedValues: [], SelectedItem: {}, productos: [], unPedido: {}, unItem: {}
+    }, () => this.forceUpdate(), () => console.log("actualizarAlguardar", this.state.listaItems)
     );
+
+  }
+
+  vistaPrevia(boolean) {
+    // this.selectedItems()
+    // if (boolean == true) {
+    this.setState({
+      vistaPrevia: boolean, listaItems: this.state.listaItems,
+      unPedido: this.state.unPedido
+    }, () => console.log("vistaPrevia", this.state.selectedValues, boolean));
+    // }
+    // if (boolean == false) {
+    //   this.crearPedido();
+    //   console.log("vistaPrevia2", this.state.selectedValues, boolean);
+
+
+    // }
+
   }
 
   confirmarPedido(idPedido) {
     this.crearPedido();
     this.setState({
       listaItems: [], nuevaListaDescripciones: [], modal: true, confirmar: true,
-      idPedido:this.state.idPedido, selectedValues: [], verPlantilla: true
+      idPedido: this.state.idPedido, selectedValues: [], verPlantilla: true
     }, () => console.log("listaItemsCOnfirmar", this.state.confirmar)
     );
     this.getCollapse();
@@ -923,17 +1015,17 @@ class Pedidos extends React.Component {
     // this.confirmar();
   }
 
-  vistaPrevia(boolean) {
-      this.setState({
-        vistaPrevia:boolean,listaItems:this.state.listaItems,
-        unPedido:this.state.unPedido
-      });
+
+
+
+  envioDePedido(estadoSeccion) {
+    this.setState({ seccion: estadoSeccion},
+      () => console.log("envioSeccion", estadoSeccion, this.state.seccion));
   }
 
-
-  envioDePedido(estadoSeccion, estadoSecciones) {
-    this.setState({ seccion: estadoSeccion, secciones: estadoSecciones },
-      () => console.log("envioSeccion", estadoSeccion, this.state.seccion));
+  envioDeEstadoResponsable(estadoResponsable) {
+    this.setState({nombre:estadoResponsable}
+      ,()=>console.log("estadoRespPedid", estadoResponsable, this.state.nombre))
   }
   seleccionarItem(unItem) {
     this.setState({ item: unItem }, () => console.log("seleccionar", this.state.item))

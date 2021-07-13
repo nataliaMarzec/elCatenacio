@@ -5,8 +5,6 @@ class PedidoItems extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      editar: false,
-      toogle: props.toggle,
       listaItems: props.listaItems,
       unItem: props.unItem,
       precio: props.precio,
