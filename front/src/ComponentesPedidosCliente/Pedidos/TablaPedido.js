@@ -11,7 +11,6 @@ class TablaPedido extends React.Component {
       unPedido: props.unPedido,
       responsablesDeMesa:props.responsablesDeMesa,
       responsable:props.responsable,
-      unResponsable:props.unResponsable,
       itemsPedido:props.itemsPedido,
       productos: props.productos || [],
       producto: props.producto || {},
@@ -78,20 +77,15 @@ class TablaPedido extends React.Component {
   componentWillReceiveProps(props) {
     this.setState({ editable: props.editable })
     this.setState({ secciones: props.secciones })
-      // , () => console.log("propsTabSecciones", this.state.secciones)
     // this.setState({unPedido:props.unPedido},()=>console.log("unPedido",this.state.unPedido))
     this.setState({ confirmar: props.confirmar })
     this.setState({ pedidos: props.pedidos })
       // , () => console.log("propsPEDIDOS", this.state.pedidos)
     this.setState({ pedido: props.pedido } )
       // , () => console.log("propsPEDIDOS", this.state.pedido)
-    this.setState({ itemsPedido: props.itemsPedido},
-    // () => console.log("propsItemsPedido", this.state.itemsPedido)
-    )
-    this.setState({ responsablesDeMesa: props.responsablesDeMesa},
-      () => console.log("propsResponsableTabl", props.responsablesDeMesa))
-    this.setState({ responsable: props.responsable},
-      () => console.log("propsResponsable", props.responsable))
+    this.setState({ itemsPedido: props.itemsPedido},)
+    this.setState({ responsablesDeMesa: props.responsablesDeMesa})
+    this.setState({ responsable: props.responsable},)
   }
 
   handleSubmit = (e) => {
@@ -256,7 +250,7 @@ class TablaPedido extends React.Component {
                 <th>Sección</th>
               </tr>
             </thead>
-            <tbody>{this.unPedido(pedidos)}</tbody>
+            <tbody>{this.unPedido()}</tbody>
           </Table>}
         </React.Fragment>
         <React.Fragment>{editable == true &&
@@ -281,51 +275,22 @@ class TablaPedido extends React.Component {
     );
   }
 
-  unPedido = (pedidos) => {
-    const { crearPedido } = this.props;
+  unPedido = () => {
     const { envioDePedido } = this.props;
-    const { envioDeEstadoLimpiarPedido } = this.props
-    const { toggle } = this.props;
-    const { handleChangeSeccion } = this.props
-    const { limpiarSeccion } = this.props;
     const {envioDeEstadoResponsable}=this.props
-    const {listadoResponsables}=this.props
-    // const {refSeccion}=this.props;
-    // const {handleEvent}=this.props;
-    // const {confirmar}=this.props;
-    // const {confirmarMetodo}=this.props
-    // const {limpiar}=this.props
-    // var unPedido = this.state.seleccionado;
-    console.log("tbl_secciones",this.state.secciones)
     return (
       <TablaPedidoRow
-        // id={unPedido.id}
-        // pedido={unPedido}
         unPedido={this.state.unPedido}
         responsablesDeMesa={this.state.responsablesDeMesa}
         listadoResponsables={this.props.listadoResponsables}
-        unResponsable={this.state.unResponsable}
         responsable={this.state.responsable}
         nombre={this.state.responsable.nombre}
         seccion={this.state.unPedido.seccion}
         secciones={this.state.secciones}
-        pedidos={pedidos}
         envioDePedido={envioDePedido}
-        envioDeEstadoLimpiarPedido={envioDeEstadoLimpiarPedido}
-        codigoPedido={this.state.codigoPedido}
-        crearPedido={crearPedido}
-        seleccionado={this.state.seleccionado}
-        listadoPedidos={this.props.listadoPedidos}
-        handleChangeSeccion={handleChangeSeccion}
-        limpiarSeccion={limpiarSeccion}
         envioDeEstadoResponsable={envioDeEstadoResponsable}
-        // refSeccion={refSeccion}
-        // handleEvent={handleEvent}
-        // confirmar={this.state.confirmar}
-        confirmar={this.props.confirmar}
-        // confirmarMetodo={confirmarMetodo}
-        // limpiar={limpiar}
-        toggle={toggle}
+        listadoPedidos={this.props.listadoPedidos}
+      
       />
     );
   };

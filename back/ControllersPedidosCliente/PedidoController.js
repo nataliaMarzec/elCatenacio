@@ -13,49 +13,50 @@ module.exports = {
     var responsable = await Responsable.findOne({
       where: { nombre: req.params.nombre },
     });
-    // var responsableId = responsable.id_responsable;
+    const id=req.body.id
+    var responsableId = responsable.id_responsable;
     // let responsableId = req.params.id_responsable
-    // const seccion = req.body.seccion;
-    // const codigoPedido = req.body.codigoPedido;
-    // const observaciones = req.body.observaciones;
-    // const entregado = false;
-    // const fecha = req.body.fecha;
-    // const hora = req.body.hora;
+    const seccion = req.body.seccion;
+    const codigoPedido = req.body.codigoPedido;
+    const observaciones = req.body.observaciones;
+    const entregado = false;
+    const fecha = req.body.fecha;
+    const hora = req.body.hora;
 
     const pedido = {
+      id:id,
       responsableId:responsable.id_responsable,
-      seccion: req.body.seccion,
-      codigoPedido:req.body.codigoPedido,
-      observaciones:req.body.observaciones,
-      entregado:req.body.entregado,
-      fecha:req.body.fecha,
-      hora:req.body.hora,
+      seccion:seccion,
+      codigoPedido:codigoPedido,
+      observaciones:observaciones,
+      entregado:entregado,
+      fecha:fecha,
+      hora:hora,
       ItemsPedido: [],
     };
     return await Pedido.create(pedido)
       .then(function (pedido) {
         console.log("pedido+++", pedido.responsableId);
         pedido.save();
-        // let id = pedido.id;
-        // let responsableId = pedido.responsableId;
-        // let seccion = pedido.seccion;
-        // let observaciones = pedido.observaciones;
-        // let codigoPedido = pedido.codigoPedido;
-        // let entregado = pedido.entregado;
-        // let fecha = pedido.fecha;
-        // let hora = pedido.hora;
+        let id = pedido.id;
+        let responsableId = pedido.responsableId;
+        let seccion = pedido.seccion;
+        let observaciones = pedido.observaciones;
+        let codigoPedido = pedido.codigoPedido;
+        let entregado = pedido.entregado;
+        let fecha = pedido.fecha;
+        let hora = pedido.hora;
 
         return res.json({
           message: "se guardo el pedido",
-          pedido,
-          // id,
-          // responsableId,
-          // seccion,
-          // observaciones,
-          // codigoPedido,
-          // entregado,
-          // fecha,
-          // hora
+          id,
+          responsableId,
+          seccion,
+          observaciones,
+          codigoPedido,
+          entregado,
+          fecha,
+          hora
 
         });
       })

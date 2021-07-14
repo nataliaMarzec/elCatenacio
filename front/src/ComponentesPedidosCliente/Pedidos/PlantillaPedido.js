@@ -11,11 +11,12 @@ class PlantillaPedido extends React.Component {
       hora: props.hora,
       listaItems: props.listaItems,
       unPedido: props.unPedido,
+      nombre:props.nombre,
       nuevaListaDescripciones: props.nuevaListaDescripciones,
       selectedValues:props.selectedValues,
     };
     this.guardar=this.guardar.bind(this)
-
+    
   }
 
   componentWillMount() {
@@ -23,9 +24,9 @@ class PlantillaPedido extends React.Component {
       listaItems: this.state.listaItems, unPedido: this.state.unPedido
       , fecha: this.state.fecha, hora: this.state.hora
       , nuevaListaDescripciones: this.state.nuevaListaDescripciones,
-      selectedValues:this.state.selectedValues
+      selectedValues:this.state.selectedValues,unPedido:this.state.unPedido
     }
-      , () => console.log("listaItemsWill", this.state.fecha, this.state.hora))
+      , () => console.log("plantillaWill-unPedido", this.state.unPedido))
   }
 
   // shouldComponentUpdate() {
@@ -83,7 +84,7 @@ class PlantillaPedido extends React.Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.unPedido !== this.props.unPedido) {
       this.setState({ unPedido: nextProps.unPedido }
-        // , () => console.log("pedidoPlantilla", nextProps.pedido)
+        , () => console.log("pedidoPlantilla", nextProps.pedido)
       );
     }
     if (nextProps.listaItems !== this.props.listaItems) {
@@ -97,6 +98,11 @@ class PlantillaPedido extends React.Component {
     }
     if (nextProps.hora !== this.props.hora) {
       this.setState({ hora: nextProps.hora }
+        // , () => console.log("pedidoPlantilla", nextProps.pedido)
+      );
+    }
+    if (nextProps.nombre !== this.props.nombre) {
+      this.setState({ nombre: nextProps.nombre }
         // , () => console.log("pedidoPlantilla", nextProps.pedido)
       );
     }
@@ -117,18 +123,25 @@ class PlantillaPedido extends React.Component {
     return total;
   };
 
-  guardar(listaItems) {
-    let lista=listaItems
-    lista=[]
-    this.setState({listaItems:lista})
+  guardar() {
+    // let lista=listaItems
+    // lista=[]
+   
     // this.props.crearPedido()
     // this.setState({selectedValues:this.state.selectedValues},()=>console.log("GUARDAR",this.state.selectedValues))
     this.props.crearPedido()
-    this.props.actualizarEstadosAlGuardar([],[])
+    this.props.actualizarEstadosAlGuardar()
+    this.setState({listaItems:[],unPedido:{}},()=>this.forceUpdate())
+    // this.props.botonPrueba()
     this.props.vistaPrevia(false)
-    // this.props.resetValues()
 
+    // this.props.resetValues()
   }
+
+  botonPrueba(){
+    this.props.botonPrueba()
+  }
+  
 
   render = () => {
     let unPedido = this.state.unPedido
@@ -153,7 +166,7 @@ class PlantillaPedido extends React.Component {
               </thead>
               <tbody>
                 <tr>
-                  <td>{ }</td>
+                  <td>{this.state.nombre}</td>
                   <td>{this.state.unPedido.seccion}</td>
                   <td>{moment(this.state.hora).format('HH:mm')}</td>
                 </tr>
@@ -180,7 +193,6 @@ class PlantillaPedido extends React.Component {
                     <tbody>
                       <tr>
                         <th scope="row">{unItem.descripcion}</th>
-                        {/* <td>{unItem.descripcion}</td> */}
                         <td>{unItem.cantidad}</td>
                         <td>{unItem.observaciones || "Sin observaciones"}</td>
                         <td>{unItem.importe}</td>
@@ -205,10 +217,11 @@ class PlantillaPedido extends React.Component {
               Cerrar
             </Button>
             <Button color="success" size="lg" block
-              onClick={() => this.guardar(this.state.listaItems)}
+              onClick={() => this.guardar()}
             >
               Guardar
             </Button>
+          
           </Col>
         </Row>
       </Container>
