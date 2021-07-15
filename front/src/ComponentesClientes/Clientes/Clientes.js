@@ -129,15 +129,14 @@ class Clientes extends React.Component {
   };
 
   render(props) {
-    var listaCuitCliente = this.state.clientes.map((cliente) => {
+    var listaDNIClientes = this.state.clientes.map((cliente) => {
       return (
         <div>
           <option value={cliente.dni} />
         </div>
       );
     });
-    console.log("listaCuitCliente", listaCuitCliente);
-
+    // console.log("listaDNIClientes", listaDNIClientes);
     return (
       <div className="container">
         <div></div>
@@ -182,7 +181,7 @@ class Clientes extends React.Component {
                               list="cliente"
                             />
                           </Col>
-                          <datalist id="cliente">{listaCuitCliente}</datalist>
+                          <datalist id="cliente">{listaDNIClientes}</datalist>
                         </FormGroup>
                         <div className="row">
                           <div className="input-field col s12 m12">
@@ -230,8 +229,6 @@ class Clientes extends React.Component {
                   </Card>
                 </Col>
               </Row>
-            {/* :<h1>hola</h1>
-          )} */}
         </div>
       </div>
     );

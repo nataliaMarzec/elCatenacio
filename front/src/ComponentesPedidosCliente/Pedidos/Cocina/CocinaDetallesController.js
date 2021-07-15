@@ -59,6 +59,8 @@ const CocinaDetallesController = (props) => {
                         index={index}
                         items={itemsLista}
                         item={props.item}
+                        productos={props.productos}
+                        producto={props.producto}
                         pedido={unPedido}
                         pedidos={props.pedidos}
                         listadoPedidos={props.listadoPedidos}

@@ -33,13 +33,9 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       observaciones: Sequelize.STRING,
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
+      listo:{
+        type:Sequelize.BOOLEAN,
+        defaultValue:false,
       },
     });
   },

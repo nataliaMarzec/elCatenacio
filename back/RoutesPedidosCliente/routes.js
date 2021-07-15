@@ -20,6 +20,7 @@ router.get("/unPedido", controllerPedido.getUnPedido);
 router.put("/pedidos/:id", controllerPedido.update);
 router.get("/pedidos/buscar/:codigo", controllerPedido.encontrarPedidoPorCodigo);
 router.get("/pedidos/encontrar/:mesero", controllerPedido.encontrarPedidoPorMesero);
+router.put("/pedido/:id/entregado/:entregado",controllerPedido.updateEntregado);
 router.get("/itemParaPedido/:codigo/:id", controllerPedido.guardarPedidoId);
 
 router.post("/productos/nuevo", controllerProducto.create);
@@ -49,6 +50,7 @@ router.get("/items/:id/producto/:descripcion", controllerItemsPedido.addProducto
 router.get("/itemsUpdate/:id/producto/:descripcion", controllerItemsPedido.updateProducto);
 router.get("/itemsDePedidos", controllerItemsPedido.todosLosItemsDePedidos);
 router.put("/itemsPedido/:id",controllerItemsPedido.updatePorId);
+router.put("/itemsPedido/:codigo/listo/:listo",controllerItemsPedido.updateListo);
 router.delete("/itemsPedido/:id",controllerItemsPedido.delete);
 router.post("/itemsPedido/producto",controllerItemsPedido.addConProducto);
 

@@ -10,24 +10,21 @@ module.exports = {
     //       productoId: 1,
     //       cantidad:3,
     //       importe:400,
-    //       createdAt: new Date(),
-    //       updatedAt: new Date(),
+    //       
     //     },
     //     {
     //       pedidoId: 1,
     //       productoId: 2,
     //       cantidad:3,
     //       importe:400,
-    //       createdAt: new Date(),
-    //       updatedAt: new Date(),
+    //      
     //     },
     //     {
     //       pedidoId: 2,
     //       productoId: 3,
     //       cantidad:3,
     //       importe:400,
-    //       createdAt: new Date(),
-    //       updatedAt: new Date(),
+    //      
     //     },
     //   ],
     //   {}

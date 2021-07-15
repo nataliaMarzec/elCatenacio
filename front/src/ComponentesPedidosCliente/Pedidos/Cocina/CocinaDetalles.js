@@ -80,9 +80,11 @@ class CocinaDetalles extends React.Component {
           pedidos={this.state.pedidos}
           items={this.state.items}
           item={this.state.item}
+          productos={this.state.productos}
+          producto={this.state.producto}
           listadoPedidos={this.listadoPedidos}
           listadoItemsPedido={this.listadoItemsPedido}
-          
+          listadoProductos={this.listadoProductos}
         ></CocinaDetallesController>
       </div>
     );

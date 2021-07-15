@@ -126,7 +126,7 @@ class Pedidos extends React.Component {
     this.selectedItems = this.selectedItems.bind(this)
     this.resetValues = this.resetValues.bind(this)
     this.selectedItems = this.selectedItems.bind(this)
-    this.botonPrueba = this.botonPrueba.bind(this)
+    this.guardarVistaPrevia = this.guardarVistaPrevia.bind(this)
     // this.verPlantilla=this.verPlantilla(this)
     // this.limpiar=this.limpiar.bind(this)
   }
@@ -600,7 +600,6 @@ class Pedidos extends React.Component {
                   actualizarEstadosAlGuardar={this.actualizarEstadosAlGuardar}
                   selectedItems={this.selectedItems}
                   resetValues={this.resetValues}
-                  botonPrueba={this.botonPrueba}
                   selectedValues={this.state.selectedValues}
                   ref={this.multiselectRef}
                 >
@@ -894,39 +893,38 @@ class Pedidos extends React.Component {
   }
 
   actualizarEstadosAlGuardar() {
-   this.botonPrueba()
+   this.guardarVistaPrevia()
 
   }
-  botonPrueba() {
+  guardarVistaPrevia() {
     this.setState({
       listaItems: [], unPedido: {}, nuevaListaDescripciones: [], selectedValues: [],
-    }, () => console.log("botonPrueba---", this.state)
-    );
-
-
+    });
   }
+
   vistaPrevia(boolean) {
     this.setState({
       vistaPrevia: boolean
     });
-
-
-    // }
-
   }
 
   confirmarPedido(idPedido) {
+    if(this.state.listaItems.length >=1){
     this.crearPedido();
     this.setState({
       listaItems: [], nuevaListaDescripciones: [], modal: true, confirmar: true,
       idPedido: this.state.idPedido, selectedValues: [], verPlantilla: true
-    }, () => console.log("listaItemsCOnfirmar", this.state.confirmar)
-    );
+    });
     this.getCollapse();
-    // this.verPlantilla();
-    this.verDetallesItems(idPedido)
-    // this.limpiarSeccion(this.state.unPedido)
-    // this.confirmar();
+  }else{
+    if(this.state.listaItems.length ===0){
+      var answer = window.confirm(
+      "Por favor selecciona productos"
+    );
+    return answer
+    // console.log("por favor selecciona productos")
+    }
+  }
   }
 
 

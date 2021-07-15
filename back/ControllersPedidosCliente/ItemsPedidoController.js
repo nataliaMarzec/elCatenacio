@@ -45,6 +45,19 @@ module.exports = {
       .then((items) => res.status(201).send(items))
       .catch((error) => res.status(400).send(error));
   },
+  updateListo: async (req, res) => {
+    var item = await ItemsPedido.findOne({
+      where: { codigo: req.params.codigo },
+      include: ["Productos"],
+    });
+    var listo = req.params.listo
+    var itemListo = await item.update({ listo: listo });
+    if (![req.body.values]) {
+      res.status(400).json({ err: "no existe codigo item" });
+    } else {
+      return res.status(200).json(itemListo);
+    }
+  },
 
   //bien
   encontrarItemPorId: async (req, res) => {
@@ -109,7 +122,7 @@ module.exports = {
         }
       })
       .catch((error) =>
-        res.status(400).send({error,message: " no existe descripcion" })
+        res.status(400).send({ error, message: " no existe descripcion" })
       );
   },
   //usado 2
@@ -117,7 +130,7 @@ module.exports = {
     var pedido = await Pedidos.findOne({
       where: { id: req.params.id },
     });
-    var idPedido=pedido.id;
+    var idPedido = pedido.id;
     var producto = await Productos.findOne({
       where: { descripcion: req.params.descripcion },
     });
@@ -125,7 +138,7 @@ module.exports = {
     return ItemsPedido.create(
       {
         codigo: req.body.codigo,
-        pedidoId:pedido.id,
+        pedidoId: pedido.id,
         productoId: producto.id,
         cantidad: req.body.cantidad,
         precioUnitario: req.body.precioUnitario,
@@ -134,7 +147,7 @@ module.exports = {
       },
       {
         include: [
-          
+
           {
             model: Productos,
             as: "Productos",

@@ -115,6 +115,19 @@ module.exports = {
         console.log("item", error);
       });
   },
+  updateEntregado: async (req, res) => {
+    var pedido = await Pedido.findOne({
+      where: { id: req.params.id },
+      include: ["ItemsPedido"],
+    });
+    var entregado = req.params.entregado
+    var pedidoEntregado = await pedido.update({ entregado: entregado });
+    if (![req.body.values]) {
+      res.status(400).json({ err: "no existe id pedido" });
+    } else {
+      return res.status(200).json(pedidoEntregado);
+    }
+  },
 
 
   //actualiza el pedido pero no el item

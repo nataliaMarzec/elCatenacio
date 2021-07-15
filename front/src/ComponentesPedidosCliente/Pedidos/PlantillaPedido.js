@@ -11,42 +11,23 @@ class PlantillaPedido extends React.Component {
       hora: props.hora,
       listaItems: props.listaItems,
       unPedido: props.unPedido,
-      nombre:props.nombre,
+      nombre: props.nombre,
       nuevaListaDescripciones: props.nuevaListaDescripciones,
-      selectedValues:props.selectedValues,
+      selectedValues: props.selectedValues,
     };
-    this.guardar=this.guardar.bind(this)
-    
+    this.guardar = this.guardar.bind(this)
+
   }
 
   componentWillMount() {
     this.setState({
-      listaItems: this.state.listaItems, unPedido: this.state.unPedido
-      , fecha: this.state.fecha, hora: this.state.hora
-      , nuevaListaDescripciones: this.state.nuevaListaDescripciones,
-      selectedValues:this.state.selectedValues,unPedido:this.state.unPedido
+      listaItems: this.state.listaItems, unPedido: this.state.unPedido,
+      fecha: this.state.fecha, hora: this.state.hora,
+      nuevaListaDescripciones: this.state.nuevaListaDescripciones,
+      unPedido: this.state.unPedido
     }
       , () => console.log("plantillaWill-unPedido", this.state.unPedido))
   }
-
-  // shouldComponentUpdate() {
-  //     this.setState({encontrado:false})
-
-  // }
-
-  // componentWillUpdate(nextProps,prevProps){
-  //   if(prevProps.idPedido != this.props.idPedido){
-  //    this.setState({idPedido:this.props.idPedido}
-  //     ,console.log("updateidPedido",this.state.idPedido)) 
-  //   }
-  //   this.props.encontrarItemsIdPedido(this.props.idPedido)
-
-
-  // }
-
-
-
-
 
   // componentWillUpdate(nextProps,prevProps,prevState) {
   //   // let items=this.props.itemsPedido.filter(i=>i.pedidoId===this.props.idPedido)
@@ -83,65 +64,34 @@ class PlantillaPedido extends React.Component {
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.unPedido !== this.props.unPedido) {
-      this.setState({ unPedido: nextProps.unPedido }
-        , () => console.log("pedidoPlantilla", nextProps.pedido)
-      );
+      this.setState({ unPedido: nextProps.unPedido });
     }
     if (nextProps.listaItems !== this.props.listaItems) {
-      this.setState({ listaItems: nextProps.listaItems }
-        , () => console.log("listaItemsPlantilla", nextProps.listaItems));
+      this.setState({ listaItems: nextProps.listaItems });
     }
     if (nextProps.fecha !== this.props.fecha) {
-      this.setState({ fecha: nextProps.fecha }
-        // , () => console.log("pedidoPlantilla", nextProps.pedido)
-      );
+      this.setState({ fecha: nextProps.fecha });
     }
     if (nextProps.hora !== this.props.hora) {
-      this.setState({ hora: nextProps.hora }
-        // , () => console.log("pedidoPlantilla", nextProps.pedido)
-      );
+      this.setState({ hora: nextProps.hora });
     }
     if (nextProps.nombre !== this.props.nombre) {
-      this.setState({ nombre: nextProps.nombre }
-        // , () => console.log("pedidoPlantilla", nextProps.pedido)
-      );
+      this.setState({ nombre: nextProps.nombre });
     }
-    if (nextProps.selectedValues !== this.props.selectedValues) {
-      this.setState({ selectedValues: nextProps.selectedValues }
-        // , () => console.log("pedidoPlantilla", nextProps.pedido)
-      );
-    }
-
-
   }
 
   sumar = () => {
     let importes = this.state.listaItems.map((i) => i.importe);
     let total = importes.reduce((a, b) => a + b, 0);
-    console.log("importetotal", this.state.importeTotal);
-
     return total;
   };
 
   guardar() {
-    // let lista=listaItems
-    // lista=[]
-   
-    // this.props.crearPedido()
-    // this.setState({selectedValues:this.state.selectedValues},()=>console.log("GUARDAR",this.state.selectedValues))
     this.props.crearPedido()
     this.props.actualizarEstadosAlGuardar()
-    this.setState({listaItems:[],unPedido:{}},()=>this.forceUpdate())
-    // this.props.botonPrueba()
+    this.setState({ listaItems: [], unPedido: {} }, () => this.forceUpdate())
     this.props.vistaPrevia(false)
-
-    // this.props.resetValues()
   }
-
-  botonPrueba(){
-    this.props.botonPrueba()
-  }
-  
 
   render = () => {
     let unPedido = this.state.unPedido
@@ -221,7 +171,7 @@ class PlantillaPedido extends React.Component {
             >
               Guardar
             </Button>
-          
+
           </Col>
         </Row>
       </Container>
