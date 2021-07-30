@@ -28,7 +28,14 @@ module.exports = function (sequelize, DataTypes) {
       codigoPedido: DataTypes.INTEGER,
       seccion: DataTypes.STRING,
       observaciones: DataTypes.STRING,
-      entregado: DataTypes.BOOLEAN,
+      preparado:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:false,
+      },
+      entregado:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:false,
+      },
       fecha: {
         type: DataTypes.DATE,
         get() {

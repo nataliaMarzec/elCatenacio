@@ -33,7 +33,14 @@ module.exports = {
       observaciones: {
         type: Sequelize.STRING,
       },
-      entregado:Sequelize.BOOLEAN,
+      preparado:{
+        type:Sequelize.BOOLEAN,
+        defaultValue:false,
+      },
+      entregado:{
+        type:Sequelize.BOOLEAN,
+        defaultValue:false,
+      },
       fecha:{
         type:Sequelize.DATE,
         get() {

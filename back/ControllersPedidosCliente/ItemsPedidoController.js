@@ -1,4 +1,5 @@
 var { Sequelize, Op } = require("sequelize");
+const Pedido = require("../HomePedidosCliente/Pedido");
 const { models } = require("../SequelizeConnection");
 const ItemsPedido = models.ItemsPedido;
 const Productos = models.Producto;
@@ -15,6 +16,7 @@ module.exports = {
       precioUnitario: req.body.precioUnitario,
       importe: req.body.importe,
       observaciones: req.body.observaciones,
+      listo:false,
     })
       .then((item) => res.status(201).send(item))
       .catch((error) => res.status(400).send(error));
@@ -58,6 +60,25 @@ module.exports = {
       return res.status(200).json(itemListo);
     }
   },
+
+  updateItemsListos: async (req, res) => {
+    let id=req.params.id
+    var pedido= await Pedidos.findOne({where:{id:id}})
+    let pedidoId=pedido.id
+    if (pedidoId) {
+      var items = await ItemsPedido.update(
+        {listo:true},
+        {where: { pedidoId:pedidoId }},
+      )
+      console.log("ItemsListos",pedido.id,items);
+      return res.status(200).json(items);
+    } else {
+      return res
+        .status(404)
+        .json("no encontro ", {id});
+    }
+  },
+  
 
   //bien
   encontrarItemPorId: async (req, res) => {
@@ -315,11 +336,10 @@ module.exports = {
       })
       .catch((error) => res.status(400).send(error));
   },
-
+ 
   delete(req, res) {
     return ItemsPedido.findOne({
       where: { codigo: req.params.codigo },
-      include: ["Productos"],
     })
       .then((item) => {
         if (!item) {
@@ -329,8 +349,7 @@ module.exports = {
         }
         return item
           .destroy()
-          .then(() => res.status(204).send())
-          .catch((error) => res.status(400).send(error));
+          .then(() => res.status(200).send())
       })
       .catch((error) => res.status(400).send(error));
   },

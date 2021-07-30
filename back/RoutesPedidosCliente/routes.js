@@ -7,16 +7,19 @@ const controllerPago = require("../ControllersPedidosCliente/PagoController");
 const controllerResponsableDeMesa = require("../ControllersPedidosCliente/ResponsableDeMesaController");
 
 router.put("/pedidos/nuevo/:nombre", controllerPedido.create);
-router.get("/pedido/busqueda/:id",controllerPedido.getIdPedido)
+router.get("/pedido/busqueda/:id",controllerPedido.busquedaPedidoPorId)
 router.put("/pedidos/items/pedido/:id/producto/:descripcion",controllerPedido.settearPedidoYProductoAItem)
 // router.get("/pedidosTodos", controllerPedido.encontrarPedidoConItems);
 // router.get("/pedidos/:id", controllerPedido.getPedidoId);
 router.put("/pedidos/items/:id", controllerPedido.updateConItems);
 router.get("/pedidos/entregado/:id/", controllerPedido.updatePedidoEntregado);
-router.delete("/pedidos/:id", controllerPedido.delete);
+router.get("/pedidos/preparado/:id/", controllerPedido.updatePedidoPreparado);
+router.put("/pedidos/editar/:id/:nombre", controllerPedido.editarPedido);
+router.put("/pedidos/items/editar/:id/producto/:descripcion",controllerPedido.editarItemConProductoDePedido)
+router.delete("/pedido/delete/:id", controllerPedido.eliminarPedidoConItems);
 
 router.get("/pedidos", controllerPedido.getPedidos);
-router.get("/unPedido", controllerPedido.getUnPedido);
+// router.get("/unPedido", controllerPedido.getUnPedido);
 router.put("/pedidos/:id", controllerPedido.update);
 router.get("/pedidos/buscar/:codigo", controllerPedido.encontrarPedidoPorCodigo);
 router.get("/pedidos/encontrar/:mesero", controllerPedido.encontrarPedidoPorMesero);
@@ -51,7 +54,8 @@ router.get("/itemsUpdate/:id/producto/:descripcion", controllerItemsPedido.updat
 router.get("/itemsDePedidos", controllerItemsPedido.todosLosItemsDePedidos);
 router.put("/itemsPedido/:id",controllerItemsPedido.updatePorId);
 router.put("/itemsPedido/:codigo/listo/:listo",controllerItemsPedido.updateListo);
-router.delete("/itemsPedido/:id",controllerItemsPedido.delete);
+router.put("/itemsPedido/listos/:id",controllerItemsPedido.updateItemsListos);
+router.delete("/itemsPedido/eliminar/:codigo",controllerItemsPedido.delete);
 router.post("/itemsPedido/producto",controllerItemsPedido.addConProducto);
 
 router.get("/itemsDescripcion/:descripcion",controllerItemsPedido.buscarDescripcion);

@@ -31,25 +31,14 @@ class VistaDePedidosParaCocinaRow extends React.Component {
             observaciones: "",
             backgroundColor: { backgroundColor: "#FDFFFE" },
             color: "#FDFFFE",
-            listo:false,
         };
-        // 92F7B5
+        this.updateListo = this.updateListo.bind(this)
     }
 
     getInitialState() {
-        return { color: "#FDFFFE",listo:false };
+        return { color: "#FDFFFE", item: { listo: false } };
     }
 
-    changeColor(productoId) {
-        let productos = this.props.productos
-        let producto = productos.find((p) => p.id == productoId)
-        let descripcion = producto.descripcion
-        console.log("+++", producto, "++", productoId, "++", descripcion)
-        if (descripcion) {
-            this.setState({ color: "#92F7B5", descripcion: descripcion }
-                , () => console.log("descripcion", descripcion, this.state.descripcion));
-        }
-    }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
         if (nextProps.pedidos !== this.props.pedidos) {
@@ -65,8 +54,7 @@ class VistaDePedidosParaCocinaRow extends React.Component {
             this.setState({ item: this.props.item });
         }
         if (nextProps.productos !== this.props.productos) {
-            this.setState({ productos: nextProps.productos }
-                , () => console.log("propsPRODS", nextProps.productos));
+            this.setState({ productos: nextProps.productos });
         }
         if (nextProps.producto !== this.props.producto) {
             this.setState({ producto: nextProps.producto });
@@ -75,20 +63,20 @@ class VistaDePedidosParaCocinaRow extends React.Component {
 
 
     todoListo = (id) => {
-        console.log("id", id)
-        fetch("http://localhost:8383/pedidos/entregado/" + id, {
+        fetch("http://localhost:8383/pedidos/preparado/" + id, {
             method: "GET",
             headers: {
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
-
         })
             .then((res) => res.json())
             .then((res) => this.setState({ pedidos: this.props.pedidos, pedido: res }))
+            .then((res) => this.updateItemsListos(id))
             .then((res) => this.actualizarPedido(this.state.pedido))
             .then(this.props.listadoPedidos)
     };
+
 
     actualizarPedido = (unPedido) => {
         var listaActualizada = this.props.pedidos.filter(
@@ -96,56 +84,59 @@ class VistaDePedidosParaCocinaRow extends React.Component {
         this.setState({ pedidos: listaActualizada, pedido: {} });
     };
 
+    updateItemsListos(id) {
+        console.log("idListos", id)
+        fetch(`http://localhost:8383/itemsPedido/listos/${id}`, {
+            method: "PUT",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(this.state.item),
+        })
+            .then((res) => res.json())
+            .then(this.props.listadoItemsPedido)
+    };
 
-    onChange = (e) => {
-        let arg1 = e.target.getAttribute('data-arg1');
-        let arg2 = e.target.getAttribute('data-arg2');
-        let elementos = document.getElementById(arg2)
-        let boton = document.getElementById(arg1)
-      
-        console.log("codigo",arg1,arg2)
-        if (boton.innerText === "Listo") {
-            let elementos = document.getElementById(arg2)
-            let boton = document.getElementById(arg1)
-            // elementos.style.backgroundColor = "#92F7B5"
-            boton.innerText = "Deshacer"
-            boton.style.backgroundColor = "#92F7B5"
-            // this.setState({ item: { backgroundColor: "#92F7B5" } })
-        } else {
-            if (boton.innerHTML === "Deshacer") {
-                let elementos = document.getElementById(arg2)
-                let boton = document.getElementById(arg1)
-                // elementos.style.backgroundColor = "#FDFFFE"
-                boton.innerText = "Listo"
-                boton.style.backgroundColor = "#92F7B5"
-                // this.setState({ pedido: { backgroundColor: "#FDFFFE" } })
-            }
-        }
-        // }
-    }
+    updateListo(codigo, listo) {
+        fetch(`http://localhost:8383/itemsPedido/${codigo}/listo/${listo}`, {
+            method: "PUT",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ listo }),
+        })
+            .then((res) => res.json())
+            .then((res) => this.setState({ item: { listo: res.listo } }))
+            .then(this.props.listadoItemsPedido)
+    };
 
 
-       getComponent(event){
+
+    getComponent(event) {
         let arg1 = event.target.getAttribute('data-arg1');
-        let arg2=event.target.getAttribute('data-arg2')
-        console.log('li item clicked!',arg1,arg2,this.state.listo);
+        // let arg2 = event.target.getAttribute('data-arg2')
+        console.log('hola!', event.currentTarget.innerText);
 
-        if (event.currentTarget.innerText==="Listo" && arg1) {
-        event.currentTarget.style.backgroundColor = '#92F7B5';
-          event.currentTarget.innerText="Deshacer"
-          this.setState({listo:true})  
-
-        }else{
-            if(event.currentTarget.innerText==="Deshacer" && arg1){
+        if (event.currentTarget.innerText == "Listo") {
+            this.updateListo(arg1, true)
+            event.currentTarget.style.backgroundColor = '#92F7B5';
+            event.currentTarget.innerText = "Deshacer"
+            event.persist(event)
+        } else {
+            if (event.currentTarget.innerText === "Deshacer") {
+                this.updateListo(arg1, false)
                 event.currentTarget.style.backgroundColor = "#FDFFFE";
-                event.currentTarget.innerText="Listo"
-                this.setState({color:"#FDFFFE",listo:false})
-            }
+                event.currentTarget.innerText = "Listo"
+                event.persist(event)
 
+            }
         }
+        event.persist(event)
     }
 
-//agregar a los items atributo "listo"
+    //agregar a los items atributo "listo"
 
     render = () => {
         var style = { backgroundColor: this.state.color }
@@ -157,24 +148,16 @@ class VistaDePedidosParaCocinaRow extends React.Component {
         let productos = this.props.productos
         let codigo = this.state.codigo
         let itemsLista = items.map((i, index) => {
-            let pedido=this.props.pedidos.find(ped=>ped.id === i.pedidoId)             
-             let producto=this.props.productos.find(p=>p.id==i.productoId
-                 && pedido.id ==i.pedidoId) 
-
-            //  let descripcion=producto.descripcion 
-            console.log("+++",producto)       
-            // let tbodyElement = document.createElement("contenido");
-            // let boton=document.createElement("button");
-            // boton.innerText = "eliminar"
-            // tbodyElement.appendChild(boton)
+            let pedido = this.props.pedidos.find(ped => ped.id === i.pedidoId)
+            let producto = this.props.productos.find(p => p.id == i.productoId
+                && pedido.id == i.pedidoId)
 
             return (
-                <Col>
-                    <tbody id="fondo">
+
                         <Card key={i.codigo} id={i.codigo} data-arg1={i.codigo} style={style} onChange={this.getComponent.bind(this)}>
-                            <td >Producto: {i.productoId}</td>
-                            <td >Cantidad: {i.cantidad}</td>
-                            <td >Observaciones: {i.observaciones} </td>
+                            <Col >Producto: {i.productoId}</Col>
+                            <Col>Cantidad: {i.cantidad}</Col>
+                            <Col >Observaciones: {i.observaciones} </Col>
                             <Button key={i.codigo} id={i.codigo}
                                 className="btn #e65100 orange darken-4"
                                 style={style}
@@ -183,13 +166,12 @@ class VistaDePedidosParaCocinaRow extends React.Component {
                             >{botonTexto}
                             </Button>
                         </Card>
-                    </tbody>
-                </Col>
+                   
             )
         })
         return (
             <Container>
-                {/* <CardColumns> */}
+                <CardColumns>
                 <Card className="border-info" >
                     <CardHeader className="border-warning" >
                         Nro pedido: &nbsp; {this.props.pedido.id}</CardHeader>
@@ -198,6 +180,7 @@ class VistaDePedidosParaCocinaRow extends React.Component {
                         {itemsLista}
                         <Button
                             className="btn #e65100 orange darken-4"
+
                             onClick={() => this.todoListo(this.props.pedido.id)}
                         >
                             <i className="fa fa-dot-circle-o">{""} Todo listo</i>
@@ -205,7 +188,8 @@ class VistaDePedidosParaCocinaRow extends React.Component {
                     </Card>
                     {/* </CardGroup> */}
                 </Card>
-                {/* </CardColumns> */}
+                </CardColumns>
+              
             </Container>
         );
     };

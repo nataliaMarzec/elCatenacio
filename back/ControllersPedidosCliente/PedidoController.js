@@ -13,7 +13,7 @@ module.exports = {
     var responsable = await Responsable.findOne({
       where: { nombre: req.params.nombre },
     });
-    const id=req.body.id
+    const id = req.body.id
     var responsableId = responsable.id_responsable;
     // let responsableId = req.params.id_responsable
     const seccion = req.body.seccion;
@@ -24,14 +24,14 @@ module.exports = {
     const hora = req.body.hora;
 
     const pedido = {
-      id:id,
-      responsableId:responsable.id_responsable,
-      seccion:seccion,
-      codigoPedido:codigoPedido,
-      observaciones:observaciones,
-      entregado:entregado,
-      fecha:fecha,
-      hora:hora,
+      id: id,
+      responsableId: responsable.id_responsable,
+      seccion: seccion,
+      codigoPedido: codigoPedido,
+      observaciones: observaciones,
+      entregado: entregado,
+      fecha: fecha,
+      hora: hora,
       ItemsPedido: [],
     };
     return await Pedido.create(pedido)
@@ -64,27 +64,6 @@ module.exports = {
         console.log("pedido", error);
       });
   },
-
-  //usado no tiene que buscar solo seetear el id sacar var pedido
-  // settearPedidoYProductoAItem: async (req, res) => {
-  //   var pedido = await Pedido.findOne({
-  //     where: { id: req.params.id },
-  //   });
-  //   console.log("id", pedido.id);
-  //   var producto = await Producto.findOne({
-  //     where: { descripcion: req.params.descripcion },
-  //   });
-  //   var item = await ItemsPedido.create({
-  //     codigo: req.body.codigo,
-  //     pedidoId: pedido.id,
-  //     productoId: producto.id,
-  //     cantidad: req.body.cantidad,
-  //     precioUnitario: req.body.precioUnitario,
-  //     importe: req.body.importe,
-  //     observaciones: req.body.observaciones,
-  //   });
-  //   return res.status(200).json(item);
-  // },
 
   //usado 
   settearPedidoYProductoAItem: async (req, res) => {
@@ -129,6 +108,74 @@ module.exports = {
     }
   },
 
+  editarPedido: async (req, res) => {
+      var responsable = await Responsable.findOne({
+        where: { nombre: req.params.nombre },
+      });
+      return Pedido.findByPk(req.params.id)
+        .then((pedido) => {
+          if (!pedido) {
+            return res.status(404).send({
+              message: "Pedido no encontrado",
+            });
+          }
+          return pedido
+            .update(
+              {
+                responsableId:responsable.id_responsable,
+                seccion:req.body.seccion,
+                codigoPedido:req.body.codigoPedido,
+                observaciones:req.body.observaciones,
+                entregado:req.body.entregado,
+                // fecha:req.body.fecha,
+                // hora:req.body.hora,
+                // ItemsPedido: req.body.ItemsPedido || pedido.ItemsPedido,
+              }
+            )
+            .then(() => res.status(200).send(pedido))
+            .catch((error) => {
+              console.log(error);
+              res.status(400).send(error);
+            });
+        })
+    },
+
+ //no funciona probar otra vez
+ editarItemConProductoDePedido: async (req, res) => {
+  let id = req.params.id
+  console.log("id", id);
+  // var producto = await Producto.findOne({
+  //   where: { descripcion: req.params.descripcion },
+  // });
+  var unItem = await ItemsPedido.findOne({
+    where: { codigo: req.params.codigo},
+  });
+  const item = {
+    codigo: req.body.codigo,
+    pedidoId: id,
+    productoId: producto.id,
+    cantidad: req.body.cantidad,
+    precioUnitario: req.body.precioUnitario,
+    importe: req.body.importe,
+    observaciones: req.body.observaciones,
+  };
+  return await ItemsPedido.update(item)
+    .then(function (item) {
+      console.log("item+++", item);
+      item.save();
+      return res.status(200).json({
+        message: "se guardo el item",
+        item,
+      });
+    })
+    .catch(function (error) {
+      console.log("item", error);
+    });
+
+},
+
+
+
 
   //actualiza el pedido pero no el item
   updatePedidoEntregado(req, res) {
@@ -169,6 +216,48 @@ module.exports = {
           });
       })
   },
+  updatePedidoPreparado(req, res) {
+    console.log(req.body, "items", Pedido.preparado);
+    return Pedido.findByPk(req.params.id, req.params.preparado, {
+      include: [
+        {
+          model: ItemsPedido,
+          as: "ItemsPedido",
+        },
+      ],
+    })
+      .then((pedido) => {
+        if (!pedido) {
+          return res.status(404).send({
+            message: "Pedido no encontrado",
+          });
+        }
+        return pedido
+          .update(
+            {
+              preparado: true,
+              ItemsPedido: req.body.ItemsPedido || pedido.ItemsPedido,
+            },
+            {
+              include: [
+                {
+                  model: ItemsPedido,
+                  as: "ItemsPedido",
+                },
+              ],
+            }
+          )
+          .then(() => res.status(200).send(pedido))
+          .catch((error) => {
+            console.log(error);
+            res.status(400).send(error);
+          });
+      })
+  },
+ 
+ 
+ 
+ 
   //usado revisar
   guardarPedidoId: async (req, res) => {
     var item = await ItemsPedido.findOne({
@@ -293,10 +382,21 @@ module.exports = {
     }
   },
   //bien usado
-  getIdPedido: async (req, res) => {
+  busquedaPedidoPorId: async (req, res) => {
     var pedido = await Pedido.findOne({
       where: { id: req.params.id },
-      // include: ["Productos"],
+      include: [
+        {
+          model: ItemsPedido,
+          as: "ItemsPedido",
+          include: [
+            {
+              model: Producto,
+              as: "Productos",
+            },
+          ],
+        },
+      ],
     });
     if (![req.body.values]) {
       res.status(400).json({ err: "No pedido con id" });
@@ -375,9 +475,11 @@ module.exports = {
     //   res.status(400).send(error);
     // });
   },
-
-  delete: async (req, res) => {
-    return await Pedido.findByPk(req.params.id)
+  //usado
+  eliminarPedidoConItems: async (req, res) => {
+    return await Pedido.findOne({
+      where: { id: req.params.id }
+    })
       .then((pedido) => {
         if (!pedido) {
           return res.status(400).send({
@@ -387,7 +489,6 @@ module.exports = {
         return pedido
           .destroy()
           .then(() => res.status(204).send())
-          .catch((error) => res.status(400).send(error));
       })
       .catch((error) => res.status(400).send(error));
   },
@@ -432,7 +533,20 @@ module.exports = {
   },
 
   getPedidos: async (req, res, next) => {
-    const pedidos = await Pedido.findAll();
+    const pedidos = await Pedido.findAll({
+      include: [
+        {
+          model: ItemsPedido,
+          as: "ItemsPedido",
+          include: [
+            {
+              model: Producto,
+              as: "Productos",
+            },
+          ],
+        },
+      ],
+    });
     if (![req.body.values]) {
       res.status(400).json({ err: "no obtiene lista de pedidos" });
     } else {
@@ -440,14 +554,14 @@ module.exports = {
     }
   },
 
-  getUnPedido: async (req, res, next) => {
-    const pedido = await Pedido.findAll();
-    if (![req.body.values]) {
-      res.status(400).json({ err: "no obtiene unPedido" });
-    } else {
-      return res.status(200).json(pedido);
-    }
-  },
+  // getUnPedido: async (req, res, next) => {
+  //   const pedido = await Pedido.findAll();
+  //   if (![req.body.values]) {
+  //     res.status(400).json({ err: "no obtiene unPedido" });
+  //   } else {
+  //     return res.status(200).json(pedido);
+  //   }
+  // },
 
   getPedidoIdConItemYProducto: async (req, res) => {
     var pedido = await Pedido.findByPk(req.params.id);

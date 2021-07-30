@@ -15,6 +15,7 @@ import {
   ModalBody,
   ModalFooter,
   Row,
+  Table
 } from "reactstrap";
 
 import { AppSwitch } from "@coreui/react";
@@ -26,15 +27,18 @@ class CargarPedido extends React.Component {
     this.state = {
       pedido: props.pedido || {},
       pedidos: props.pedidos || [],
-      productos: props.productos||[],
+      productos: props.productos || [],
       producto: props.producto || {},
-      listaProductosEnPedido:props.listaProductosEnPedido,
+      items: props.items,
+      item: props.item,
+      itemsDePedido:[],
+      listaProductosEnPedido: props.listaProductosEnPedido,
       cliente: props.cliente || {},
       modal: false,
       codigo: "",
       descripcion: "",
-      items: [],
       id: "",
+      selecionado:{}
     };
   }
 
@@ -49,7 +53,7 @@ class CargarPedido extends React.Component {
           {
             cantidad: 1,
             importeTotal: 0,
-            observaciones:"",
+            observaciones: "",
             Productos: {
               descripcion: "",
               precioUnitario: 0,
@@ -59,7 +63,7 @@ class CargarPedido extends React.Component {
       },
     });
   };
- 
+
   // estadoInicial = () => {
   //   this.setState({
   //     pedido: {
@@ -70,12 +74,29 @@ class CargarPedido extends React.Component {
   //   });
   // };
 
+  
 
   componentWillMount() {
     this.props.listadoPedidos();
     this.props.listadoItemsPedido();
     this.props.listadoProductos();
+    // this.props.seleccionar;
   }
+
+ 
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (nextProps.pedidos !== this.props.pedidos) {
+      this.setState({ pedidos: this.props.pedidos });
+    }
+    if (nextProps.pedido !== this.props.pedido) {
+      this.setState({ pedido: nextProps.pedido }
+        // ,console.log("nextProps",nextProps.pedido)
+        );
+    }
+  }
+
+
+
   handleSubmit = (e) => {
     // const id = this.state.pedido.id;
     // if (id) {
@@ -97,7 +118,7 @@ class CargarPedido extends React.Component {
     })
       .then((res) => this.props.listadoPedidos())
       .then((res) => this.estadoInicial());
-    console.log("CREARRRR", this.state.pedido);
+    // console.log("CREARRRR", this.state.pedido);
   };
 
   getPrecio = () => {
@@ -142,6 +163,13 @@ class CargarPedido extends React.Component {
         .then((prods) => this.setState({ id: pedidoId, items: prods }));
     }
   };
+  componentDidUpdate(prevProps){
+    if(prevProps.pedido !== this.state.pedido){
+    this.setState({pedido:prevProps.pedido,itemsDePedido:prevProps.pedido.ItemsPedido},()=>this.forceUpdate(),
+      // console.log("itemsPedido",this.state.pedido,this.state.itemsDePedido)
+      )
+    }
+  }
 
 
   editarPedido = (id) => {
@@ -157,10 +185,23 @@ class CargarPedido extends React.Component {
       .then(this.estadoInicial());
   };
 
-  
- 
-  render() {
 
+
+  render() {
+    let descripciones = this.state.productos.map(p => p.descripcion)
+    // let listaCantidad=this.state.pedido.ItemsPedido.map(i=>i.observaciones)
+    // let items=this.state.pedidos.map((unPedido, index) => {
+    //   this.state.items.filter(i => i.pedidoId == unPedido.id)
+    // })
+    // let listaProductos = items.map((i, index) => <tr key={index}>
+    //   {i.productoId}</tr>)
+    // let listaCantidad = items.map((i, index) => <tr key={index}>
+    //   {i.cantidad}</tr>)
+    // let listaObservaciones = items.map((i, index) => <tr key={index}>
+    //   {i.observaciones}</tr>)
+    // let listaImporte = items.map((i, index) => <tr key={index}>
+    //   ${i.importe}</tr>)
+    // console.log("PEDIDO CARGAR",this.state.pedido,this.state.itemsPedido)
     return (
       <Col xs="12" md="12">
         <ModalBody>
@@ -170,7 +211,7 @@ class CargarPedido extends React.Component {
             <Row></Row>
             <Col max-width="%100">
               <Card className="border-warning">
-                <Card style={{ border: "1px solid red" }}>
+                {/* <Card style={{ border: "1px solid red" }}>
                   <CardImg
                     // top height="150px" src={asado}
                     type="img"
@@ -185,21 +226,21 @@ class CargarPedido extends React.Component {
                     <CardSubtitle>Cargar imagen</CardSubtitle>
                     <CardText></CardText>
                   </CardBody>
-                </Card>
+                </Card> */}
 
                 <CardBody>
                   <FormGroup row>
                     <Col md="3">
-                      <Label for="codigoPedido">codigo</Label>
+                      <Label for="seccion">Sección</Label>
                     </Col>
                     <Col xs="12" md="9">
                       <Input
-                        type="number"
-                        id="codigoPedido"
-                        name="codigoPedido"
-                        placeholder="Código..."
+                        type="text"
+                        id="seccion"
+                        name="seccion"
+                        placeholder="Sección..."
                         required={true}
-                        value={this.state.pedido.codigoPedido}
+                        value={this.state.pedido.seccion}
                         onChange={this.handleChange}
                       />
                     </Col>
@@ -225,55 +266,73 @@ class CargarPedido extends React.Component {
                   </Form> */}
                   <FormGroup row>
                     <Col md="3">
-                      <Label for="mesero">Mesero</Label>
+                      <Label for="observaciones">Observaciones</Label>
                     </Col>
                     <Col xs="12" md="9">
                       <Input
                         type="text"
-                        id="mesero"
-                        name="mesero"
-                        placeholder="Mesero..."
-                        value={this.state.pedido.mesero}
+                        id="observaciones"
+                        name="observaciones"
+                        placeholder="Observaciones..."
+                        value={this.state.pedido.observaciones}
                         onChange={this.handleChange}
                       />
                     </Col>
                   </FormGroup>
-                  <FormGroup row>
+                  {/* <FormGroup row>
                     <Col md="3">
-                      <Label for="seccion">Sección</Label>
+                      <Label for="producto">Producto</Label>
                     </Col>
                     <Col xs="12" md="9">
                       <Input
                         type="text"
-                        id="seccion"
-                        name="seccion"
-                        placeholder="Sección..."
+                        id="producto"
+                        name="producto"
+                        placeholder="Producto..."
                         // required
-                        value={this.state.pedido.seccion}
+                        value={this.state.item.productoId}
                         onChange={this.handleChange}
                       />
                     </Col>
-                  </FormGroup>
-                  <Form onSubmit={this.handleSubmitProducto} id="formulario">
-                    <FormGroup row>
-                      <Col md="3">
-                        <Label for="codigo">Elegir codigo producto</Label>
-                      </Col>
-                      <Col xs="12" md="9">
-                        <Input
-                          type="number"
-                          id="codigo"
-                          name="codigo"
-                          placeholder="Elegir codigo"
-                          onChange={this.handleChangeProducto}
-                          list="producto"
-                        />
-                      </Col>
-                      <datalist id="producto">{this.state.listaProductosEnPedido}</datalist>
-                    </FormGroup>
-                    <div className="row">
-                      <div className="input-field col s12 m12">
-                        {/* <Button
+                  </FormGroup> */}
+                  <Table>
+                    <thead>
+                      <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Observaciones</th>
+                        <th>Importe</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        {/* <td key="producto">{listaProductos}</td>
+                        <td key="cantidad">{listaCantidad}</td>
+                        <td key="observaciones">{listaObservaciones}</td>
+                        <td key="importe">{listaImporte}</td> */}
+                      </tr>
+                    </tbody>
+                    <Form onSubmit={this.handleSubmitDescripcion} id="formulario">
+
+                      <FormGroup row>
+                        <Col md="3">
+                          <Label for="descripcion">Descripción</Label>
+                        </Col>
+                        <Col xs="12" md="9">
+                          <Input
+                            type="text"
+                            id="descripcion"
+                            name="descripcion"
+                            placeholder="Elegir descripcion"
+                            onChange={this.handleChangeProducto}
+                            list="producto"
+                          />
+                        </Col>
+                        <datalist id="producto">{descripciones}</datalist>
+                      </FormGroup>
+                      <div className="row">
+                        <div className="input-field col s12 m12">
+                          {/* <Button
                           type="button"
                           style={{ margin: "2px" }}
                           color="success"
@@ -282,42 +341,43 @@ class CargarPedido extends React.Component {
                         >
                           <i className="fa fa-dot-circle-o"></i>Ver clientes
                         </Button> */}
+                        </div>
                       </div>
-                    </div>
-                  </Form>
+                    </Form>
 
-                  <FormGroup row>
-                    <Col md="3">
-                      <Label for="cantidad">Cantidad</Label>
-                    </Col>
-                    <Col xs="12" md="9">
-                      <Input
-                        type="text"
-                        id="cantidad"
-                        name="cantidad"
-                        placeholder="Cantidad..."
-                        // required
-                        value={this.state.pedido.cantidad}
-                        onChange={this.handleChange}
-                      />
-                    </Col>
-                  </FormGroup>
-                  <FormGroup row>
-                    <Col md="3">
-                      <Label for="precioUnitario">Precio p/un.</Label>
-                    </Col>
-                    <Col xs="12" md="9">
-                      <Input
-                        type="text"
-                        id="precioUnitario"
-                        name="precioUnitario"
-                        placeholder="Precio p/un. ..."
-                        // required
-                        value={this.state.pedido.precio}
-                        onChange={this.handleChangeProducto}
-                      />
-                    </Col>
-                  </FormGroup>
+                    <FormGroup row>
+                      <Col md="3">
+                        <Label for="cantidad">Cantidad</Label>
+                      </Col>
+                      <Col xs="12" md="9">
+                        <Input
+                          type="text"
+                          id="cantidad"
+                          name="cantidad"
+                          placeholder="Cantidad..."
+                          // required
+                          value={this.state.pedido.cantidad}
+                          onChange={this.handleChange}
+                        />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Col md="3">
+                        <Label for="precioUnitario">Precio p/un.</Label>
+                      </Col>
+                      <Col xs="12" md="9">
+                        <Input
+                          type="text"
+                          id="precioUnitario"
+                          name="precioUnitario"
+                          placeholder="Precio p/un. ..."
+                          // required
+                          value={this.state.pedido.precio}
+                          onChange={this.handleChangeProducto}
+                        />
+                      </Col>
+                    </FormGroup>
+                  </Table>
                   <FormGroup row>
                     <Col md="3">
                       <Label for="importeTotal">Importe</Label>
@@ -403,8 +463,8 @@ class CargarPedido extends React.Component {
     nuevoPedido[e.target.name] =
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
     this.setState({ pedido: nuevoPedido });
-    console.log("item handle change", this.state.pedido.ItemsPedido);
-    console.log("productos", this.state.productos);
+    // console.log("item handle change", this.state.pedido.ItemsPedido);
+    // console.log("productos", this.state.productos);
   };
 
   handleChangeProducto = (e) => {
@@ -413,6 +473,7 @@ class CargarPedido extends React.Component {
     const name = target.name;
     this.setState({ [name]: value });
   };
+
 }
 
 export default CargarPedido;

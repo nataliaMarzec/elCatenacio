@@ -12,47 +12,25 @@ class PedidoItemsDos extends React.Component {
       observaciones: null,
     };
     this.handleChange = this.handleChange.bind(this);
-    // this.observaciones = this.observaciones.bind(this);
   }
 
-  // componentWillMount() {
-  //   this.setState({ listaItems: this.state.listaItems}
-  //     ,()=>this.forceUpdate()
-  //     ,() => console.log("willListaItems2", this.state.listaItems)
-  //     )
-  //   // this.observaciones(this.state.observaciones)
-  // }
-  // componentDidUpdate(nextProps){
-  //   if(this.props.listaItems!== nextProps.listaItems){
-  //     this.setState({listaItems:this.props.listaItems}
-  //       ,console.log("updateListaItems2",this.props.listaItems,nextProps.listaItems,this.state.listaItems))
-  //   }
-  // }
- 
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.listaItems !== this.props.listaItems) {
       this.setState({ listaItems:this.props.listaItems });
-      console.log("ListaITEMS2props", this.props.listaItems, nextProps.listaItems.values());
     }
     if (nextProps.unItem !== this.props.unItem) {
       this.setState({ unItem: nextProps.unItem });
     }
-    if (nextProps.listaItems !== this.props.listaItems) {
-      this.setState({ listaItems: this.props.listaItems });
-      // console.log("Items props", this.props.items, nextProps.items.values());
-    }
+   
     if (nextProps.productoId !== this.props.productoId) {
       this.setState({ productoId: this.props.productoId });
-      // console.log("productoId", this.props.productoId);
     }
     if (nextProps.precio !== this.props.precio) {
       this.setState({ precio: this.props.precio });
-      console.log("precio---", this.props.precio);
     }
     if (nextProps.importe !== this.props.importe) {
       this.setState({ importe: this.props.importe });
-      console.log("importe---", this.props.importe);
     }
   }
 
@@ -62,7 +40,6 @@ class PedidoItemsDos extends React.Component {
     nuevoItem[e.target.name] = e.target.value;
     unItem = nuevoItem
     this.setState({ unItem: unItem}
-    ,() => console.log("nuevoItem/key", this.state.unItem, nuevoItem)
     );
     this.props.envioDeEstadoObservaciones(unItem) 
     // console.log("evento", `${e.target.name}:${e.target.value}`);
@@ -74,7 +51,6 @@ class PedidoItemsDos extends React.Component {
   
   eliminar = (unItem) => {
     this.props.handleRemoveRow(unItem);
-    console.log("eliminar");
   };
 
   render = () => {

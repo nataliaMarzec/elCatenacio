@@ -144,8 +144,8 @@ class TablaPedidoRow extends React.Component {
   listaResponsables(){
     var listaResponsables = this.props.responsablesDeMesa.map((responsable) => {
       return (
-        <div>
-          <option value={responsable.nombre} />
+        <div key={responsable.nombre}>
+          <option key={responsable.id} value={responsable.nombre} />
         </div>
       );
     });
@@ -166,7 +166,7 @@ class TablaPedidoRow extends React.Component {
             placeholder="Elige responsable"
             className="form-control"
           />
-          <datalist id="responsable">{this.listaResponsables()}</datalist>
+          <datalist key="responsable" id="responsable">{this.listaResponsables()}</datalist>
         </td>
         <td>
           {" "}

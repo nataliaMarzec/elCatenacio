@@ -1,6 +1,6 @@
 import React from "react";
 import PedidosListaRow from "./PedidosListaRow";
-// import CargarPedido from "./CargarPedido";
+import CargarPedido from "./CargarPedido";
 import {
     Table,
     Container,
@@ -32,6 +32,7 @@ class PedidosLista extends React.Component {
             editable: false,
             id: "",
         };
+        this.seleccionar=this.seleccionar.bind(this)
     }
 
     toggle = () => {
@@ -74,11 +75,10 @@ class PedidosLista extends React.Component {
         }
     };
     listadoPedidos = () => {
-        fetch(`http://localhost:8383/pedidos`)
+        fetch("http://localhost:8383/pedidos")
             .then((res) => res.json())
-            .then(
-                (pddos) => this.setState({ pedidos: pddos, pedido: {} }),
-                console.log("pedidoEnviado", this.state.pedidos)
+            .then((res) => this.setState({ pedidos:res, pedido: {} }),
+           
             );
     };
     listadoProductos = () => {
@@ -123,7 +123,7 @@ class PedidosLista extends React.Component {
 
     actualizarAlEliminar = (unPedido) => {
         var listaActualizada = this.state.pedidos.filter(
-            (item) => unPedido !== item
+            (pedido) => unPedido !== pedido
         );
         this.setState({ pedidos: listaActualizada, pedido: {} });
     };
@@ -151,6 +151,7 @@ class PedidosLista extends React.Component {
             </ModalHeader>
         );
     };
+    
 
     render(props) {
         var listaIdsPedidos = this.state.pedidos.map((pedido) => {
@@ -160,7 +161,7 @@ class PedidosLista extends React.Component {
                 </div>
             );
         });
-        console.log("listaIdsPedidos", listaIdsPedidos);
+        // console.log("listaIdsPedidos", this.state.pedido);
 
         return (
             <div className="container">
@@ -176,11 +177,14 @@ class PedidosLista extends React.Component {
                         className={this.props.className}
                     >
                         <this.ModalHeaderStrong></this.ModalHeaderStrong>
-                        {/* <CargarPedido
-              listadoPedidos={this.listadoPedidos}
-              pedido={this.state.pedido}
-              pedidos={this.state.pedidos}
-            /> */}
+                        <CargarPedido
+                            pedido={this.state.pedido}
+                            pedidos={this.state.pedidos}
+                            listadoPedidos={this.listadoPedidos}
+                            listadoProductos={this.listadoProductos}
+                            listadoItemsPedido={this.listadoItemsPedido}
+                            seleccionar={this.seleccionar}
+                        />
                     </Modal>
                     <Row>&nbsp;</Row>
                 </Container>
@@ -271,7 +275,7 @@ class PedidosLista extends React.Component {
             ? console.log("NULL", null)
             : pedidos.map((unPedido, index) => {
                 let itemsLista = items.filter(i => i.pedidoId == unPedido.id)
-                console.log("rowPedidosLista", "+++", itemsLista)
+                // console.log("rowUNPEDIDO+++", unPedido)
                 return (
                     <PedidosListaRow
                         key={index}
@@ -279,7 +283,7 @@ class PedidosLista extends React.Component {
                         items={itemsLista}
                         item={this.state.item}
                         pedidos={pedidos}
-                        unPedido={unPedido}
+                        pedido={unPedido}
                         selector={this.seleccionar}
                         actualizarAlEliminar={this.actualizarAlEliminar}
                         eliminarPedido={this.eliminarPedido.bind(this)}

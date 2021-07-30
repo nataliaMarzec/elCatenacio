@@ -14,6 +14,7 @@ import {
   CardFooter,
   CardText,
   Collapse,
+  CardColumns,
   Form,
   Input
 } from "reactstrap";
@@ -31,10 +32,11 @@ class Pedidos extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      pedido: props.pedido,
+      pedido:{},
       pedidos: [],
       producto: props.producto,
       productos: [],
+      listaProductosEnPedidoEditar: [],
       // listaProductosEnPedido:[this.props.productos.map((p) => ({
       //   name: p.descripcion + "",
       //   id: p.id,
@@ -47,12 +49,14 @@ class Pedidos extends React.Component {
       modal: false,
       editable: false,
       unPedido: {},
-      unResponsable: { nombre: "" },
       precioUnitario: [],
       selectedValues: null,
       SelectedItem: null,
+      selectedValuesEditar: null,
+      SelectedItemEditar: null,
       options: [],
       items: [],
+      item: {},
       unItem: {
         descripcion: null,
         cantidad: null, importe: null
@@ -71,22 +75,26 @@ class Pedidos extends React.Component {
         { id: 3, name: "" },
       ],
       seccion: "",
-      nombreResponsable: null,
+      seccionEditable: "",
       responsablesDeMesa: [],
       responsable: {},
       nombre: "",
+      nombreResponsableEditable: "",
       // fecha: new Date().toLocaleDateString(),
       fecha: new Date().toString(),
       hora: new Date(),
       importeTotal: null,
       cantidad: null,
       observaciones: props.observaciones,
+      observacionesEditable: "",
       importe: null,
       total: props.total,
       idItem: 0,
       id: props.id,
+      idPedidoTabla:null,
       productoIdDos: null,
       nuevaListaDescripciones: [],
+      nuevaListaDescripcionesEditar: [],
       listaItems: [],
       nuevoItem: {},
       itemsObjects: [],
@@ -94,15 +102,14 @@ class Pedidos extends React.Component {
       descripcion: null,
       nuevaListaItems: [],
       confirmar: false,
-      valueSeccion: props.valueSeccion,
-      idSeccion: props.idSeccion,
       refSeccion: React.createRef(),
       limpiar: props.limpiar,
-      event: null,
       verPlantilla: false,
       itemsSeleccionado: 0,
       encontrado: false,
-      vistaPrevia: false
+      vistaPrevia: false,
+      hasError: false,
+      itemsDePedidoElegido: [],
 
 
     };
@@ -111,22 +118,35 @@ class Pedidos extends React.Component {
     this.listadoResponsables = this.listadoResponsables.bind(this)
     this.listaProductosEnPedido = this.listaProductosEnPedido.bind(this);
     this.envioDePedido = this.envioDePedido.bind(this);
-    this.envioDeEstadoObservaciones =
-      this.envioDeEstadoObservaciones.bind(this);
+    this.envioDeSeccionEditar = this.envioDeSeccionEditar.bind(this)
+    this.envioDeEstadoObservaciones = this.envioDeEstadoObservaciones.bind(this);
+    this.envioDeObservacionesEditar = this.envioDeObservacionesEditar.bind(this)
     this.envioDeEstadoResponsable = this.envioDeEstadoResponsable.bind(this)
+    this.envioDeEstadoResponsableEditar = this.envioDeEstadoResponsableEditar.bind(this)
     this.crearPedido = this.crearPedido.bind(this);
-    this.settearPedidoYProductoAItem =
-      this.settearPedidoYProductoAItem.bind(this);
+    this.settearPedidoYProductoAItem = this.settearPedidoYProductoAItem.bind(this);
     this.handleRemoveRow = this.handleRemoveRow.bind(this);
+    this.handleAddRowEditar = this.handleAddRowEditar.bind(this)
     this.seleccionarItem = this.seleccionarItem.bind(this)
     this.calcular = this.calcular.bind(this)
     this.multiselectRef = React.createRef();
+    this.multiselectRefEditar = React.createRef();
     this.vistaPrevia = this.vistaPrevia.bind(this)
     this.actualizarEstadosAlGuardar = this.actualizarEstadosAlGuardar.bind(this)
     this.selectedItems = this.selectedItems.bind(this)
     this.resetValues = this.resetValues.bind(this)
+    this.selectedItemsEditar = this.selectedItemsEditar.bind(this)
+    this.resetValuesEditar = this.resetValuesEditar.bind(this)
     this.selectedItems = this.selectedItems.bind(this)
     this.guardarVistaPrevia = this.guardarVistaPrevia.bind(this)
+    this.elegirId = this.elegirId.bind(this)
+    this.calcularEditar = this.calcularEditar.bind(this)
+    this.limpiarItemsDePedidoElegidoDeTabla = this.limpiarItemsDePedidoElegidoDeTabla.bind(this)
+    this.actualizarAlEliminar = this.actualizarAlEliminar.bind(this)
+    this.encontrarItemsIdPedido = this.encontrarItemsIdPedido.bind(this)
+    this.tablaPedido = React.createRef()
+    this.getReferenceChildTablaPedido = this.getReferenceChildTablaPedido.bind(this)
+    // this.pedidoElegido=this.pedidoElegido.bind(this)
     // this.verPlantilla=this.verPlantilla(this)
     // this.limpiar=this.limpiar.bind(this)
   }
@@ -164,86 +184,81 @@ class Pedidos extends React.Component {
 
     if (modal == false && boolean.value == false) {
       this.setState({ editable: false, itemsPedido: [], vistaPrevia: false }
-        , () => console.log("NOboolean", this.state.editable, boolean.value))
+        // , () => console.log("NOboolean", this.state.editable, boolean.value)
+      )
       // this.setState({ codigoPedido: this.state.codigoPedido }, () =>
       //   this.uniqueCodigo(idPedido)
       // );
     }
     if (modal == false && boolean.value == true) {
-      this.setState({ editable: true }
-        , () => console.log("SIboolean", this.state.editable, boolean))
+      this.setState({ editable: true, selectedValuesEditar: this.state.selectedValuesEditar }
+        , () => console.log("SIboolean", this.state.selectedValuesEditar)
+      )
       // this.setState({ codigoPedido: this.state.codigoPedido }, () =>
       //   this.uniqueCodigo(idPedido)
       // );
     }
   };
 
-
-  // componentDidMount() {
-  //   this.state.refSeccion.current.focus();
-  // }
-
-  componentWillReceiveProps(props) {
-    this.setState({ producto: props.producto });
-    this.setState({ productos: props.productos }, () => console.log("Productos++++", props.productos));
-    this.setState({ pedido: props.pedido });
-    // this.setState({ seccion: props.seccion });
-    this.setState({ importe: props.importe });
-    this.setState({ observaciones: props.observaciones });
-    this.setState({ cantidad: props.cantidad });
-    this.setState({ productoId: props.productoId });
-    this.setState({ descripcion: props.descripcion });
-    this.setState({ id: props.id });
-    // this.setState({ refSeccion: props.refSeccion })
-  }
-
   componentWillMount() {
     this.listadoPedidos();
     this.listadoProductos();
     this.listadoItemsPedido();
     this.listaProductosEnPedido();
-
-    // this.setState({ options: this.listaProductosEnPedido() })
+    this.nuevaLista()
     this.setState((currentState) => ({ cantidad: currentState.cantidad }));
     this.setState({
       secciones: this.state.secciones, idPedido: this.state.idPedido
-      , SelectedItem: {}, selectedValues: [], listaItems: [], unPedido: {}
+      , SelectedItem: {}, selectedValues: [], listaItems: [], unPedido: {},
+    })
+    this.setState({
+      selectedValuesEditar: [], SelectedItemEditar: {},responsable:{},pedido:{},idPedidoTabla:""
+      , itemsDePedidoElegido: this.state.itemsDePedidoElegido, item: this.state.item
     }
-      // , () => console.log("willsecciones", this.state.secciones)
-    )
+      , () => this.forceUpdate())
     this.setState({
       confirmar: false, fecha: this.state.fecha, hora: this.state.hora,
       verPlantilla: this.state.verPlantilla
-    }
-      , () => console.log("confirmarwillverPlantilla", this.state.verPlantilla))
-    // this.setState((currentState) => ({ listaItems: currentState.listaItems }
-    //   // , () => console.log("listaItemswill", currentState.listaItems)
-    // )
-    // )
+    })
   }
-  // componentDidUpdate(nextState) {
-  //   let optionsN = this.state.productos.map((p) => ({
-  //     name: p.descripcion + "",
-  //     id: p.id,
-  //     precio: "$" + p.precioUnitario,
-  //     descripcion: p.descripcion,
-  //     precioUnitario: p.precioUnitario,
-  //     cantidad: 0,
-  //     importe: 0,
-  //   }))
-  //   if(nextState.options !=this.state.options){
-  //   this.setState({options:optionsN})
 
-  //   }
-  //   return this.state.options
-  // }
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (nextProps.productos !== this.props.productos) {
+      this.setState({ productos: nextProps.productos }
+        , () => console.log("nextProductos", this.state.productos))
+    }
+    if (nextProps.producto !== this.props.producto) {
+      this.setState({ producto: nextProps.producto })
+    }
+    // if (nextProps.pedido !== this.props.pedido) {
+    //   this.setState({ pedido: nextProps.pedido })
+    // }
+    if (nextProps.importe !== this.props.importe) {
+      this.setState({ importe: nextProps.importe })
+    }
+    if (nextProps.observaciones !== this.props.observaciones) {
+      this.setState({ observaciones: nextProps.observaciones })
+    }
+    if (nextProps.cantidad !== this.props.cantidad) {
+      this.setState({ cantidad: nextProps.cantidad })
+    }
+    if (nextProps.productoId !== this.props.productoId) {
+      this.setState({ productoId: nextProps.productoId })
+    }
+    if (nextProps.descripcion !== this.props.descripcion) {
+      this.setState({ descripcion: nextProps.descripcion });
+    }
+    if (nextProps.id !== this.props.id) {
+      this.setState({ id: nextProps.id });
+    }
+  }
 
   listadoPedidos = () => {
     fetch(`http://localhost:8383/pedidos`)
       .then((res) => res.json())
-      .then((pds) =>
+      .then((pdds) =>
         this.setState({
-          pedidos: pds,
+          pedidos: pdds,
           pedido: {},
         })
       );
@@ -294,6 +309,29 @@ class Pedidos extends React.Component {
 
     return listaProductosEnPedido
   }
+  nuevaLista() {
+    let data1 = this.state.itemsDePedidoElegido
+    let data2 = this.listaProductosEnPedido()
+    var nuevaLista = data1.filter(function (el) {
+      var found = false, x = 0;
+      while (x < data2.length && !found) {
+        if (el.productoId == data2[x].id) found = true;
+        x++;
+      }
+      if (!found) return el;
+    });
+    nuevaLista = nuevaLista.concat(data2.filter(function (el) {
+      var found = false, x = 0;
+      while (x < data1.length && !found) {
+        if (el.id == data1[x].productoId) found = true;
+        x++;
+      }
+      if (!found) return el;
+    }));
+    console.log("nuevaLista", nuevaLista)
+    return nuevaLista
+  }
+
 
   // componentDidMount() {
   //   this.timerID = setInterval(
@@ -313,79 +351,141 @@ class Pedidos extends React.Component {
   //   });
   // }
 
-
-
-  actualizarAlEliminar = (unPedido) => {
-    var listaActualizada = this.state.pedidos.filter(
-      (item) => unPedido !== item
+  settingDescripciones = (selectedValues, SelectedItem) => {
+    let nuevaListaDescripciones = this.state.nuevaListaDescripciones;
+    this.setState(
+      { selectedValues: selectedValues, SelectedItem: SelectedItem },
+      this.handleAddRow(SelectedItem),
+      nuevaListaDescripciones.push(SelectedItem.descripcion),
     );
-    this.setState({ pedidos: listaActualizada, pedido: {} });
   };
-
-  eliminarPedido(id) {
-    this.props.eliminarPedido(id);
-  }
-
-  seleccionar = (unPedido) => {
-    this.setState({ pedido: unPedido });
-  };
-
-
 
   handleAddRow = (SelectedItem) => {
     this.setState((prevState, props) => {
       const row = {
         descripcion: SelectedItem.descripcion, cantidad: 1,
         importe: SelectedItem.precioUnitario, observaciones: ""
-
       };
       return { unItem: row, listaItems: [...this.state.listaItems, row] };
-    }
-      , () => console.log("listaItemsADD", this.state.listaItems, SelectedItem)
-    );
+    });
   };
 
-  settingDescripciones = (selectedValues, SelectedItem) => {
-    let nuevaListaDescripciones = this.state.nuevaListaDescripciones;
-    this.setState(
-      { selectedValues: selectedValues, SelectedItem: SelectedItem },
-      this.handleAddRow(SelectedItem),
-      // this.resetValues(),
-      nuevaListaDescripciones.push(SelectedItem.descripcion),
-    );
-    // console.log("nuevaListaDescripciones", nuevaListaDescripciones);
-  };
   handleRemoveRow = (unItem) => {
-    // var SelectedItem = this.state.SelectedItem
     var selectedValues = this.state.selectedValues
     let listaItems = this.state.listaItems
     this.selectedItems()
     this.setState({ selectedValues: selectedValues })
     var listaActualizadaSeleccionados = selectedValues.filter(
-      (item) => unItem.descripcion !== item.name,
-    );
+      (item) => unItem.descripcion !== item.name);
     selectedValues = listaActualizadaSeleccionados
-
-    this.setState({ listaItems: listaItems }, () => this.forceUpdate()
-      , () => console.log("listaItems", this.state.listaItems))
-    var listaActualizada = this.state.listaItems.filter(
-      (item) => unItem !== item
-    );
+    this.setState({ listaItems: listaItems }, () => this.forceUpdate())
+    var listaActualizada = this.state.listaItems.filter((item) => unItem !== item);
     listaItems = listaActualizada
-    console.log("listaActualizada", this.state.listaItems)
-    this.setState({ listaItems: listaItems, unItem: {} }
-      , () => console.log("nuevaLista", this.state.listaItems))
+    this.setState({ listaItems: listaItems, unItem: {} })
     this.setState({ selectedValues: selectedValues, SelectedItem: {} })
     this.state.nuevaListaDescripciones.pop(1)
     this.resetValues();
   };
 
-  getOptions() {
-    let options =
-      this.multiselectRef.current.props.options.values
-    console.log("options", options)
-    return options
+  onRemove = (selectedValues, SelectedItem) => {
+    let listaItems = this.state.listaItems
+    this.setState({ SelectedItem: SelectedItem });
+    this.setState({ listaItems: listaItems }, () => this.forceUpdate())
+    var listaActualizada = listaItems.filter((item) => SelectedItem.name !== item.descripcion);
+    listaItems = listaActualizada
+    this.setState({ listaItems: listaItems, unItem: {} })
+    this.state.nuevaListaDescripciones.pop(SelectedItem.descripcion)
+  };
+
+  settingDescripcionesEditar = (selectedValuesEditar, SelectedItemEditar) => {
+    let nuevaListaDescripcionesEditar = this.state.nuevaListaDescripcionesEditar;
+    this.setState(
+      { selectedValuesEditar: selectedValuesEditar, SelectedItemEditar: SelectedItemEditar },
+      this.handleAddRowEditar(SelectedItemEditar),
+      // nuevaListaDescripcionesEditar.push(SelectedItemEditar.descripcion)
+    );
   }
+
+  handleAddRowEditar = (SelectedItemEditar) => {
+    let item = {
+      pedidoId: this.state.pedido.id, productoId: SelectedItemEditar.id,
+      cantidad: 1,
+      importe: SelectedItemEditar.precioUnitario, observaciones: null, listo: false
+    }
+    fetch("http://localhost:8383/itemsPedido/nuevo", {
+      method: "post",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(item),
+    })
+      .then((res) => res.json())
+      .then((res) =>
+        this.setState((prevState, state) => {
+          let row = res
+          return {
+            item: res, itemsDePedidoElegido: [...this.state.itemsDePedidoElegido, row]
+          }
+        }
+          // ,()=>console.log("itemhandleADD", this.state.item, this.state.itemsDePedidoElegido)
+        ))
+      .then(this.listadoItemsPedido())
+  };
+
+  onRemoveEditar = (selectedValuesEditar, SelectedItemEditar) => {
+
+    let itemsDePedidoElegido = this.state.itemsDePedidoElegido
+    // this.setState({ SelectedItemEditar: SelectedItemEditar, selectedValuesEditar: selectedValuesEditar });
+    var item = itemsDePedidoElegido.find((item) => SelectedItemEditar.id === item.productoId)
+    // this.setState({item:item},()=>this.forceUpdate())
+    fetch("http://localhost:8383/itemsPedido/eliminar/" + item.codigo, {
+      method: "delete",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }).then(
+      this.actualizarListasEliminadas(selectedValuesEditar, SelectedItemEditar, itemsDePedidoElegido)
+    )
+      .then(() => this.selectedItemsEditar())
+    // .then(this.setState({itemsDePedidoElegido:this.state.itemsDePedidoElegido,item:{}}))
+    // this.setState({item:{}})
+    // var listaActualizada = 
+    // itemsDePedidoElegido = listaActualizada
+    // console.log("listaActualizada", listaActualizada, "++", item)
+    //   , () => console.log("itemsDEpEDIEl", this.state.itemsDePedidoElegido))
+    // this.state.nuevaListaDescripcionesEditar.pop(SelectedItemEditar.descripcion)
+  }
+  actualizarListasEliminadas(selectedValuesEditar, SelectedItemEditar, itemsDePedidoElegido) {
+    this.selectedItemsEditar()
+    this.setState({ itemsDePedidoElegido: itemsDePedidoElegido })
+    let listaActualizada = itemsDePedidoElegido.filter((i) => SelectedItemEditar.id !== i.productoId)
+    let selectedValuesActualizados = selectedValuesEditar.filter((s) => s.id !== SelectedItemEditar.id)
+    this.setState({ selectedValuesEditar: selectedValuesActualizados, SelectedItemEditar: {} })
+    this.setState({ itemsDePedidoElegido: listaActualizada, item: {} })
+    // this.state.nuevaListaDescripcionesEditar.pop(SelectedItemEditar)
+    this.resetValuesEditar()
+  }
+
+  handleRemoveRowEditar = (unItem) => {
+    this.selectedItemsEditar()
+    var selectedValuesEditar = this.state.selectedValuesEditar
+    let itemsDePedidoElegido = this.state.itemsDePedidoElegido
+    this.setState({ selectedValuesEditar: selectedValuesEditar })
+    var listaActualizadaSeleccionados = this.state.selectedValuesEditar.filter(
+      (s) => unItem.productoId !== s.id);
+    selectedValuesEditar = listaActualizadaSeleccionados
+    this.setState({ itemsDePedidoElegido: itemsDePedidoElegido, item: this.state.item })
+    var listaActualizada = this.state.itemsDePedidoElegido.filter(
+      (item) => unItem !== item);
+    itemsDePedidoElegido = listaActualizada
+    this.setState({ itemsDePedidoElegido: itemsDePedidoElegido, item: {} })
+    this.setState({ selectedValuesEditar: selectedValuesEditar, SelectedItemEditar: {} })
+    // this.state.nuevaListaDescripcionesEditar.pop(1)
+    this.resetValuesEditar();
+  };
+
 
   resetValues() {
     this.multiselectRef.current.resetSelectedValues();
@@ -395,23 +495,15 @@ class Pedidos extends React.Component {
     this.multiselectRef.current.getSelectedItems();
   }
 
-  onRemove = (selectedValues, SelectedItem) => {
-    let listaItems = this.state.listaItems
-    this.setState({ SelectedItem: SelectedItem }
-    );
-    this.setState({ listaItems: listaItems }, () => this.forceUpdate())
-    var listaActualizada = listaItems.filter(
-      (item) => SelectedItem.name !== item.descripcion
-    );
-    listaItems = listaActualizada
-    this.setState({ listaItems: listaItems, unItem: {} })
-    this.state.nuevaListaDescripciones.pop(SelectedItem.descripcion)
-    // if(this.state.vistaPrevia==false){
-    //   this.vistaPrevia(false)
-    //   this.setState({ SelectedItem: SelectedItem })
-    //   this.resetValues()
-    // }
-  };
+  resetValuesEditar() {
+    this.multiselectRefEditar.current.resetSelectedValues();
+  }
+
+  selectedItemsEditar() {
+    this.multiselectRefEditar.current.getSelectedItems();
+  }
+
+
 
   event = (event) => {
     event.preventDefault();
@@ -432,7 +524,18 @@ class Pedidos extends React.Component {
     let total = importes.reduce((a, b) => a + b, 0);
     let importeTotal = this.state.importeTotal
     importeTotal = total
-    console.log("importetotal", this.state.importeTotal);
+    // console.log("importetotal", this.state.importeTotal);
+
+    return importeTotal;
+  };
+
+  sumarEditar = () => {
+    //items con el mismo productoId
+    let importes = this.state.itemsDePedidoElegido.map((i) => i.importe);
+    let total = importes.reduce((a, b) => a + b, 0);
+    let importeTotal = this.state.importeTotal
+    importeTotal = total
+    // console.log("importetotal", this.state.importeTotal);
 
     return importeTotal;
   };
@@ -486,7 +589,7 @@ class Pedidos extends React.Component {
     let hora = this.state.hora
     let horaFormato = moment(hora).format('HH-mm');
     let listaItems = this.state.listaItems
-    console.log("nombreResponsable", idPedido)
+    // console.log("nombreResponsable", idPedido)
     fetch(`http://localhost:8383/pedidos/nuevo/${nombre}`, {
       method: "put",
       headers: {
@@ -521,15 +624,107 @@ class Pedidos extends React.Component {
           pedidoId: id,
         }))
       .catch(function (error) {
-        console.log(error, "error......", id);
+        // console.log(error, "error......", id);
+      });
+  };
+  //falta fecha y hora
+  editarPedido(id) {
+    let nombre = this.state.responsable.nombre
+    let seccion = this.state.seccionEditable || this.state.pedido.seccion;
+    let observaciones = this.state.observacionesEditable || this.state.pedido.observaciones;
+    let fecha = this.state.fecha;
+    let hora = this.state.hora
+    let horaFormato = moment(hora).format('HH-mm');
+    console.log("nombreResponsable", id, nombre, seccion, observaciones)
+
+    fetch(`http://localhost:8383/pedidos/editar/${id}/${nombre}`, {
+      method: "put",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({seccion, observaciones }),
+    })
+      .then((res) => res.json())
+      .then((res) => this.setState({ idPedido: res.id, pedido: res }))
+      .then((res) => this.state.itemsDePedidoElegido.map(i => this.editarPedidoYProductoAItem(this.state.idPedido,
+        i.productoId, i.cantidad, i.importe, i.observaciones)))
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+
+  editarPedidoYProductoAItem = (id, productoId, cantidad, importe, observaciones) => {
+    let producto = this.state.productos.find(p => p.id === productoId)
+    console.log("editarDescripcion", producto.descripcion)
+    fetch(
+      `http://localhost:8383/pedidos/items/pedido/${id}/producto/${producto.descripcion}`,
+      {
+        method: "put",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ cantidad, importe, observaciones }),
+      }
+    )
+      .then((res) =>
+        this.setState({
+          pedidoId: id,
+        }))
+      .catch(function (error) {
+        // console.log(error, "error......", id);
       });
   };
 
+  eliminarItem = (codigo) => {
+    fetch("http://localhost:8383/itemsPedido/eliminar/" + codigo, {
+      method: "delete",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => this.setState({ itemsDePedidoElegido: this.state.itemsDePedidoElegido }
+        , () => this.nuevaLista()), console.log("ipeEliminar", this.state.itemsDePedidoElegido
+        ))
+    // .then(this.listadoItemsPedido())
+  };
 
   signOut(e) {
     e.preventDefault();
     this.props.history.push("./Editar/EditarPedido");
     // console.log("propsSigout", this.props);
+  }
+
+  // pedidoElegido(pedido,items){
+  //  this.setState({pedido:pedido,itemsDePedidoElegido:items}
+  //   ,()=>console.log("pedidoElegido-PEDDIDOS",this.state.pedido,this.state.itemsDePedidoElegido))
+  // }
+  getReferenceChildTablaPedido() {
+    this.ref.tablaPedido.eliminarDetallesPedido(this.state.id);
+
+  }
+
+
+  encontrarItemsIdPedido(idPedido) {
+    try {
+      return fetch(`http://localhost:8383/itemsDePedido/${idPedido}`, {
+        method: "get",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((res) =>
+          this.setState({ itemsDePedidoElegido: res }
+            , () => console.log("itemUpdae", res, this.state.itemsDePedidoElegido, this.state.pedido)
+          ))
+    } catch (error) {
+      console.log(error);
+    }
+    // }
   }
 
 
@@ -538,7 +733,8 @@ class Pedidos extends React.Component {
     let nuevaListaDescripciones = this.state.nuevaListaDescripciones;
     let codigoPedido = this.state.codigoPedido;
     let listaItems = this.state.listaItems
-    console.log("listaProductosEnPedido$$", this.state.responsablesDeMesa);
+    let pedido = this.state.pedido
+    // console.log("listaProductosEnPedido$$", this.state.responsablesDeMesa);
     // var listaIdsPedidos = this.state.pedidos.map((pedido) => {
     //   return (
     //     <div>
@@ -546,7 +742,9 @@ class Pedidos extends React.Component {
     //     </div>
     //   );
     // });
-    // console.log("listaIdsPedidos", listaIdsPedidos);
+    // let itemsDePedido=this.state.items.filter(i=>i.pedidoId ===pedido.id)
+    console.log("listaIdsPedidos", this.nuevaLista());
+
     return (
       <div className="container">
         <Row className="align-items-center">
@@ -636,9 +834,14 @@ class Pedidos extends React.Component {
                     </Row>
                   </CardHeader>
                   <TablaPedido
+                    ref="tablaPedido"
                     editable={this.state.editable}
                     envioDePedido={this.envioDePedido}
                     envioDeEstadoResponsable={this.envioDeEstadoResponsable}
+                    envioDeEstadoResponsableEditar={this.envioDeEstadoResponsableEditar}
+                    envioDeSeccionEditar={this.envioDeSeccionEditar}
+                    envioDeObservacionesEditar={this.envioDeObservacionesEditar}
+                    limpiarItemsDePedidoElegidoDeTabla={this.limpiarItemsDePedidoElegidoDeTabla}
                     pedidos={this.state.pedidos}
                     pedido={this.state.pedido}
                     unPedido={this.state.unPedido}
@@ -646,11 +849,14 @@ class Pedidos extends React.Component {
                     responsable={this.state.responsable}
                     nombre={this.state.nombre}
                     secciones={this.state.secciones}
+                    seccionEditable={this.state.seccionEditable}
+                    observacionesEditable={this.state.observacionesEditable}
                     items={this.state.items}
+                    item={this.state.item}
                     itemsPedido={this.state.itemsPedido}
+                    itemsDePedidoElegido={this.state.itemsDePedidoElegido}
                     pedidoId={this.state.pedidoId}
                     listadoItemsPedido={this.listadoItemsPedido}
-                    // listaProductosEnPedido={listaProductosEnPedido}
                     listadoPedidos={this.listadoPedidos}
                     listadoProductos={this.listadoProductos}
                     listadoResponsables={this.listadoResponsables}
@@ -658,6 +864,8 @@ class Pedidos extends React.Component {
                     codigoPedido={codigoPedido}
                     confirmar={this.state.confirmar}
                     toggle={this.toggle}
+                    idPedidoTabla={this.state.idPedidoTabla}
+                    elegirId={this.elegirId}
                   ></TablaPedido>
                   <React.Fragment>{editable == false && (
                     <CardBody>
@@ -672,6 +880,47 @@ class Pedidos extends React.Component {
                             SelectedItem={this.state.SelectedItem}
                             onSelect={this.settingDescripciones}
                             onRemove={this.onRemove}
+                            groupBy="precio"
+                            closeIcon="circle2"
+                            hidePlaceholder={true}
+                            loading={false}
+                            placeholder="Seleccione un producto"
+                            displayValue="name"
+                            emptyRecordMsg="No hay más productos para seleccionar"
+                            style={{
+                              chips: { background: "#9D1212" },
+                              searchBox: {
+                                background: "white",
+                                borderBottom: "1px solid #9D1212",
+                                borderRadius: "10px",
+                                // "border": "none",
+                              },
+                            }}
+                          />
+                          {/* <div className="column">
+                          {React.cloneElement(this.props.children, {
+                            selectedItem: this.state.selectedItem,
+                          })}
+                        </div> */}
+
+                        </FormGroup>
+                      </Row>
+                    </CardBody>
+                  )}</React.Fragment>
+
+                  <React.Fragment>{editable == true && this.state.pedido.id !== undefined && (
+                    <CardBody>
+                      <Row>
+                        &nbsp;
+                        <FormGroup>
+                          <Multiselect
+                            id="descripcionEditar"
+                            options={this.nuevaLista()}
+                            ref={this.multiselectRefEditar}
+                            selectedValues={this.state.selectedValuesEditar}
+                            SelectedItem={this.state.SelectedItemEditar}
+                            onSelect={this.settingDescripcionesEditar}
+                            onRemove={this.onRemoveEditar}
                             groupBy="precio"
                             closeIcon="circle2"
                             hidePlaceholder={true}
@@ -768,29 +1017,41 @@ class Pedidos extends React.Component {
                   </React.Fragment>
 
                   <React.Fragment>
-                    {editable == true && (
+                    {editable == true && this.state.itemsDePedidoElegido.length > 0 && (
                       <Container style={{ backgroundColor: "#f1f1f1" }}>
                         <Row>
-                          <Col class="col-lg-4">
+                          <Col className="col-lg-6">
                             <Table style={{ backgroundColor: "#eee363" }}>
                               <thead>
                                 <tr>
                                   <th>Código</th>
                                   <th>Productos</th>
                                   <th>Cantidad</th>
-                                  <th>importe</th>
+                                  {/* <th>Precio</th> */}
                                   <th></th>
                                 </tr>
                               </thead>
                               <tbody>
-                                {this.renderItemsUnoEditable(
-                                  this.state.SelectedItem
-                                )}
+                                {this.state.itemsDePedidoElegido.map((unItem, index) => {
+                                  let producto = this.state.productos.find(p => p.id === unItem.productoId)
+                                  {/* let descripcion =this.state.SelectedItemEditar.descripcion */ }
+                                  return (
+                                    <PedidoItemsEditar
+                                      key={index}
+                                      item={unItem}
+                                      pedido={pedido}
+                                      productos={this.state.productos}
+                                      producto={producto}
+                                      // descripcion={this.state.SelectedItemEditar ? this.state.SelectedItemEditar.descripcion : producto.descripcion}
+                                      calcularEditar={this.calcularEditar}
+                                    />
+                                  )
+                                })
+                                }
                               </tbody>
-
                             </Table>
                           </Col>
-                          <Col class="col-lg-4">
+                          <Col className="col-lg-6">
                             <Table
                               style={{ backgroundColor: "#F5C765" }}
                               importe={this.state.importe}
@@ -802,10 +1063,26 @@ class Pedidos extends React.Component {
                                 </tr>
                               </thead>
                               <tbody>
-                                {this.renderItemsDosEditable()}
+                                {this.state.itemsDePedidoElegido.map((unItem, index) => {
+                                  let producto = this.state.productos.find(p => p.id === unItem.productoId)
+                                  return (
+                                    <PedidoItemsDosEditar
+                                      key={index}
+                                      pedido={pedido}
+                                      items={this.state.itemsDePedidoElegido}
+                                      item={unItem}
+                                      actualizarAlEliminar={this.actualizarAlEliminar}
+                                      handleRemoveRowEditar={this.handleRemoveRowEditar}
+
+                                    />
+                                  )
+                                })
+                                }
                               </tbody>
                             </Table>
+
                           </Col>
+
                         </Row>
                         <CardFooter>
                           <CardText align="right" style={{ marginRight: "3rem" }}>
@@ -813,36 +1090,36 @@ class Pedidos extends React.Component {
                             {this.sumar()}
                           </CardText>
                         </CardFooter>
-                        <CardFooter>
-                          <CardText align="left">Observaciones: <input
-                            key="observaciones"
-                            style={{ backgroundColor: "#eee363" }}
-                            type="textarea"
-                            id="observaciones"
-                            name="observaciones"
-                            placeholder="Observaciones generales"
-                            value={this.state.unPedido.observaciones}
-                            onChange={this.handleChangeObservaciones}
-                            className="form-control"
-                          ></input></CardText>
-                        </CardFooter>
+                        {/* <Col xs="12" md="6" onSubmit={this.event}> */}
+                        <Button
+                          color="success"
+                          size="lg"
+                          block
+                          onClick={() => this.confirmarPedidoEditado(this.state.pedido.id)
+                          }
+                        >
+                          Guardar
+                        </Button>
+                        {/* </Col> */}
                       </Container>
                     )}
                   </React.Fragment>
 
                   <CardFooter>
                     <Row>
-                      <Col xs="12" md="6" onSubmit={this.event}>
-                        <Button
-                          color="success"
-                          size="lg"
-                          block
-                          onClick={() => this.confirmarPedido(this.state.idPedido)
-                          }
-                        >
-                          Confirmar
-                        </Button>
-                      </Col>
+                      {editable === false &&
+                        <Col xs="12" md="6" onSubmit={this.event}>
+                          <Button
+                            color="success"
+                            size="lg"
+                            block
+                            onClick={() => this.confirmarPedido(this.state.idPedido)
+                            }
+                          >
+                            Confirmar
+                          </Button>
+                        </Col>
+                      }
                       <Col xs="12" md="6">
                         {/* <Button
                         activeClassName="button-confirmar"
@@ -876,24 +1153,8 @@ class Pedidos extends React.Component {
   }
 
 
-
-  verDetallesItems(pedidoId) {
-    var listaActualizada = this.state.items.filter(
-      (item) => pedidoId == item.pedidoId
-    );
-    this.setState({ items: listaActualizada }, () => console.log("detallesItems", this.state.items));
-  }
-
-  actualizarEstadosAlCrear() {
-    this.setState({
-      listaItems: [], nuevaListaDescripciones: [], modal: true, confirmar: true,
-      idPedido: this.state.idPedido, selectedValues: [], verPlantilla: true
-    }, () => console.log("listaItemsCOnfirmar", this.state.confirmar)
-    );
-  }
-
   actualizarEstadosAlGuardar() {
-   this.guardarVistaPrevia()
+    this.guardarVistaPrevia()
 
   }
   guardarVistaPrevia() {
@@ -909,38 +1170,83 @@ class Pedidos extends React.Component {
   }
 
   confirmarPedido(idPedido) {
-    if(this.state.listaItems.length >=1){
-    this.crearPedido();
-    this.setState({
-      listaItems: [], nuevaListaDescripciones: [], modal: true, confirmar: true,
-      idPedido: this.state.idPedido, selectedValues: [], verPlantilla: true
-    });
-    this.getCollapse();
-  }else{
-    if(this.state.listaItems.length ===0){
-      var answer = window.confirm(
-      "Por favor selecciona productos"
-    );
-    return answer
-    // console.log("por favor selecciona productos")
+    if (this.state.listaItems.length >= 1) {
+      this.crearPedido();
+      this.setState({
+        listaItems: [], nuevaListaDescripciones: [], modal: true, confirmar: true,
+        idPedido: this.state.idPedido, selectedValues: [], verPlantilla: true
+      });
+      this.getCollapse();
+      // console.log("prueba",this.state.unItem.descripcion)
+    } else {
+      if (this.state.listaItems.length === 0) {
+        var answer = window.confirm(
+          "Por favor selecciona productos"
+        );
+        return answer
+        // console.log("por favor selecciona productos")
+      }
     }
   }
+  confirmarPedidoEditado(id) {
+    // if (id !== undefined) {
+    this.editarPedido(id);
+    // console.log("editarPedido", id)
+    this.limpiarEditado(id)
+    this.listadoPedidos()
+    this.listadoItemsPedido()
+    // this.setState({
+    //   itemsDePedidoElegido: [],pedido:{}
+    // }, () => console.log("idConfirmar", this.state.itemsDePedidoElegido));
+    // this.getCollapse();
+    // } else {
+    //   if (id === undefined) {
+    //     var answer = window.confirm(
+    //       "Por favor selecciona un pedido"
+    //     );
+    //     return answer
+    //   }
+    // }
   }
-
-
-
+  limpiarEditado(id){
+    var listaActualizada = this.state.pedidos.filter(
+      (pedido) => id !== pedido.id
+    );
+    this.setState({
+      pedidos: listaActualizada,pedido:{id:null,seccion:"",observaciones:""}
+      , responsable: {nombre:""},
+      seccionEditable:"", observacionesEditable:"", responsablesDeMesa: [],itemsDePedidoElegido:[]
+    })
+  }
 
   envioDePedido(estadoSeccion) {
     this.setState({ unPedido: { seccion: estadoSeccion } },
-      () => console.log("envioSeccion", estadoSeccion, this.state.seccion));
+      // () => console.log("envioSeccion", estadoSeccion, this.state.seccion)
+    );
   }
-
+  envioDeSeccionEditar(estadoSeccion) {
+    this.setState({seccionEditable:estadoSeccion}, () => console.log("envioSeccion",this.state.seccionEditable))
+  }
+  envioDeObservacionesEditar(estadoObservaciones) {
+    this.setState({ observacionesEditable: estadoObservaciones }
+      , () => console.log("envioObservaciones", this.state.observacionesEditable))
+  }
+  envioDeEstadoResponsableEditar(estadoResponsable) {
+    this.setState({
+      responsable:{nombre:estadoResponsable}
+    }
+      , () => console.log("estadoRespPedid",this.state.responsable.nombre)
+    )
+  }
   envioDeEstadoResponsable(estadoResponsable) {
     this.setState({ nombre: estadoResponsable }
-      , () => console.log("estadoRespPedid", estadoResponsable, this.state.nombre))
+      , () => console.log("estadoRespPedid", estadoResponsable, this.state.nombre)
+    )
   }
   seleccionarItem(unItem) {
-    this.setState({ item: unItem }, () => console.log("seleccionar", this.state.item))
+    this.setState({ item: unItem }
+      // , () => console.log("seleccionar", this.state.item)
+    )
 
   }
 
@@ -950,21 +1256,15 @@ class Pedidos extends React.Component {
 
         listaItems: state.listaItems.forEach(function (i) {
           if (i.descripcion === nuevoItem.descripcion) {
-            // i.descripcion = nuevoItem.descripcion
             i.observaciones = nuevoItem.observaciones;
           }
-          console.log("nuevaLista", state.listaItems, nuevoItem.observaciones);
-        }
-        ),
+        }),
         listaItems: state.listaItems,
         unItem: {
           observaciones: state.unItem.observaciones,
-          // descripcion: state.unItem.descripcion,
-
         },
       };
-    }, () => console.log("nuevaLista2", this.state.listaItems))
-
+    })
   }
 
   calcular = (nuevoItem) => {
@@ -978,55 +1278,81 @@ class Pedidos extends React.Component {
             total = (i.cantidad * nuevoItem.importe);
             i.importe = total;
           }
-          console.log("nuevaLista", state.listaItems, nuevoItem.importe);
-        }
-        ),
+        }),
         listaItems: state.listaItems,
         unItem: {
           importe: total,
           descripcion: state.unItem.descripcion,
-
         },
       };
-    }, () => console.log("nuevaLista2", this.state.listaItems))
+    })
   }
 
+  calcularEditar = (nuevoItem, producto) => {
+    this.setState(function (state, props) {
+      var total = 0;
+      return {
+        itemsDePedidoElegido: state.itemsDePedidoElegido.forEach(function (i) {
+          if (producto.id == i.productoId) {
+            i.cantidad = nuevoItem.cantidad;
+            total = (i.cantidad * producto.precioUnitario);
+            i.importe = total;
+          }
+        }),
+        itemsDePedidoElegido: state.itemsDePedidoElegido,
+        item: {
+          importe: total,
+        },
+      };
+    })
+  }
+  //modificar elegirId o limpiar 
+  elegirId(id) {
+    console.log("id",id,this.state.pedidos)
+    // this.setState({pedido:{},itemsDePedidoElegido:[],responsablesDeMesa:[],selectedValuesEditar:[]})
+    var pedido = this.state.pedidos.find(
+      (pedido) => pedido.id == id
+    );
+    this.setState({pedido:pedido})
+    console.log("pedido",pedido)
+    let responsable = this.state.responsablesDeMesa.find(r => r.id_responsable === pedido.responsableId)
+    let items = this.state.items.filter(i => i.pedidoId === pedido.id)
+    this.setState({
+      pedido: pedido, responsable:responsable, itemsDePedidoElegido: items
+      , responsablesDeMesa: this.state.responsablesDeMesa, secciones: this.state.secciones,
+      selectedValuesEditar: this.state.selectedValuesEditar,
+    }
+      , () => console.log("pedidoelegido", this.state.itemsDePedidoElegido)
+    );
+    // this.encontrarItemsIdPedido(pedido.id)
+  }
+
+  limpiarItemsDePedidoElegidoDeTabla() {
+    this.setState({
+      itemsDePedidoElegido: [], selectedValuesEditar: []
+      , SelectedItemEditar: {}
+    })
+  }
+
+  actualizarAlEliminar = (unItem) => {
+    var listaActualizada = this.state.itemsDePedidoElegido.filter(
+      (item) => unItem !== item
+    );
+    this.setState({ itemsDePedidoElegido: listaActualizada, item: {} });
+  };
 
   renderItems(listaItems, SelectedItem) {
-    let nuevaListaDescripciones = this.state.nuevaListaDescripciones;
     const id = this.state.id;
     let productos = this.state.productos;
-    // let listaItems = this.state.listaItems;
-    // let item = this.state.unItem;
-    // let cantidad = this.state.unItem.cantidad
-    let idItem = this.state.idItem
-
     if (listaItems) {
-      // if (Selecteditem) {
       return listaItems.map((unItem, unIndex) => {
-
-        // item = unItem
-        // let idParaItem = this.idItem()
-
-        // let cantidad=nuevoItem.cantidad
-        // cantidad=1
-
-        // const pid = id;
-        // unItem.pedidoId = pid;
-        // if (unItem.importe == null) {
-        //   unItem.importe =producto.precioUnitario;
-        // }
-        console.log("renderUNO", listaItems);
         return (
           <PedidoItems
-            // id={id}
-            // pedidoId={unItem.pedidoId}
             nuevaListaDescripciones={this.state.nuevaListaDescripciones}
             envioDePedido={this.envioDePedido}
             envioDeEstadoCantidad={this.envioDeEstadoCantidad}
             envioDeEstadoImporte={this.envioDeEstadoImporte}
             settearPedidoYProductoAItem={this.settearPedidoYProductoAItem}
-            // handleEvent={this.handleEvent}
             key={unIndex}
             index={unIndex}
             unItem={unItem}
@@ -1034,10 +1360,8 @@ class Pedidos extends React.Component {
             pedido={this.state.pedido}
             productos={productos}
             productoId={unItem.productoId}
-            // productoId={SelectedItem.id}
             descripcion={SelectedItem.descripcion}
             precio={SelectedItem.precioUnitario}
-            // cantidad={cantidad}
             importe={unItem.importe}
             seleccionarItem={this.seleccionarItem}
             codigo={unItem.codigo}
@@ -1047,8 +1371,6 @@ class Pedidos extends React.Component {
             listadoProductos={this.listadoProductos}
             listadoItemsPedido={this.listadoItemsPedido}
             estadoInicial={this.estadoInicial}
-            actualizarAlEliminar={this.actualizarAlEliminar}
-            eliminarPedido={this.eliminarPedido.bind(this)}
             toggle={this.toggle}
           />
         );
@@ -1062,22 +1384,9 @@ class Pedidos extends React.Component {
     return this.state.importe;
   }
 
-
-
-
   renderItemsDos(listaItems) {
-    let nuevaListaDescripciones = this.state.nuevaListaDescripciones;
-    // let items = this.state.items;
-    // let SelectedItem = this.state.SelectedItem;
-    // let listaItems = this.state.listaItems;
-
     if (listaItems) {
-
       return listaItems.map((unItem, index) => {
-        // const producto = listaProductosEnPedido.find(
-        //   (p) => p.descripcion == SelectedItem
-        // );
-        console.log("renderDos", listaItems)
         return (
           <PedidoItemsDos
             envioDeEstadoObservaciones={this.envioDeEstadoObservaciones}
@@ -1098,51 +1407,20 @@ class Pedidos extends React.Component {
     }
 
   }
-
-  renderItemsUnoEditable(listaProductosEnPedido) {
-    let items = this.state.items;
-    return !items
-      ? console.log("NULL", null)
-      : items.map((unItem, index) => {
-        return (
-          <div>{console.log("itemsUno", items)}</div>
-          // <PedidoItemsEditar
-          //   key={index}
-          //   items={this.state.items}
-          //   unItem={unItem}
-          //   productos={this.state.productos}
-          //   productoId={unItem.productoId}
-          //   importe={this.state.item.importe}
-          //   selector={this.seleccionarItem}
-          //   listadoPedidos={this.listadoPedidos}
-          //   listadoProductos={this.listadoProductos}
-          //   listadoItemsPedido={this.listadoItemsPedido}
-          // />
-        );
-      });
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
   }
 
-  renderItemsDosEditable(listaProductosEnPedido) {
-    let nuevaListaDescripciones = this.state.nuevaListaDescripciones;
-    let items = this.state.items;
-    let SelectedItem = this.state.SelectedItem;
-    let listaItems = this.state.listaItems;
-
-    return (
-      <div>hola render dos editable</div>
-
-
-    );
+  componentDidCatch(error, errorInfo) {
+    // You can also log the error to an error reporting service
+    console.log(error, errorInfo);
   }
+  // console.log("renderItemsRowEdit",pedido,lista)
+  // if (this.state.hasError) {
+  //   // You can render any custom fallback UI
+  //   return <h1>Something went wrong.</h1>;
+  // }
 
-  renderRows(pedido) {
-
-    return (
-      <div>hola soy renderRows</div>
-
-
-    );
-  }
 }
 
 export default Pedidos;

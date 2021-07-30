@@ -73,6 +73,8 @@ models.ItemsPedido.belongsTo(models.Pedido, {
   foreignKey: "pedidoId",
   targetKey: "id",
   constraints:false,
+  onDelete: "SET NULL",
+  onUpdate:"SET NULL"
 });
 
 models.ResponsableDeMesa.hasMany(models.Pedido, {
