@@ -37,6 +37,7 @@ class CargarProducto extends React.Component {
       producto: {
         codigo: "",
         descripcion: "",
+        categoria:"",
         precioUnitario: "",
         habilitado: "",
       },
@@ -156,6 +157,22 @@ class CargarProducto extends React.Component {
                         placeholder="Completa descripción..."
                         required={false}
                         value={this.state.producto.descripcion}
+                        onChange={this.handleChange}
+                      />
+                    </Col>
+                  </FormGroup>
+                  <FormGroup row>
+                    <Col md="3">
+                      <Label for="categoria">Categoría</Label>
+                    </Col>
+                    <Col xs="12" md="9">
+                      <Input
+                        type="text"
+                        id="categoria"
+                        name="categoria"
+                        placeholder="Completa categoría..."
+                        required={false}
+                        value={this.state.producto.categoria}
                         onChange={this.handleChange}
                       />
                     </Col>

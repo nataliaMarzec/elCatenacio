@@ -11,6 +11,75 @@ const CocinaDetallesController = (props) => {
     if (activeTab !== tab) setActiveTab(tab);
   }
 
+
+  const itemsListaCocina= ()=> {
+    let data1 = props.items
+    let data2 = props.productos
+    var nuevaLista = data1.filter(function (el) {
+      var found = false, x = 0;
+      while (x < data2.length && !found) {
+        if (el.productoId == data2[x].id && data2[x].categoria != "Cocina") found = true;
+        x++;
+      }
+      if (!found) return el;
+    });
+    nuevaLista = nuevaLista.concat(data2.filter(function (el) {
+      var found = false, x = 0;
+      while (x < data1.length && !found) {
+        if (el.id == data1[x].productoId) found = true;
+        x++;
+      }
+      if (!found) return el;
+    }));
+    console.log("Cocina", nuevaLista)
+    return nuevaLista
+  }
+  // const pedidoListaCocina= ()=> {
+  //   let data1 = props.pedidos
+  //   let data2 = itemsListaCocina()
+  //   var nuevaLista = data1.filter(function (el) {
+  //     var found = false, x = 0;
+  //     while (x < data2.length && !found) {
+  //       if (el.id == data2[x].pedidoId && el.preparado != false && el.entregado != false) found = true;
+  //       x++;
+  //     }
+  //     if (!found) return el;
+  //   });
+  //   nuevaLista = nuevaLista.concat(data2.filter(function (el) {
+  //     var found = false, x = 0;
+  //     while (x < data1.length && !found) {
+  //       if (el.pedidoId == data1[x].id) found = true;
+  //       x++;
+  //     }
+  //     if (!found) return el;
+  //   }));
+  //   console.log("CocinaPEDIDO", nuevaLista)
+  //   return nuevaLista
+  // }
+
+  const itemsListaParrilla= ()=> {
+    let data1 = props.items
+    let data2 = props.productos
+    var nuevaLista = data1.filter(function (el) {
+      var found = false, x = 0;
+      while (x < data2.length && !found) {
+        if (el.productoId == data2[x].id && data2[x].categoria != "Parrilla") found = true;
+        x++;
+      }
+      if (!found) return el;
+    });
+    nuevaLista = nuevaLista.concat(data2.filter(function (el) {
+      var found = false, x = 0;
+      while (x < data1.length && !found) {
+        if (el.id == data1[x].productoId) found = true;
+        x++;
+      }
+      if (!found) return el;
+    }));
+    console.log("Cocina", nuevaLista)
+    return nuevaLista
+  }
+
   return (
     <div>
       <Container>
@@ -33,7 +102,7 @@ const CocinaDetallesController = (props) => {
           </NavItem>
           <NavItem>
             <NavLink
-              className={classnames({ active: activeTab === '2' })}
+              className={classnames({ active: activeTab === '3' })}
               onClick={() => { toggle('3'); }}
             >
               Pedidos preparados
@@ -41,7 +110,7 @@ const CocinaDetallesController = (props) => {
           </NavItem>
           <NavItem>
             <NavLink
-              className={classnames({ active: activeTab === '3' })}
+              className={classnames({ active: activeTab === '4' })}
               onClick={() => { toggle('4'); }}
             >
               Pedidos entregados
@@ -54,7 +123,10 @@ const CocinaDetallesController = (props) => {
             <React.Fragment>{
               props.pedidos.filter(p => p.entregado == false && p.preparado === false).length > 0 &&
               props.pedidos.filter(p => p.entregado === false && p.preparado === false).map((unPedido, index) => {
-                let itemsLista = props.items.filter(i => i.pedidoId == unPedido.id)
+               
+                let itemsLista = itemsListaCocina().filter((i) => i.pedidoId == unPedido.id)
+               console.log("itemsLista",itemsListaCocina())
+               {/* if(itemsListaCocina().length > 0){ */}
                 return (
                   <Row>
                     {/* <React.Fragment>{
@@ -71,11 +143,9 @@ const CocinaDetallesController = (props) => {
                       listadoItemsPedido={props.listadoItemsPedido}
                       entregado={unPedido.entregado}
                     />
-
-
                   </Row>
                 )
-
+                {/* } */}
               })}{
                 props.pedidos.filter(p => p.entregado == false && p.preparado === false).length === 0 &&
                 <Container><CardText>No hay productos para preparar</CardText></Container>
@@ -87,7 +157,7 @@ const CocinaDetallesController = (props) => {
             <React.Fragment>{
               props.pedidos.filter(p => p.entregado == false && p.preparado === false).length > 0 &&
               props.pedidos.filter(p => p.entregado === false && p.preparado === false).map((unPedido, index) => {
-                let itemsLista = props.items.filter(i => i.pedidoId == unPedido.id)
+                let itemsLista = itemsListaParrilla().filter((i) => i.pedidoId == unPedido.id)
                 return (
                   <Row>
                     {/* <React.Fragment>{

@@ -19,6 +19,10 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         type: DataTypes.INTEGER,
       },
+      categoria:{
+        allowNull:true,
+        type:DataTypes.STRING,
+      },
       codigo: DataTypes.INTEGER,
       habilitado: DataTypes.STRING,
     

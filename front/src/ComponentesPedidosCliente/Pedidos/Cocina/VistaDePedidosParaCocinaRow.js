@@ -139,6 +139,7 @@ class VistaDePedidosParaCocinaRow extends React.Component {
     //agregar a los items atributo "listo"
 
     render = () => {
+        
         var style = { backgroundColor: this.state.color }
 
         let botonTexto = document.innerText;
@@ -152,6 +153,7 @@ class VistaDePedidosParaCocinaRow extends React.Component {
             let producto = this.props.productos.find(p => p.id == i.productoId
                 && pedido.id == i.pedidoId)
 
+        //    console.log("productoscocina",productoCocina)
             return (
 
                         <Card key={i.codigo} id={i.codigo} data-arg1={i.codigo} style={style} onChange={this.getComponent.bind(this)}>
@@ -168,7 +170,9 @@ class VistaDePedidosParaCocinaRow extends React.Component {
                         </Card>
                    
             )
+           
         })
+    
         return (
             <Container>
                 <CardColumns>

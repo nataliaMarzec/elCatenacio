@@ -19,6 +19,10 @@ module.exports = {
         allowNull:true,
         type:Sequelize.INTEGER,
       },
+      categoria:{
+        allowNull:true,
+        type:Sequelize.STRING,
+      },
       codigo: {
         type: Sequelize.INTEGER,
       },

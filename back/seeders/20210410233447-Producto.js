@@ -9,9 +9,11 @@ module.exports = {
       "Productos",
       [
         {
-          codigo: 1,
+          
           descripcion: "postre",
           precioUnitario: 120,
+          categoria:"Cocina",
+          codigo: 1,
           habilitado: "si",
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -19,6 +21,7 @@ module.exports = {
         {
           descripcion: "asado",
           precioUnitario: 300,
+          categoria:"Parrilla",
           codigo: 2,
           habilitado: "no",
           createdAt: new Date(),
@@ -27,6 +30,16 @@ module.exports = {
         {
           descripcion: "achuras",
           precioUnitario: 400,
+          categoria:"Parrilla",
+          codigo: 3,
+          habilitado: "si",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          descripcion: "tortilla",
+          precioUnitario: 400,
+          categoria:"Cocina",
           codigo: 3,
           habilitado: "si",
           createdAt: new Date(),

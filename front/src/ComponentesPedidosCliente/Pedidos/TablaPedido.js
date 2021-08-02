@@ -6,11 +6,11 @@ class TablaPedido extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      pedido:{},
+      pedido: props.pedido,
       pedidos: props.pedidos,
       unPedido: props.unPedido,
       responsablesDeMesa: props.responsablesDeMesa,
-      responsable:props.responsable || {},
+      responsable: props.responsable || {},
       itemsPedido: props.itemsPedido,
       itemsDePedidoElegido: props.itemsDePedidoElegido,
       productos: props.productos || [],
@@ -26,8 +26,9 @@ class TablaPedido extends React.Component {
       codigoPedido: props.codigoPedido,
       editable: props.editable,
       secciones: props.secciones,
-      id:"",
-      idPedidoTabla:props.idPedidoTabla,
+      id: "",
+      idPedidoTabla: props.idPedidoTabla,
+      limpiarPedidoEditar: props.limpiarPedidoEditar,
     };
     // this.elegirId = this.elegirId.bind(this)
   }
@@ -69,7 +70,7 @@ class TablaPedido extends React.Component {
     this.props.listadoItemsPedido();
     this.props.listadoProductos();
     this.props.listadoResponsables();
-    this.setState({ editable: this.state.editable, id: "" }
+    this.setState({ editable: this.state.editable, id: "", idPedidoTabla: this.state.idPedidoTabla }
       , console.log("id", this.state.id)
     );
     this.setState({
@@ -87,18 +88,21 @@ class TablaPedido extends React.Component {
     this.setState({ secciones: props.secciones })
     // this.setState({unPedido:props.unPedido},()=>console.log("unPedido",this.state.unPedido))
     this.setState({ confirmar: props.confirmar })
-    this.setState({ pedidos: props.pedidos })
-    // , () => console.log("propsPEDIDOS", this.state.pedidos)
-    this.setState({ pedido: props.pedido },()=>console.log("pedido_tbl",props.pedido))
+    this.setState({ pedidos: props.pedidos }, () => console.log("pedidos_tbl", props.pedidos))
+    this.setState({ pedido: props.pedido }, () => console.log("pedido_tbl", props.pedido))
     this.setState({ items: props.items },)
     this.setState({ item: props.item },)
     this.setState({ idPedidoTabla: props.idPedidoTabla },)
     this.setState({ itemsDePedidoElegido: props.itemsDePedidoElegido })
     this.setState({ responsablesDeMesa: props.responsablesDeMesa })
     this.setState({ responsable: props.responsable })
-    this.setState({seccionEditable:props.seccionEditable
-      ,observacionesEditable:props.observacionesEditable
-      ,nombreResponsableEditable:props.nombreResponsableEditable,nombre:props.nombre})
+    this.setState({ limpiarPedidoEditar: props.limpiarPedidoEditar })
+    this.setState({
+      seccionEditable: props.seccionEditable
+      , observacionesEditable: props.observacionesEditable
+      , nombreResponsableEditable: props.nombreResponsableEditable, nombre: props.nombre
+    })
+    // this.props.refs.tablaPedido;
     // this.setState({ responsable: props.responsable },)
   }
 
@@ -106,33 +110,19 @@ class TablaPedido extends React.Component {
 
   handleSubmit = (e) => {
     var busqueda;
-    if (this.state.id === "") {
+    if (this.state.pedido.id === "") {
       this.listadoBusqueda(busqueda);
+      this.setState({limpiarPedidoEditar:false})
       this.setState({pedido:{}})
     }
-    if (this.state.id !== "") {
-      busqueda = '?busqueda=id=="' + this.state.id + '"';
+    if (this.state.pedido.id !== "") {
+      busqueda = '?busqueda=id=="' + this.state.pedido.id + '"';
       this.listadoBusqueda(busqueda);
-      // this.props.elegirId(this.state.id)
-      this.props.listadoPedidos()
-      // this.props.listadoResponsables()
-      // this.props.encontrarItemsIdPedido(this.state.id)
+     
+      // this.elegirId(this.state.pedido.id)
     }
     e.preventDefault(e);
   };
-  // handleSubmit = (e) => {
-  //   var busqueda;
-  //   if (this.state.id === "") {
-  //     this.listadoBusqueda(busqueda);
-  //     this.setState({pedido:{}})
-  //   }
-  //   if (this.state.id !== "") {
-  //     busqueda = '?busqueda=id=="' + this.state.id + '"';
-  //     this.listadoBusqueda(busqueda);
-  //     this.elegirId(this.state.id)
-  //   }
-  //   e.preventDefault(e);
-  // };
 
 
   listadoBusqueda = (busqueda) => {
@@ -142,43 +132,53 @@ class TablaPedido extends React.Component {
         .then((res) => res.json())
         .then((pedidos) => this.setState({ pedidos: pedidos }));
     }
-    if (busqueda == null) {
+    if (this.state.limpiarPedidoEditar === true) {
       fetch(`http://localhost:8383/pedido`)
         .then((res) => res.json())
-        .then((pedidos) => this.setState({ pedidos: pedidos }));
+        .then((pedidos) => this.setState({ pedidos: pedidos, pedido: { id: "" } }));
     }
   };
-limpiarTabla=()=>{
-  // this.setState({seccionEditable:"",observacionesEditable:"",pedido:{id:null},responsable:{}
-  // ,itemsDePedidoElegido:[]})
-  document.getElementById("id").value = "";
-  // this.setState({idPedidoTabla:""})
-  this.props.limpiarItemsDePedidoElegidoDeTabla()
-  this.props.listadoPedidos()
-  this.props.listadoResponsables()
-};
-
-handleChange = (e) => {
-  var nuevoPedido = Object.assign({}, this.state.pedido);
-  nuevoPedido[e.target.name] = e.target.value;
-  this.setState(
-    {pedido: nuevoPedido},()=>this.props.elegirId(nuevoPedido.id))
-
+  limpiarTabla = () => {
+    this.setState({seccionEditable:"",observacionesEditable:""
+    ,pedido:{id:null,seccion:"",observaciones:""},responsable:{}
+    ,itemsDePedidoElegido:[]})
+    document.getElementById("id").value = "";
+    // this.setState({idPedidoTabla:""})
+    this.props.limpiarItemsDePedidoElegidoDeTabla()
+    this.props.listadoPedidos()
+    this.props.listadoResponsables()
   };
 
- 
+  handleChange = (e) => {
+    var nuevoPedido = Object.assign({}, this.state.pedido);
+    nuevoPedido[e.target.name] = e.target.value;
+      this.setState(
+        { pedido: nuevoPedido }, () => this.props.elegirId(nuevoPedido.id)) 
+        // this.props.confirmarPedidoTablaEditar(nuevoPedido)  
+  };
+
+  onChangeDataList = (e) => {
+    document.getElementById("id").value = "";
+    this.props.limpiarItemsDePedidoElegidoDeTabla()
+    this.props.listadoPedidos()
+    this.props.listadoResponsables()
+    this.setState({limpiarPedidoEditar:false})
+    e.preventDefault(e)
+    console.log("e",e)
+  }
+
 
   render() {
     let pedidos = this.state.pedidos;
     let editable = this.state.editable;
     // console.log("itemsTabla", this.state.itemsDePedidoElegido)
     var listaIdsPedidos = this.state.pedidos.map((pedido) => {
-      let unPedido=this.state.pedido;
-      unPedido=pedido;
-      console.log("id listaIds",pedido)
+      let unPedido = this.state.pedido;
+      unPedido = pedido;
+      // console.log("id listaIds",pedido)
       return (
         <div>
-          <option value={pedido.id} id={pedido.id}/>
+          <option data-value="" value={pedido.id} id={pedido.id} />
         </div>
       );
     });
@@ -195,12 +195,13 @@ handleChange = (e) => {
                       type="number"
                       id="id"
                       name="id"
+                      value={this.state.pedido.id}
                       placeholder="Elegir id"
-                      onChange={this.handleChange}
+                      onChange={this.state.limpiarPedidoEditar === true ? this.onChangeDataList : this.handleChange}
                       list="pedidos"
                     />
                   </Col>
-                  <datalist id="pedidos" >{listaIdsPedidos}</datalist>
+                  <datalist id="pedidos" onChange={this.onChangeDataList } >{listaIdsPedidos}</datalist>
                 </FormGroup>
                 <div className="row">
                   <div className="input-field col s12 m12">
@@ -302,14 +303,15 @@ handleChange = (e) => {
           pedidos={pedidos}
           responsablesDeMesa={this.state.responsablesDeMesa}
           responsable={this.state.responsable}
-            listadoPedidos={this.props.listadoPedidos}
+          listadoPedidos={this.props.listadoPedidos}
           envioDeEstadoResponsableEditar={envioDeEstadoResponsableEditar}
           envioDeSeccionEditar={envioDeSeccionEditar}
           envioDeObservacionesEditar={envioDeObservacionesEditar}
-          envioDeEstadoLimpiarPedido={envioDeEstadoLimpiarPedido} 
+          envioDeEstadoLimpiarPedido={envioDeEstadoLimpiarPedido}
         />
       )
     }
+
 
 
   };

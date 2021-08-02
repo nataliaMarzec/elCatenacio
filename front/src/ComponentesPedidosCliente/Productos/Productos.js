@@ -118,10 +118,11 @@ class Productos extends React.Component {
                       <Table responsive bordered size="sm">
                         <thead>
                           <tr>
-                            <th>codigo</th>
-                            <th>descripcion</th>
-                            <th>precio</th>
-                            <th>habilitado</th>
+                            <th>Código</th>
+                            <th>Descripcion</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Habilitado</th>
                           </tr>
                         </thead>
                         <tbody>{this.renderRows()}</tbody>

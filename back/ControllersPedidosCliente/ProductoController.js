@@ -10,12 +10,13 @@ module.exports = {
       where: { descripcion:producto.descripcion },
     });
     if(!existe){
-    const { id, descripcion, codigo, habilitado } = await Producto.create(
+    const { id, descripcion,categoria,codigo, habilitado } = await Producto.create(
       producto
     );
     return res.status(200).json({
       id,
       descripcion,
+      categoria,
       codigo,
       habilitado,
     });
@@ -32,7 +33,7 @@ module.exports = {
 
   update: async (req, res) => {
     const producto = await Producto.findByPk(req.params.id);
-    const { id, productoId, codigo, habilitado } = await producto.update(
+    const { id, productoId,categoria, codigo, habilitado } = await producto.update(
       req.body
     );
 
@@ -40,6 +41,7 @@ module.exports = {
       .json({
         id,
         productoId,
+        categoria,
         codigo,
         habilitado,
       })
