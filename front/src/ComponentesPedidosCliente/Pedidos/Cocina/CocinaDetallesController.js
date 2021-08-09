@@ -210,6 +210,7 @@ const CocinaDetallesController = (props) => {
                       <th>Producto</th>
                       <th>Cantidad</th>
                       <th>Observaciones</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody> {tablaPreparados(props)}</tbody>

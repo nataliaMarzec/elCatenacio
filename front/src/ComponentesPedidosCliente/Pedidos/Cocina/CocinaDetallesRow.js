@@ -64,7 +64,7 @@ class CocinaDetallesRow extends React.Component {
                 <td key="productoId">{listaProductos}</td>
                 <td key="cantidad">{listaCantidad}</td>
                 <td key="observaciones">{listaObservaciones}</td>
-                <td></td>
+              
                 <React.Fragment>
                     {this.props.pedido.entregado === false && this.props.pedido.ItemsPedido.length 
                     === this.props.items.length 
@@ -72,10 +72,22 @@ class CocinaDetallesRow extends React.Component {
                       &&
                         <td>
                             <Button
-                                className="btn #e65100 orange darken-4"
+                                active  color="primary" className="btn-pill" size="btn-sm-4" aria-pressed="true"
                                 onClick={() => this.entregar(this.props.pedido.id)}
                             >
                                 <i className="fa fa-dot-circle-o">{""}Entregar</i>
+                            </Button>
+                        </td>
+                    }
+                    {this.props.pedido.entregado === false && this.props.pedido.ItemsPedido.length 
+                    !== this.props.items.length 
+                 
+                      &&
+                        <td>
+                            <Button
+                                color="primary" className="btn-pill" size="btn-sm-4" disabled
+                            >
+                                <i className="fa">{""}Incompleto</i>
                             </Button>
                         </td>
                     }
