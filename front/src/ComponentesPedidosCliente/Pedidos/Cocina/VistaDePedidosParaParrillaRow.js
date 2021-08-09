@@ -23,32 +23,41 @@ class VistaDePedidosParaParrillaRow extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            pedido: { backgroundColor: "#FDFFFE" },
+            pedidoParrilla: props.pedidoParrilla,
             pedidos: props.pedidos,
-            items: props.items,
+            itemsParrilla: props.itemsParrilla,
             item: props.item,
             productos: props.productos,
             observaciones: "",
             backgroundColor: { backgroundColor: "#FDFFFE" },
             color: "#FDFFFE",
+
         };
         this.updateListo = this.updateListo.bind(this)
+        this.actualizarPedidoParrilla = this.actualizarPedidoParrilla.bind(this)
+
     }
 
     getInitialState() {
-        return { color: "#FDFFFE", item: { listo: false } };
+        return { color: "#FDFFFE", itemsParrilla: [], pedidoParrilla: {} };
     }
 
+    componentWillUpdate(nextProps) {
+        if (nextProps.pedidoParrilla != this.props.pedidoParrilla) {
+            this.setState({ pedidoParrilla: nextProps.pedidoParrilla },
+                () => console.log("pedidoupdate", this.state.pedidoParrilla))
+        }
+    }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
         if (nextProps.pedidos !== this.props.pedidos) {
             this.setState({ pedidos: this.props.pedidos });
         }
-        if (nextProps.pedido !== this.props.pedido) {
-            this.setState({ pedido: nextProps.pedido });
+        if (nextProps.pedidoParrilla !== this.props.pedidoParrilla) {
+            this.setState({ pedidoParrilla: nextProps.pedidoParrilla });
         }
-        if (nextProps.items !== this.props.items) {
-            this.setState({ items: nextProps.items });
+        if (nextProps.itemsParrilla !== this.props.itemsParrilla) {
+            this.setState({ itemsParrilla: nextProps.itemsParrilla });
         }
         if (nextProps.item !== this.props.item) {
             this.setState({ item: this.props.item });
@@ -61,9 +70,8 @@ class VistaDePedidosParaParrillaRow extends React.Component {
         }
     }
 
-
-    todoListoParrilla = (id) => {
-        fetch("http://localhost:8383/pedidos/preparado/parrilla" + id, {
+    todoListoPedidoPreparadoParrilla = (id) => {
+        fetch(`http://localhost:8383/pedidos/preparadoParrilla/${id}`, {
             method: "GET",
             headers: {
                 Accept: "application/json",
@@ -71,31 +79,24 @@ class VistaDePedidosParaParrillaRow extends React.Component {
             },
         })
             .then((res) => res.json())
-            .then((res) => this.setState({ pedidos: this.props.pedidos, pedido: res }))
-            .then((res) => this.updateItemsListosParrilla(id))
-            .then((res) => this.actualizarPedido(this.state.pedido))
+            .then((res) => this.setState({
+                pedidoParrilla: res
+                , itemsParrilla: this.state.itemsParrilla
+            }))
+            .then((res) => this.actualizarPedidoParrilla(this.state.item, this.state.pedidoParrilla.id))
             .then(this.props.listadoPedidos)
+            .catch(function (error) {
+                console.log(error, "error......", id);
+            });
     };
 
-    actualizarPedido = (unPedido) => {
-        var listaActualizada = this.props.pedidos.filter(
-            (pedido) => unPedido !== pedido);
-        this.setState({ pedidos: listaActualizada, pedido: {} });
-    };
-
-
-    updateItemsListosParrilla(id) {
-        console.log("idListos", id)
-        fetch(`http://localhost:8383/itemsPedido/listos/parrilla/${id}`, {
-            method: "PUT",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(this.state.item),
-        })
-            .then((res) => res.json())
-            // .then(this.props.listadoItemsPedido)
+    actualizarPedidoParrilla = (item, id) => {
+        var listaActualizada = this.props.itemsParrilla.filter(i => item != i && i.pedidoId != id);
+        var listaActualizadaPedidos = this.props.pedidos.filter(p => p.id != id)
+        this.setState({
+            itemsParrilla: listaActualizada, item: {}, pedidos: listaActualizadaPedidos,
+            pedidoParrilla: {}
+        });
     };
 
     updateListo(codigo, listo) {
@@ -108,17 +109,13 @@ class VistaDePedidosParaParrillaRow extends React.Component {
             body: JSON.stringify({ listo }),
         })
             .then((res) => res.json())
-            .then((res) => this.setState({ item: { listo: res.listo } }))
+            .then((res) => this.setState({ item: { listoParrilla: res.listo } }))
             .then(this.props.listadoItemsPedido)
     };
 
-
-
     getComponent(event) {
         let arg1 = event.target.getAttribute('data-arg1');
-        // let arg2 = event.target.getAttribute('data-arg2')
         console.log('hola!', event.currentTarget.innerText);
-
         if (event.currentTarget.innerText == "Listo") {
             this.updateListo(arg1, true)
             event.currentTarget.style.backgroundColor = '#92F7B5';
@@ -130,72 +127,48 @@ class VistaDePedidosParaParrillaRow extends React.Component {
                 event.currentTarget.style.backgroundColor = "#FDFFFE";
                 event.currentTarget.innerText = "Listo"
                 event.persist(event)
-
             }
         }
         event.persist(event)
     }
 
-    //agregar a los items atributo "listo"
-
     render = () => {
-        
         var style = { backgroundColor: this.state.color }
-
         let botonTexto = document.innerText;
         botonTexto = "Listo"
-        let items = this.props.items
-        let item = this.props.item
-        let productos = this.props.productos
-        let codigo = this.state.codigo
-        let itemsLista = items.map((i, index) => {
-            let pedido = this.props.pedidos.find(ped => ped.id === i.pedidoId)
-            let producto = this.props.productos.find(p => p.id == i.productoId
-                && pedido.id == i.pedidoId)
-
-        //    console.log("productoscocina",productoCocina)
-            return (
-
-                        <Card key={i.codigo} id={i.codigo} data-arg1={i.codigo} style={style} onChange={this.getComponent.bind(this)}>
-                            <Col >Producto: {i.productoId}</Col>
-                            <Col>Cantidad: {i.cantidad}</Col>
-                            <Col >Observaciones: {i.observaciones} </Col>
-                            <Button key={i.codigo} id={i.codigo}
-                                className="btn #e65100 orange darken-4"
-                                style={style}
-                                data-arg1={i.codigo}
-                                onClick={this.getComponent.bind(this)}
-                            >{botonTexto}
-                            </Button>
-                        </Card>
-                   
-            )
-           
-        })
-    
+        let itemsParrilla = this.props.itemsParrilla
         return (
-            <Container>
-                <CardColumns>
-                <Card className="border-info" >
-                    <CardHeader className="border-warning" >
-                        Nro pedido: &nbsp; {this.props.pedido.id}</CardHeader>
-                    {/* <CardGroup> */}
-                    <Card>
-                        {itemsLista}
-                        <Button
-                            className="btn #e65100 orange darken-4"
-
-                            onClick={() => this.todoListoParrilla(this.props.pedido.id)}
-                        >
-                            <i className="fa fa-dot-circle-o">{""} Todo listo</i>
-                        </Button>
-                    </Card>
-                    {/* </CardGroup> */}
-                </Card>
-                </CardColumns>
-              
-            </Container>
-        );
+            <Card className="border-info">
+                <CardHeader className="border-warning">
+                    Nro pedidoCocina: &nbsp; {this.props.pedidoParrilla.id}</CardHeader>
+                <CardBody>
+                    {itemsParrilla.map((i, index) => {
+                        return (
+                            <div key={i.codigo} id={i.codigo} data-arg1={i.codigo} style={style} onChange={this.getComponent.bind(this)}>
+                                <Col >Producto: {i.productoId}</Col>
+                                <Col>Cantidad: {i.cantidad}</Col>
+                                <Col >Observaciones: {i.observaciones} </Col>
+                                <Button key={i.codigo} id={i.codigo}
+                                    className="btn #e65100 orange darken-4"
+                                    style={style}
+                                    data-arg1={i.codigo}
+                                    onClick={this.getComponent.bind(this)}
+                                >{botonTexto}
+                                </Button>
+                            </div>
+                        )
+                    })}
+                </CardBody>
+                <CardFooter>
+                    <Button
+                        className="btn #e65100 orange darken-4"
+                        onClick={() => this.todoListoPedidoPreparadoParrilla(this.props.pedidoParrilla.id)}
+                    >
+                        <i className="fa fa-dot-circle-o">{""} Todo listo</i>
+                    </Button>
+                </CardFooter>
+            </Card>
+        )
     };
 }
 

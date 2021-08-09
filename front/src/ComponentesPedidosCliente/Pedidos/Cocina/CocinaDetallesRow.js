@@ -6,7 +6,8 @@ class CocinaDetallesRow extends React.Component {
         super(props);
         this.state = {
             pedido: {},
-            pedidos: props.pedidos
+            pedidos: props.pedidos,
+            itemsPreparados:props.itemsPreparados,
         };
         this.entregar = this.entregar.bind(this);
     }
@@ -38,6 +39,9 @@ class CocinaDetallesRow extends React.Component {
         if (nextProps.pedido !== this.props.pedido) {
             this.setState({ pedido: nextProps.pedido });
         }
+        if (nextProps.itemsPreparados !== this.props.itemsPreparados) {
+            this.setState({ itemsPreparados: nextProps.itemsPreparados });
+        }
         if (nextProps.items !== this.props.items) {
             this.setState({ items: nextProps.items });
         }
@@ -63,6 +67,7 @@ class CocinaDetallesRow extends React.Component {
                 <td></td>
                 <React.Fragment>
                     {this.props.pedido.entregado === false && this.props.pedido.preparadoCocina === true &&
+                    this.props.pedido.preparadoParrilla === true &&
                         <td>
                             <Button
                                 className="btn #e65100 orange darken-4"
