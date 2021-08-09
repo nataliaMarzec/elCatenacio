@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { Component, useState } from 'react';
 import CocinaDetallesRow from './CocinaDetallesRow';
 import VistaDePedidosParaCocinaRow from './VistaDePedidosParaCocinaRow';
+import VistaDePedidosParaParrillaRow from './VistaDePedidosParaParrillaRow';
+
 import { Table, TabContent, TabPane, Nav, NavItem, NavLink, Card, Button, CardColumns, CardText, Container, Row, Col } from 'reactstrap';
 import classnames from 'classnames';
 
@@ -12,7 +14,7 @@ const CocinaDetallesController = (props) => {
   }
 
 
-  const itemsListaCocina= ()=> {
+  const itemsListaCocina = () => {
     let data1 = props.items
     let data2 = props.productos
     var nuevaLista = data1.filter(function (el) {
@@ -23,41 +25,46 @@ const CocinaDetallesController = (props) => {
       }
       if (!found) return el;
     });
+    // console.log("nuevaLista1",nuevaLista)
     nuevaLista = nuevaLista.concat(data2.filter(function (el) {
       var found = false, x = 0;
       while (x < data1.length && !found) {
         if (el.id == data1[x].productoId) found = true;
+        // data1[x].listoCocina=true;
         x++;
       }
       if (!found) return el;
     }));
-    console.log("Cocina", nuevaLista)
+
+    // console.log("nuevaLista2", nuevaLista)
     return nuevaLista
   }
-  // const pedidoListaCocina= ()=> {
-  //   let data1 = props.pedidos
-  //   let data2 = itemsListaCocina()
-  //   var nuevaLista = data1.filter(function (el) {
-  //     var found = false, x = 0;
-  //     while (x < data2.length && !found) {
-  //       if (el.id == data2[x].pedidoId && el.preparado != false && el.entregado != false) found = true;
-  //       x++;
-  //     }
-  //     if (!found) return el;
-  //   });
-  //   nuevaLista = nuevaLista.concat(data2.filter(function (el) {
-  //     var found = false, x = 0;
-  //     while (x < data1.length && !found) {
-  //       if (el.pedidoId == data1[x].id) found = true;
-  //       x++;
-  //     }
-  //     if (!found) return el;
-  //   }));
-  //   console.log("CocinaPEDIDO", nuevaLista)
-  //   return nuevaLista
-  // }
+  const pedidoListaCocina = () => {
+    let data1 = props.pedidos
+    let data2 = itemsListaCocina()
+    console.log("pedidoItemscocina", itemsListaCocina())
+    var nuevaLista = data1.filter(function (el) {
+      var found = false, x = 0;
+      while (x < data2.length && !found) {
+        if (el.id == data2[x].pedidoId && el.preparado != false && el.entregado != false) found = true;
+        x++;
+      }
+      if (!found) return el;
+    });
+    console.log("CocinaPEDIDOf1", nuevaLista)
+    nuevaLista = nuevaLista.concat(data2.filter(function (el) {
+      var found = false, x = 0;
+      while (x < data1.length && !found) {
+        if (el.pedidoId == data1[x].id) found = true;
+        x++;
+      }
+      if (!found) return el;
+    }));
+    console.log("CocinaPEDIDOf2", nuevaLista)
+    return nuevaLista
+  }
 
-  const itemsListaParrilla= ()=> {
+  const itemsListaParrilla = () => {
     let data1 = props.items
     let data2 = props.productos
     var nuevaLista = data1.filter(function (el) {
@@ -76,7 +83,7 @@ const CocinaDetallesController = (props) => {
       }
       if (!found) return el;
     }));
-    console.log("Cocina", nuevaLista)
+    // console.log("Cocina", nuevaLista)
     return nuevaLista
   }
 
@@ -120,51 +127,54 @@ const CocinaDetallesController = (props) => {
         <TabContent activeTab={activeTab}>
 
           <TabPane tabId="1">
-            <React.Fragment>{
-              props.pedidos.filter(p => p.entregado == false && p.preparado === false).length > 0 &&
-              props.pedidos.filter(p => p.entregado === false && p.preparado === false).map((unPedido, index) => {
-               
-                let itemsLista = itemsListaCocina().filter((i) => i.pedidoId == unPedido.id)
-               console.log("itemsLista",itemsListaCocina())
-               {/* if(itemsListaCocina().length > 0){ */}
-                return (
-                  <Row>
-                    {/* <React.Fragment>{
-                      props.pedidos.map(p=><Col className="col-lg-4"></Col> */}
-                    <VistaDePedidosParaCocinaRow
-                      index={index}
-                      items={itemsLista}
-                      item={props.item}
-                      productos={props.productos}
-                      producto={props.producto}
-                      pedido={unPedido}
-                      pedidos={props.pedidos}
-                      listadoPedidos={props.listadoPedidos}
-                      listadoItemsPedido={props.listadoItemsPedido}
-                      entregado={unPedido.entregado}
-                    />
-                  </Row>
-                )
-                {/* } */}
-              })}{
-                props.pedidos.filter(p => p.entregado == false && p.preparado === false).length === 0 &&
-                <Container><CardText>No hay productos para preparar</CardText></Container>
-              }
-            </React.Fragment>
+            <Row>
+
+              <React.Fragment>{
+                props.pedidos.filter(p => p.entregado == false && p.preparadoCocina == false).length > 0 &&
+
+                props.pedidos.filter(p => p.entregado == false && p.preparadoCocina == false).map((unPedido, index) => {
+                  let itemsListoCocina = itemsListaCocina()
+                    .filter((i) => i.pedidoId == unPedido.id && i.listoCocina == true)
+                  let filter = unPedido.ItemsPedido.filter(i => i.listoCocina == true)
+                  console.log("pedidoCocina++", filter)
+                  if (filter.length > 0) {
+                    return (
+                      <div className="col-sm-4">
+                        <VistaDePedidosParaCocinaRow
+                          index={index}
+                          itemsCocina={itemsListoCocina}
+                          item={props.item}
+                          productos={props.productos}
+                          producto={props.producto}
+                          pedidoCocina={unPedido}
+                          pedidos={props.pedidos}
+                          listadoPedidos={props.listadoPedidos}
+                          listadoItemsPedido={props.listadoItemsPedido}
+                          entregado={unPedido.entregado}
+                        />
+                      </div>
+                    )
+                  }
+                })}{
+                  props.pedidos.filter(p => p.entregado == false && p.preparadoCocina === false).length === 0 &&
+                  <Container><CardText>No hay productos para preparar</CardText></Container>
+                }
+              </React.Fragment>
+            </Row>
           </TabPane>
 
           <TabPane tabId="2">
             <React.Fragment>{
-              props.pedidos.filter(p => p.entregado == false && p.preparado === false).length > 0 &&
-              props.pedidos.filter(p => p.entregado === false && p.preparado === false).map((unPedido, index) => {
-                let itemsLista = itemsListaParrilla().filter((i) => i.pedidoId == unPedido.id)
+              props.pedidos.filter(p => p.entregado == false && p.preparadoParrilla === false).length > 0 &&
+              props.pedidos.filter(p => p.entregado === false && p.preparadoParrilla === false).map((unPedido, index) => {
+                let itemsListoParrilla = itemsListaParrilla().filter((i) => i.pedidoId == unPedido.id)
                 return (
                   <Row>
                     {/* <React.Fragment>{
                       props.pedidos.map(p=><Col className="col-lg-4"></Col> */}
-                    <VistaDePedidosParaCocinaRow
+                    <VistaDePedidosParaParrillaRow
                       index={index}
-                      items={itemsLista}
+                      items={itemsListoParrilla}
                       item={props.item}
                       productos={props.productos}
                       producto={props.producto}
@@ -196,7 +206,7 @@ const CocinaDetallesController = (props) => {
 
               </React.Fragment>
               <React.Fragment>{
-                props.pedidos.filter(p => p.preparado === true && p.entregado === false).length > 0 &&
+                props.pedidos.filter(p => p.preparadoCocina == true && p.entregado === false).length > 0 &&
                 <Table responsive bordered size="sm">
                   <thead>
                     <tr>
@@ -209,7 +219,7 @@ const CocinaDetallesController = (props) => {
                   <tbody> {tablaPreparados(props)}</tbody>
                 </Table>
               }{
-                  props.pedidos.filter(p =>p.preparado === true && p.entregado === false).length === 0 &&
+                  props.pedidos.filter(p => p.preparadoCocina == true && p.entregado === false).length === 0 &&
                   <Container><CardText>No hay productos para preparar</CardText></Container>
                 }
               </React.Fragment>
@@ -248,7 +258,7 @@ const CocinaDetallesController = (props) => {
 function tablaPreparados(props) {
   return (
     <React.Fragment>{
-      props.pedidos.filter(p => p.entregado=== false && p.preparado === true).map((unPedido, index) => {
+      props.pedidos.filter(p => p.entregado === false && p.preparado === true).map((unPedido, index) => {
         let itemsLista = props.items.filter(i => i.pedidoId == unPedido.id)
         return (
           <CocinaDetallesRow

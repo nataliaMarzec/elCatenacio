@@ -72,6 +72,7 @@ module.exports = {
     var producto = await Producto.findOne({
       where: { descripcion: req.params.descripcion },
     });
+    if(producto.categoria === "Cocina"){
     const item = {
       codigo: req.body.codigo,
       pedidoId: id,
@@ -80,19 +81,47 @@ module.exports = {
       precioUnitario: req.body.precioUnitario,
       importe: req.body.importe,
       observaciones: req.body.observaciones,
+      listoCocina:true,
+      listoParrilla:req.body.listoParrilla,
     };
     return await ItemsPedido.create(item)
       .then(function (item) {
         console.log("item+++", item);
         item.save();
         return res.status(200).json({
-          message: "se guardo el item",
+          message: "se guardo el itemCocina",
           item,
         });
       })
       .catch(function (error) {
         console.log("item", error);
-      });
+      })
+    }
+    if(producto.categoria === "Parrilla"){
+      const item = {
+        codigo: req.body.codigo,
+        pedidoId: id,
+        productoId: producto.id,
+        cantidad: req.body.cantidad,
+        precioUnitario: req.body.precioUnitario,
+        importe: req.body.importe,
+        observaciones: req.body.observaciones,
+        listoCocina:req.body.listoCocina,
+        listoParrilla:true,
+      };
+      return await ItemsPedido.create(item)
+        .then(function (item) {
+          console.log("item+++", item);
+          item.save();
+          return res.status(200).json({
+            message: "se guardo el itemParrilla",
+            item,
+          });
+        })
+        .catch(function (error) {
+          console.log("item", error);
+        })
+      }
   },
   updateEntregado: async (req, res) => {
     var pedido = await Pedido.findOne({
@@ -180,7 +209,7 @@ module.exports = {
   //actualiza el pedido pero no el item
   updatePedidoEntregado(req, res) {
     console.log(req.body, "items", Pedido.entregado);
-    return Pedido.findByPk(req.params.id, req.params.entregado, {
+    return Pedido.findByPk(req.params.id, {
       include: [
         {
           model: ItemsPedido,
@@ -198,7 +227,7 @@ module.exports = {
           .update(
             {
               entregado: true,
-              ItemsPedido: req.body.ItemsPedido || pedido.ItemsPedido,
+              ItemsPedido: pedido.ItemsPedido,
             },
             {
               include: [
@@ -216,36 +245,30 @@ module.exports = {
           });
       })
   },
-  updatePedidoPreparado(req, res) {
-    console.log(req.body, "items", Pedido.preparado);
-    return Pedido.findByPk(req.params.id, req.params.preparado, {
+  //agregar preparado cocina y preparado parrilla
+  todoListoPedidoPreparadoDeCocina(req, res) {
+    console.log(req.body, "items", Pedido.preparadoCocina);
+    return Pedido.findByPk(req.params.id, {
       include: [
         {
           model: ItemsPedido,
           as: "ItemsPedido",
+          where: { listoCocina:true,pedidoId:req.params.id },
         },
       ],
     })
       .then((pedido) => {
         if (!pedido) {
           return res.status(404).send({
-            message: "Pedido no encontrado",
+            message: "Pedido cocina no encontrado",
           });
         }
         return pedido
           .update(
             {
-              preparado: true,
-              ItemsPedido: req.body.ItemsPedido || pedido.ItemsPedido,
+              preparadoCocina: true,
+              ItemsPedido: pedido.ItemsPedido,
             },
-            {
-              include: [
-                {
-                  model: ItemsPedido,
-                  as: "ItemsPedido",
-                },
-              ],
-            }
           )
           .then(() => res.status(200).send(pedido))
           .catch((error) => {
@@ -254,6 +277,38 @@ module.exports = {
           });
       })
   },
+  todoListoPedidoPreparadoDeParrilla(req, res) {
+    console.log(req.body, "items", Pedido.preparadoParrilla);
+    return Pedido.findByPk(req.params.id, {
+      include: [
+        {
+          model: ItemsPedido,
+          as: "ItemsPedido",
+          where: { listoParrilla:true,pedidoId:req.params.id },
+        },
+      ],
+    })
+      .then((pedido) => {
+        if (!pedido) {
+          return res.status(404).send({
+            message: "Pedido parrilla no encontrado",
+          });
+        }
+        return pedido
+          .update(
+            {
+              preparadoParrilla: true,
+              ItemsPedido: pedido.ItemsPedido,
+            },
+          )
+          .then(() => res.status(200).send(pedido))
+          .catch((error) => {
+            console.log(error);
+            res.status(400).send(error);
+          });
+      })
+  },
+ 
  
  
  

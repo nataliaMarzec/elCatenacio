@@ -16,7 +16,7 @@ module.exports = {
       precioUnitario: req.body.precioUnitario,
       importe: req.body.importe,
       observaciones: req.body.observaciones,
-      listo:false,
+      listo: false,
     })
       .then((item) => res.status(201).send(item))
       .catch((error) => res.status(400).send(error));
@@ -47,38 +47,148 @@ module.exports = {
       .then((items) => res.status(201).send(items))
       .catch((error) => res.status(400).send(error));
   },
-  updateListo: async (req, res) => {
+  updateListoCocina: async (req, res) => {
     var item = await ItemsPedido.findOne({
       where: { codigo: req.params.codigo },
       include: ["Productos"],
     });
-    var listo = req.params.listo
-    var itemListo = await item.update({ listo: listo });
+    var listo = req.params.listoCocina
+    var itemListo = await item.update({ listoCocina: listo });
     if (![req.body.values]) {
       res.status(400).json({ err: "no existe codigo item" });
     } else {
       return res.status(200).json(itemListo);
     }
   },
-
-  updateItemsListos: async (req, res) => {
-    let id=req.params.id
-    var pedido= await Pedidos.findOne({where:{id:id}})
-    let pedidoId=pedido.id
-    if (pedidoId) {
-      var items = await ItemsPedido.update(
-        {listo:true},
-        {where: { pedidoId:pedidoId }},
-      )
-      console.log("ItemsListos",pedido.id,items);
-      return res.status(200).json(items);
+  updateListoParrilla: async (req, res) => {
+    var item = await ItemsPedido.findOne({
+      where: { codigo: req.params.codigo },
+      include: ["Productos"],
+    });
+    var listo = req.params.listoParrilla
+    var itemListo = await item.update({ listoParrilla: listo });
+    if (![req.body.values]) {
+      res.status(400).json({ err: "no existe codigo item" });
     } else {
-      return res
-        .status(404)
-        .json("no encontro ", {id});
+      return res.status(200).json(itemListo);
     }
   },
-  
+//usado
+  updateItemsListosCocina: async (req, res) => {
+    let id = req.params.id
+    // await Pedidos.update({where:{id:id},preparado:true})
+    var pedido = await Pedidos.findOne({ where: { id: id } })
+    let pId = pedido.id
+    var values = { listoCocina: true };
+    var condition = {
+      where: { pedidoId: pId }, include: [
+        {
+          model: Productos,
+          as: "Productos",
+          where: { categoria: "Cocina" },
+        },
+      ],
+    }
+    return await ItemsPedido.findAll(condition
+    ).then(function (items) {
+      let itemsCocina = items.map(i => i.update(values))
+      let update = pedido.update({where:{id:id}, include: [
+        {
+          model: ItemsPedido,
+          as: "ItemsPedido",
+          where: { listoCocina:true,pedidoId:req.params.id },
+        },
+      ],preparadoCocina:true})
+      return res.json({
+        message: "se actualizaron los items", itemsCocina,
+        message:"pedido",update
+      })
+    })
+      .catch(function (error) {
+        console.log("error", error, pId)
+
+      })
+  },
+//usado
+  updateItemsListosParrilla: async (req, res) => {
+    let id = req.params.id
+    var pedido = await Pedidos.findOne({ where: { id: id } })
+    let pId = pedido.id
+
+    var values = { listoParrilla: true };
+    var condition = {
+      where: { pedidoId: pId }, include: [
+        {
+          model: Productos,
+          as: "Productos",
+          where: { categoria: "Parrilla" },
+        },
+      ],
+    }
+    return await ItemsPedido.findAll(condition
+    ).then(function (items) {
+      let itemsParrilla = items.map(i => i.update(values))
+      return res.json({
+        message: "se actualizaron los items", itemsParrilla
+      })
+    })
+      .catch(function (error) {
+        console.log("error", error, pId)
+
+      })
+  },
+//usado
+  getItemsCocina: async (req, res) => {
+    let id = req.params.id
+    var pedido = await Pedidos.findOne({ where: { id: id } })
+    let pId = pedido.id
+    var condition = {
+      where: { pedidoId: pId, listoCocina: true }, include: [
+        {
+          model: Productos,
+          as: "Productos",
+          where: { categoria: "Cocina" },
+        },
+      ],
+    }
+    let items = await ItemsPedido.findAll(condition)
+    if (items) {
+      return res.status(200).json({
+        message: "se encontraron los items", items
+      })
+    }
+    else {
+      return res.status(404).json({
+        error: "no hay items", pId
+      })
+    }
+  },
+//usado
+  getItemsParrilla: async (req, res) => {
+    let id = req.params.id
+    var pedido = await Pedidos.findOne({ where: { id: id } })
+    let pId = pedido.id
+    var condition = {
+      where: { pedidoId: pId, listoParrilla: true }, include: [
+        {
+          model: Productos,
+          as: "Productos",
+          where: { categoria: "Parrilla" },
+        },
+      ],
+    }
+    let items = await ItemsPedido.findAll(condition)
+    if (items) {
+      return res.status(200).json({
+        message: "se encontraron los items", items
+      })
+    }
+    else {
+      return res.status(404).json({
+        error: "no hay items", pId
+      })
+    }
+  },
 
   //bien
   encontrarItemPorId: async (req, res) => {
@@ -125,7 +235,7 @@ module.exports = {
       console.log("producto", producto.id, "pid", itemProd);
       return res.status(200).json(itemProd);
     } else {
-      return res.status(200).json({ err: "item ya tiene producto", item });
+      return res.status(404).json({ err: "item ya tiene producto", item });
     }
   },
   //usado
@@ -191,17 +301,6 @@ module.exports = {
     console.log("cantidad", itemCantidad.cantidad, "item", item, item.pedidoId);
     return res.status(200).json(itemCantidad);
   },
-  // updateCantidadItem: async (req, res) => {
-  //     var item = await ItemsPedido.findOne({
-  //       where: { productoId: req.params.productoId },
-  //     });
-  //     var itemCantidad = await item.update({
-  //       cantidad: req.body.cantidad,
-  //       pedidoId: req.body.pedidoId,
-  //     });
-  //     console.log("cantidad", itemCantidad.cantidad, "item", item,item.pedidoId);
-  //     return res.status(200).json(itemCantidad);
-  //   },
 
   //usado
   updateImporteItem: async (req, res) => {
@@ -336,7 +435,7 @@ module.exports = {
       })
       .catch((error) => res.status(400).send(error));
   },
- 
+
   delete(req, res) {
     return ItemsPedido.findOne({
       where: { codigo: req.params.codigo },

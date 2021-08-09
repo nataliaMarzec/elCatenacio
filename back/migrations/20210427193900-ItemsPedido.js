@@ -14,9 +14,9 @@ module.exports = {
         allowNull: true,
         foreignKey: true,
         type: Sequelize.INTEGER,
-        unique:false,
-        constraints:false,
-        references: { model: "Pedidos", key: "id" , constraints:false},
+        unique: false,
+        constraints: false,
+        references: { model: "Pedidos", key: "id", constraints: false },
 
       },
       productoId: {
@@ -33,9 +33,13 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       observaciones: Sequelize.STRING,
-      listo:{
-        type:Sequelize.BOOLEAN,
-        defaultValue:false,
+      listoCocina: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      listoParrilla: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
     });
   },

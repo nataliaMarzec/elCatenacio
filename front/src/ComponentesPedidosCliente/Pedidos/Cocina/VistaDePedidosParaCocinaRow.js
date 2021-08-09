@@ -12,20 +12,20 @@ import {
     CardTitle,
     CardFooter,
     CardColumns,
+    CardGroup,
     Col,
     Container,
     Label,
     Row,
 } from "reactstrap";
-import CardGroup from "reactstrap/lib/CardGroup";
 
 class VistaDePedidosParaCocinaRow extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            pedido: { backgroundColor: "#FDFFFE" },
+            pedidoCocina: props.pedidoCocina,
             pedidos: props.pedidos,
-            items: props.items,
+            itemsCocina: props.itemsCocina,
             item: props.item,
             productos: props.productos,
             observaciones: "",
@@ -33,22 +33,31 @@ class VistaDePedidosParaCocinaRow extends React.Component {
             color: "#FDFFFE",
         };
         this.updateListo = this.updateListo.bind(this)
+        this.actualizarPedidoCocina = this.actualizarPedidoCocina.bind(this)
     }
 
     getInitialState() {
-        return { color: "#FDFFFE", item: { listo: false } };
+        return { color: "#FDFFFE", itemsCocina: [], pedidoCocina: {}};
     }
-
+   
+    componentWillUpdate(nextProps){
+        if(nextProps.pedidoCocina != this.props.pedidoCocina){
+           this.setState({pedidoCocina:nextProps.pedidoCocina},
+               ()=>console.log("pedidoupdate",this.state.pedidoCocina))
+        }
+       }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
         if (nextProps.pedidos !== this.props.pedidos) {
             this.setState({ pedidos: this.props.pedidos });
         }
-        if (nextProps.pedido !== this.props.pedido) {
-            this.setState({ pedido: nextProps.pedido });
+        if (nextProps.pedidoCocina !== this.props.pedidoCocina) {
+            this.setState({ pedidoCocina: nextProps.pedidoCocina });
         }
-        if (nextProps.items !== this.props.items) {
-            this.setState({ items: nextProps.items });
+        if (nextProps.itemsCocina !== this.props.itemsCocina) {
+            this.setState({ itemsCocina: nextProps.itemsCocina }
+                // , () => console.log("propsItemsCOC", nextProps.itemsCocina, this.state.itemsCocina)
+            );
         }
         if (nextProps.item !== this.props.item) {
             this.setState({ item: this.props.item });
@@ -61,9 +70,8 @@ class VistaDePedidosParaCocinaRow extends React.Component {
         }
     }
 
-
-    todoListo = (id) => {
-        fetch("http://localhost:8383/pedidos/preparado/" + id, {
+    todoListoPedidoPreparadoCocina = (id) => {
+        fetch(`http://localhost:8383/pedidos/preparadoCocina/${id}`, {
             method: "GET",
             headers: {
                 Accept: "application/json",
@@ -71,44 +79,57 @@ class VistaDePedidosParaCocinaRow extends React.Component {
             },
         })
             .then((res) => res.json())
-            .then((res) => this.setState({ pedidos: this.props.pedidos, pedido: res }))
-            .then((res) => this.updateItemsListos(id))
-            .then((res) => this.actualizarPedido(this.state.pedido))
+            .then((res) => this.setState({
+                pedidoCocina: res
+                , itemsCocina: this.state.itemsCocina
+            }))
+            .then((res) => this.actualizarPedidoCocina(this.state.item, this.state.pedidoCocina))
             .then(this.props.listadoPedidos)
+            .catch(function (error) {
+                console.log(error, "error......", id);
+            });
+        // .then(this.props.listadoPedidos)
+    };
+
+    actualizarPedidoCocina = (item, id, pedido) => {
+        var listaActualizada = this.props.itemsCocina.filter(i => item != i && i.pedidoId != id);
+        var listaActualizadaPedidos = this.props.pedidos.filter(p => p.id != id)
+        this.setState({
+            itemsCocina: listaActualizada, item: {}, pedidos: listaActualizadaPedidos,
+            pedidoCocina: {}
+        });
+    };
+
+    getItemsCocina(id) {
+        console.log("getListos", this.props.itemsCocina)
+        fetch(`http://localhost:8383/itemsPedido/listos/cocina/${id}`, {
+            method: "get",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+        })
+            .then((res) => res.json())
+            .then((res) => this.setState({ itemsCocina: res, pedidoCocina: { preparadoCocina: true } },
+                () => this.forceUpdate()
+            ))
+            .catch(function (error) {
+                console.log(error, "error......", id);
+            })
     };
 
 
-    actualizarPedido = (unPedido) => {
-        var listaActualizada = this.props.pedidos.filter(
-            (pedido) => unPedido !== pedido);
-        this.setState({ pedidos: listaActualizada, pedido: {} });
-    };
-
-    updateItemsListos(id) {
-        console.log("idListos", id)
-        fetch(`http://localhost:8383/itemsPedido/listos/${id}`, {
+    updateListo(codigo, listoCocina) {
+        fetch(`http://localhost:8383/itemsPedido/${codigo}/listoCocina/${listoCocina}`, {
             method: "PUT",
             headers: {
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(this.state.item),
+            body: JSON.stringify({ listoCocina }),
         })
             .then((res) => res.json())
-            .then(this.props.listadoItemsPedido)
-    };
-
-    updateListo(codigo, listo) {
-        fetch(`http://localhost:8383/itemsPedido/${codigo}/listo/${listo}`, {
-            method: "PUT",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ listo }),
-        })
-            .then((res) => res.json())
-            .then((res) => this.setState({ item: { listo: res.listo } }))
+            .then((res) => this.setState({ item: { listoCocina: res.listoCocina } }))
             .then(this.props.listadoItemsPedido)
     };
 
@@ -123,80 +144,84 @@ class VistaDePedidosParaCocinaRow extends React.Component {
             this.updateListo(arg1, true)
             event.currentTarget.style.backgroundColor = '#92F7B5';
             event.currentTarget.innerText = "Deshacer"
-            event.persist(event)
+            // event.persist(event)
         } else {
             if (event.currentTarget.innerText === "Deshacer") {
                 this.updateListo(arg1, false)
                 event.currentTarget.style.backgroundColor = "#FDFFFE";
                 event.currentTarget.innerText = "Listo"
-                event.persist(event)
+                // event.persist(event)
 
             }
         }
-        event.persist(event)
+        // event.persist(event)
     }
-
-    //agregar a los items atributo "listo"
+    getEvent(e) {
+        e.preventDefault(e)
+    }
+    //agregar a los itemsCocina atributo "listo"
 
     render = () => {
-        
         var style = { backgroundColor: this.state.color }
-
         let botonTexto = document.innerText;
         botonTexto = "Listo"
-        let items = this.props.items
-        let item = this.props.item
-        let productos = this.props.productos
-        let codigo = this.state.codigo
-        let itemsLista = items.map((i, index) => {
-            let pedido = this.props.pedidos.find(ped => ped.id === i.pedidoId)
-            let producto = this.props.productos.find(p => p.id == i.productoId
-                && pedido.id == i.pedidoId)
-
-        //    console.log("productoscocina",productoCocina)
-            return (
-
-                        <Card key={i.codigo} id={i.codigo} data-arg1={i.codigo} style={style} onChange={this.getComponent.bind(this)}>
-                            <Col >Producto: {i.productoId}</Col>
-                            <Col>Cantidad: {i.cantidad}</Col>
-                            <Col >Observaciones: {i.observaciones} </Col>
-                            <Button key={i.codigo} id={i.codigo}
-                                className="btn #e65100 orange darken-4"
-                                style={style}
-                                data-arg1={i.codigo}
-                                onClick={this.getComponent.bind(this)}
-                            >{botonTexto}
-                            </Button>
-                        </Card>
-                   
-            )
-           
-        })
-    
+        let itemsCocina = this.props.itemsCocina
+        let pedidoPreparado=this.state.pedidoCocina.preparadoCocina
+        
+        // if (pedidoPreparado === false) {
+        //     console.log("reow pedidoCocina",pedidoPreparado === false)
         return (
-            <Container>
-                <CardColumns>
-                <Card className="border-info" >
-                    <CardHeader className="border-warning" >
-                        Nro pedido: &nbsp; {this.props.pedido.id}</CardHeader>
-                    {/* <CardGroup> */}
-                    <Card>
-                        {itemsLista}
+            
+            //     <div className="col-sm-6 bg-light mt-3" >
+            // <div className="row border offset-sm-3 rounded mr-3 shadow-lg p-3 mb-5 bg-body rounded" key="uebaEmpresa" >
+
+
+            // <div className="row border offset-sm-1">
+          
+        
+
+                <Card className="border-info">
+                    <CardHeader className="border-warning">
+                        Nro pedidoCocina: &nbsp; {this.props.pedidoCocina.id}</CardHeader>
+                    <CardBody>
+
+                        {itemsCocina.map((i, index) => {
+                            return (
+                                // <React.Fragment>{pedidoCocina.preparadoCocina === false && i &&
+                                <div key={i.codigo} id={i.codigo} data-arg1={i.codigo} style={style} onChange={this.getComponent.bind(this)}>
+
+                                    <Col >Producto: {i.productoId}</Col>
+                                    <Col>Cantidad: {i.cantidad}</Col>
+                                    <Col >Observaciones: {i.observaciones} </Col>
+                                    <Button key={i.codigo} id={i.codigo}
+                                        className="btn #e65100 orange darken-4"
+                                        style={style}
+                                        data-arg1={i.codigo}
+                                        onClick={this.getComponent.bind(this)}
+                                    >{botonTexto}
+                                    </Button>
+                                </div>
+                            )
+                        })}
+                    </CardBody>
+                    <CardFooter>
                         <Button
                             className="btn #e65100 orange darken-4"
-
-                            onClick={() => this.todoListo(this.props.pedido.id)}
+                            onClick={() => this.todoListoPedidoPreparadoCocina(this.props.pedidoCocina.id)}
                         >
                             <i className="fa fa-dot-circle-o">{""} Todo listo</i>
                         </Button>
-                    </Card>
-                    {/* </CardGroup> */}
+                    </CardFooter>
+
                 </Card>
-                </CardColumns>
-              
-            </Container>
-        );
+             
+            // </div>
+
+
+        )
+       
     };
+
 }
 
 export default VistaDePedidosParaCocinaRow;

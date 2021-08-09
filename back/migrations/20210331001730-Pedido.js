@@ -33,7 +33,11 @@ module.exports = {
       observaciones: {
         type: Sequelize.STRING,
       },
-      preparado:{
+      preparadoCocina:{
+        type:Sequelize.BOOLEAN,
+        defaultValue:false,
+      },
+      preparadoParrilla:{
         type:Sequelize.BOOLEAN,
         defaultValue:false,
       },

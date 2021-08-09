@@ -31,7 +31,11 @@ module.exports = function (sequelize, DataTypes) {
       },
       importe: DataTypes.INTEGER,
       observaciones: DataTypes.STRING,
-      listo:{
+      listoCocina:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:false,
+      },
+      listoParrilla:{
         type:DataTypes.BOOLEAN,
         defaultValue:false,
       },

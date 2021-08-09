@@ -147,7 +147,7 @@ class Pedidos extends React.Component {
     this.limpiarIdTabla = this.limpiarIdTabla = this.limpiarIdTabla.bind(this)
     this.actualizarAlEliminar = this.actualizarAlEliminar.bind(this)
     this.encontrarItemsIdPedido = this.encontrarItemsIdPedido.bind(this)
-    this.confirmarPedidoTablaEditar=this.confirmarPedidoTablaEditar.bind(this)
+    this.confirmarPedidoTablaEditar = this.confirmarPedidoTablaEditar.bind(this)
     this.tablaPedido = React.createRef()
     this.getReferenceChildTablaPedido = this.getReferenceChildTablaPedido.bind(this)
     // this.pedidoElegido=this.pedidoElegido.bind(this)
@@ -196,10 +196,10 @@ class Pedidos extends React.Component {
     }
     if (modal == false && boolean.value == true) {
       this.setState({
-        editable: true, selectedValuesEditar: this.state.selectedValuesEditar
+        editable: true, itemsDePedidoElegido: [], items: [], pedido: {}, item: {}
         , limpiarPedidoEditar: false
       }
-        , () => console.log("SIboolean", this.state.selectedValuesEditar)
+        , () => this.forceUpdate()
       )
       // this.setState({ codigoPedido: this.state.codigoPedido }, () =>
       //   this.uniqueCodigo(idPedido)
@@ -312,6 +312,7 @@ class Pedidos extends React.Component {
         precio: "$" + p.precioUnitario,
         descripcion: p.descripcion,
         precioUnitario: p.precioUnitario,
+        categoria: p.categoria,
         cantidad: 0,
         importe: 0,
       }));
@@ -370,13 +371,23 @@ class Pedidos extends React.Component {
   };
 
   handleAddRow = (SelectedItem) => {
-    this.setState((prevState, props) => {
-      const row = {
-        descripcion: SelectedItem.descripcion, cantidad: 1,
-        importe: SelectedItem.precioUnitario, observaciones: ""
-      };
-      return { unItem: row, listaItems: [...this.state.listaItems, row] };
-    });
+    if (SelectedItem.categoria == "Cocina") {
+      this.setState((prevState, props) => {
+        const row = {
+          descripcion: SelectedItem.descripcion, cantidad: 1,
+          importe: SelectedItem.precioUnitario, observaciones: "", listoCocina: true,
+        };
+        return { unItem: row, listaItems: [...this.state.listaItems, row] };
+      });
+    } else {
+      this.setState((prevState, props) => {
+        const row = {
+          descripcion: SelectedItem.descripcion, cantidad: 1,
+          importe: SelectedItem.precioUnitario, observaciones: "", listoParrilla: true,
+        };
+        return { unItem: row, listaItems: [...this.state.listaItems, row] };
+      });
+    }
   };
 
   handleRemoveRow = (unItem) => {
@@ -608,16 +619,17 @@ class Pedidos extends React.Component {
       body: JSON.stringify({ seccion, observaciones, fecha, hora }),
     })
       .then((res) => res.json())
-      .then((res) => this.setState({ idPedido: res.id, pedido: res },console.log("listaitems",listaItems)))
+      .then((res) => this.setState({ idPedido: res.id, pedido: res }, console.log("listaitems", listaItems)))
       .then((res) => listaItems.map(i => this.settearPedidoYProductoAItem(this.state.idPedido,
-        i.descripcion, i.cantidad, i.importe, i.observaciones)))
+        i.descripcion, i.cantidad, i.importe, i.observaciones, i.listoCocina, i.listoParrilla)))
       .catch(function (error) {
         console.log(error);
       });
 
   }
-  settearPedidoYProductoAItem = (id, descripcion, cantidad, importe, observaciones) => {
-    console.log("setterar",descripcion,id,cantidad,importe,observaciones)
+  settearPedidoYProductoAItem = (id, descripcion, cantidad, importe, observaciones
+    , listoCocina, listoParrilla) => {
+    console.log("setterar", listoCocina, listoParrilla)
     fetch(
       `http://localhost:8383/pedidos/items/pedido/${id}/producto/${descripcion}`,
       {
@@ -626,13 +638,13 @@ class Pedidos extends React.Component {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ cantidad, importe, observaciones }),
+        body: JSON.stringify({ cantidad, importe, observaciones, listoCocina, listoParrilla }),
       }
     )
       .then((res) =>
         this.setState({
           pedidoId: id,
-        }),()=>console.log("SettearItems",cantidad,importe,observaciones))
+        }), () => console.log("SettearItems", cantidad, importe, observaciones))
       .catch(function (error) {
         console.log(error, "error......", id);
       });
@@ -656,7 +668,7 @@ class Pedidos extends React.Component {
       body: JSON.stringify({ seccion, observaciones }),
     })
       .then((res) => res.json())
-      .then((res) => this.setState({ idPedido: res.id, pedido: res }),()=>console.log("itemsPedido",this.state.itemsDePedidoElegido))
+      .then((res) => this.setState({ idPedido: res.id, pedido: res }), () => console.log("itemsPedido", this.state.itemsDePedidoElegido))
       .then((res) => this.state.itemsDePedidoElegido.map(i => this.editarPedidoYProductoAItem(this.state.idPedido,
         i.productoId, i.cantidad, i.importe, i.observaciones)))
       .catch(function (error) {
@@ -666,7 +678,7 @@ class Pedidos extends React.Component {
 
   editarPedidoYProductoAItem = (id, productoId, cantidad, importe, observaciones) => {
     let producto = this.state.productos.find(p => p.id === productoId)
-    console.log("editarDescripcion", producto.descripcion,"+++",cantidad,importe,observaciones)
+    console.log("editarDescripcion", producto.descripcion, "+++", cantidad, importe, observaciones)
     fetch(
       `http://localhost:8383/pedidos/items/pedido/${id}/producto/${producto.descripcion}`,
       {
@@ -1209,7 +1221,7 @@ class Pedidos extends React.Component {
   }
   //modificar elegirId o limpiar 
   elegirId(id) {
-    this.setState({limpiarPedidoEditar:false})
+    this.setState({ limpiarPedidoEditar: false })
     console.log("id", id, this.state.pedidos)
     // this.setState({pedido:{},itemsDePedidoElegido:[],responsablesDeMesa:[],selectedValuesEditar:[]})
     var pedido = this.state.pedidos.find(
@@ -1234,15 +1246,16 @@ class Pedidos extends React.Component {
       , SelectedItemEditar: {}, pedido: {}
     })
   }
-confirmarPedidoTablaEditar(idVacio){
-  if(this.state.limpiarPedidoEditar === true){
-  this.setState({pedido:idVacio})
+  confirmarPedidoTablaEditar(idVacio) {
+    if (this.state.limpiarPedidoEditar === true) {
+      this.setState({ pedido: idVacio })
+    }
   }
-}
   confirmarPedidoEditado(id) {
     // if (id !== undefined) {
-    
+
     this.editarPedido(id);
+    // this.setState({itemsDePedidoElegido:[]})
     // this.limpiarEditado(id)
     // this.listadoPedidos()
     // this.listadoItemsPedido()
@@ -1253,7 +1266,7 @@ confirmarPedidoTablaEditar(idVacio){
     // }, () =>console.log("limpiarPedido",this.state.limpiarPedidoEditar));
     // this.setState({limpiarPedidoEditar :true})
     this.getCollapse();
-   
+
     // } else {
     //   if (id === undefined) {
     //     var answer = window.confirm(

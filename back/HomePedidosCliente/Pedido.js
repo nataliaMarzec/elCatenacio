@@ -28,7 +28,11 @@ module.exports = function (sequelize, DataTypes) {
       codigoPedido: DataTypes.INTEGER,
       seccion: DataTypes.STRING,
       observaciones: DataTypes.STRING,
-      preparado:{
+      preparadoCocina:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:false,
+      },
+      preparadoParrilla:{
         type:DataTypes.BOOLEAN,
         defaultValue:false,
       },

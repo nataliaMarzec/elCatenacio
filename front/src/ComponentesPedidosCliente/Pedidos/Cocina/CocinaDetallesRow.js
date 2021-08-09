@@ -62,7 +62,7 @@ class CocinaDetallesRow extends React.Component {
                 <td key="observaciones">{listaObservaciones}</td>
                 <td></td>
                 <React.Fragment>
-                    {this.props.pedido.entregado === false && this.props.pedido.preparado === true &&
+                    {this.props.pedido.entregado === false && this.props.pedido.preparadoCocina === true &&
                         <td>
                             <Button
                                 className="btn #e65100 orange darken-4"

@@ -13,7 +13,8 @@ router.put("/pedidos/items/pedido/:id/producto/:descripcion",controllerPedido.se
 // router.get("/pedidos/:id", controllerPedido.getPedidoId);
 router.put("/pedidos/items/:id", controllerPedido.updateConItems);
 router.get("/pedidos/entregado/:id/", controllerPedido.updatePedidoEntregado);
-router.get("/pedidos/preparado/:id/", controllerPedido.updatePedidoPreparado);
+router.get("/pedidos/preparadoCocina/:id/", controllerPedido.todoListoPedidoPreparadoDeCocina);
+router.get("/pedidos/preparadoParrilla/:id/", controllerPedido.todoListoPedidoPreparadoDeParrilla);
 router.put("/pedidos/editar/:id/:nombre", controllerPedido.editarPedido);
 router.put("/pedidos/items/editar/:id/producto/:descripcion",controllerPedido.editarItemConProductoDePedido)
 router.delete("/pedido/delete/:id", controllerPedido.eliminarPedidoConItems);
@@ -53,8 +54,12 @@ router.get("/items/:id/producto/:descripcion", controllerItemsPedido.addProducto
 router.get("/itemsUpdate/:id/producto/:descripcion", controllerItemsPedido.updateProducto);
 router.get("/itemsDePedidos", controllerItemsPedido.todosLosItemsDePedidos);
 router.put("/itemsPedido/:id",controllerItemsPedido.updatePorId);
-router.put("/itemsPedido/:codigo/listo/:listo",controllerItemsPedido.updateListo);
-router.put("/itemsPedido/listos/:id",controllerItemsPedido.updateItemsListos);
+router.put("/itemsPedido/:codigo/listoCocina/:listoCocina",controllerItemsPedido.updateListoCocina);
+router.put("/itemsPedido/:codigo/listoParrilla/:listoParrilla",controllerItemsPedido.updateListoParrilla);
+router.put("/itemsPedido/listos/cocina/:id",controllerItemsPedido.updateItemsListosCocina);
+router.get("/itemsPedido/listos/cocina/:id",controllerItemsPedido.getItemsCocina)
+router.put("/itemsPedido/listos/parrilla/:id",controllerItemsPedido.updateItemsListosParrilla);
+router.get("/itemsPedido/listos/parrilla/:id",controllerItemsPedido.getItemsParrilla)
 router.delete("/itemsPedido/eliminar/:codigo",controllerItemsPedido.delete);
 router.post("/itemsPedido/producto",controllerItemsPedido.addConProducto);
 
