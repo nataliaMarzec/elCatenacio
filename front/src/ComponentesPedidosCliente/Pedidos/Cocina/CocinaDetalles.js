@@ -12,7 +12,8 @@ class CocinaDetalles extends React.Component {
       producto:{},
       item: {},
       items: [],
-      itemsPreparados:[]
+      itemsPreparados:[],
+      pedidoCompleto:false,
 
 
     };
@@ -85,6 +86,7 @@ class CocinaDetalles extends React.Component {
           productos={this.state.productos}
           producto={this.state.producto}
           itemsPreparados={this.state.itemsPreparados}
+          pedidoCompleto={this.state.pedidoCompleto}
           listadoPedidos={this.listadoPedidos}
           listadoItemsPedido={this.listadoItemsPedido}
           listadoProductos={this.listadoProductos}
