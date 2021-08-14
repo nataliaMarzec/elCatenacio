@@ -218,7 +218,7 @@ const routes = [
     path: "/pedidos",
     exact: true,
     key: "#pedidos",
-    name: "Pedidos",
+    name: "Cargar pedidos",
     component: Pedidos,
   },
   {
@@ -238,13 +238,13 @@ const routes = [
   {
     path: "/cargarPedidos",
     exact: false,
-    name: "CargarPedido",
+    name: "ModificarPedido",
     component: CargarPedido,
   },
   {
     path: "/unPedido",
     exact: true,
-    name: "UnPedido",
+    name: "Un Pedido",
     component: UnPedido,
   },
   {
@@ -287,7 +287,7 @@ const routes = [
     path: "/pedidosLista",
     exact: true,
     key: "#pedidosLista",
-    name: "PedidosLista",
+    name: "Pedidos",
     component: PedidosLista,
   },
   {
@@ -301,7 +301,7 @@ const routes = [
     path: "/cocinaDetalles",
     exact: true,
     key: "#cocinaDetalles",
-    name: "CocinaDetalles",
+    name: "Cocina",
     component: CocinaDetalles,
   },
   {
@@ -351,7 +351,7 @@ const routes = [
   {
     path: "/vistaDeProductosParaClientesCard",
     exact: false,
-    name: "VistaDeProductosParaClientesCard",
+    name: "Productos-Clientes",
     component: VistaDeProductosParaClientesCard,
   },
   {

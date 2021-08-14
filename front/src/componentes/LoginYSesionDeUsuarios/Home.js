@@ -1,5 +1,5 @@
 import React from "react";
-import { Redirect, Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch,Link } from "react-router-dom";
 import * as router from "react-router-dom";
 import { Button } from "reactstrap";
 
@@ -15,15 +15,15 @@ class Home extends React.Component {
   render() {
     return (
       <div className="container">
-        <div className="jumbotron mt-5" style={{ backgroundColor: "#c29a71" }}>
+        <div className="jumbotron mt-5" style={{ backgroundColor: "#020405" }}>
           <div className="col-sm-8 mx-auto">
             <h1 className="text-center" style={{ color: "#18ecca" }}>
               Conoce El Catenacio!
             </h1>
           </div>
-          <Button color="danger" size="lg" block onClick={this.onClick}>
+          <Link style={{ color: "#18ecca" }} aling="aling-center" size="lg"  onClick={this.onClick}>
             Ver productos
-          </Button>
+          </Link>
         </div>
       </div>
     );

@@ -89,13 +89,6 @@ class PedidoListaRow extends React.Component {
           >
             <i className="cui-trash icons font-1xl d-block mt-1"></i>
           </Button>{" "}
-          &nbsp;&nbsp;
-          <Button
-            onClick={this.seleccionarPedido}
-          >
-            <i className="fa fa-dot-circle-o">{""}</i>
-          </Button>
-
         </td>
         )}
       </tr>

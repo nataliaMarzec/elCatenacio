@@ -21,7 +21,7 @@ function App() {
   // const {usuario,cargandoUsuario,login,signup,logout}=useUsuario()
   // style={{ backgroundColor: "#ac7c54" }}
   return (
-    <div className="App" style={{ backgroundColor: "#72407d" }}>
+    <div className="App" style={{ backgroundColor: "#FDFFFE" }}>
     <Router >
  
       <main className="App-main">

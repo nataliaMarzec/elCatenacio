@@ -172,39 +172,62 @@ module.exports = {
  //no funciona probar otra vez
  editarItemConProductoDePedido: async (req, res) => {
   let id = req.params.id
+  let codigo=req.params.codigo
   console.log("id", id);
-  // var producto = await Producto.findOne({
-  //   where: { descripcion: req.params.descripcion },
-  // });
-  var unItem = await ItemsPedido.findOne({
-    where: { codigo: req.params.codigo},
+  var producto = await Producto.findOne({
+    where: { descripcion: req.params.descripcion},
   });
-  const item = {
-    codigo: req.body.codigo,
-    pedidoId: id,
-    productoId: producto.id,
-    cantidad: req.body.cantidad,
-    precioUnitario: req.body.precioUnitario,
-    importe: req.body.importe,
-    observaciones: req.body.observaciones,
-  };
-  return await ItemsPedido.update(item)
-    .then(function (item) {
-      console.log("item+++", item);
-      item.save();
+  if(producto.categoria == "Cocina"){
+    const itemCocina = {
+      pedidoId: id,
+      productoId: producto.id,
+      cantidad: req.body.cantidad,
+      importe:req.body.importe,
+      observaciones: req.body.observaciones,
+      listoCocina:true,
+      listoParrilla:req.body.listoParrilla
+    };
+    console.log("itemCocina",itemCocina)
+    // return res.status(200).json(producto)
+  return await ItemsPedido.update(itemCocina,{where:{codigo:codigo}})
+    .then(function (itemCocina) {
+      console.log("item+++", itemCocina);
+      // itemCocina.save();
       return res.status(200).json({
-        message: "se guardo el item",
-        item,
+        message: "se guardo el itemCocina",
+        itemCocina,
       });
     })
     .catch(function (error) {
       console.log("item", error);
-    });
+    })
+  }
+  if(producto.categoria == "Parrilla"){
+    const itemParrilla = {
+      pedidoId:id,
+      productoId: producto.id,
+      cantidad: req.body.cantidad,
+      precioUnitario: req.body.precioUnitario,
+      importe: req.body.importe,
+      observaciones: req.body.observaciones,
+      listoCocina:req.body.listoCocina,
+      listoParrilla:true
+    };
+    return await ItemsPedido.update(itemParrilla,{where:{codigo:codigo}})
+      .then(function (itemParrilla) {
+        console.log("item+++", itemParrilla);
+        // itemParrilla.save();
+        return res.status(200).json({
+          message: "se guardo el itemParrilla",
+          itemParrilla,
+        });
+      })
+      .catch(function (error) {
+        console.log("item", error);
+      })
+    }
 
 },
-
-
-
 
   //actualiza el pedido pero no el item
   updatePedidoEntregado(req, res) {

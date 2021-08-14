@@ -59,7 +59,7 @@ class TablaPedidoEditarRow extends React.Component {
     var nuevoResponsable = Object.assign({}, this.state.responsable);
     nuevoResponsable[e.target.name] = e.target.value;
     this.setState({ responsable: nuevoResponsable },
-      () => console.log("RESPONSABLE--", nuevoResponsable.nombre)
+      // () => console.log("RESPONSABLE--", nuevoResponsable.nombre)
     );
     this.props.envioDeEstadoResponsableEditar(nuevoResponsable.nombre)
   };
@@ -68,7 +68,7 @@ class TablaPedidoEditarRow extends React.Component {
     var nuevoPedido = Object.assign({}, this.state.pedido);
     nuevoPedido[e.target.name] = e.target.value;
     this.setState({ pedido:nuevoPedido},
-      () => console.log("SECCIONES---", nuevoPedido.seccion)
+      // () => console.log("SECCIONES---", nuevoPedido.seccion)
     );
     this.props.envioDeSeccionEditar(nuevoPedido.seccion)
   };
@@ -76,7 +76,7 @@ class TablaPedidoEditarRow extends React.Component {
     var nuevoPedido = Object.assign({}, this.state.pedido);
     nuevoPedido[e.target.name] = e.target.value;
     this.setState({ pedido: nuevoPedido }
-      , () => console.log("observacionesEnvio", nuevoPedido.observaciones)
+      // , () => console.log("observacionesEnvio", nuevoPedido.observaciones)
     );
     this.props.envioDeObservacionesEditar(nuevoPedido.observaciones)
   };
@@ -92,7 +92,8 @@ class TablaPedidoEditarRow extends React.Component {
   limpiar = () => {
     this.setState({ pedido: { seccion: "", observaciones: "" }, responsable: {nombre:""} }
     , () => this.forceUpdate()
-      , () => console.log("limpiar", this.state.pedido, this.state.responsable.nombre))
+      // , () => console.log("limpiar", this.state.pedido, this.state.responsable.nombre)
+      )
     this.listadoResponsablesDeMesa();
     this.setState({ secciones: this.state.secciones });
   };

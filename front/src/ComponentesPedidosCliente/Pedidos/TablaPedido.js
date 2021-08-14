@@ -6,7 +6,7 @@ class TablaPedido extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      pedido: props.pedido,
+      pedido: props.pedido || {},
       pedidos: props.pedidos,
       unPedido: props.unPedido,
       responsablesDeMesa: props.responsablesDeMesa,
@@ -33,7 +33,7 @@ class TablaPedido extends React.Component {
     // this.elegirId = this.elegirId.bind(this)
   }
   // componentDidUpdate(prevProps) {
-  //   // Uso tipico (no olvides de comparar las props):
+  //   // Uso tipico (no olvidar de comparar las props):
   //   if (this.props.limpiar !== prevProps.limpiar) {
   //     // this.fetchData(this.props.userID);
   //     this.props.limpiar()
@@ -77,23 +77,35 @@ class TablaPedido extends React.Component {
       unPedido: this.state.unPedido, pedido: this.state.pedido, secciones: this.state.secciones
       , itemsPedido: this.state.itemsPedido, responsablesDeMesa: this.state.responsablesDeMesa,
       itemsDePedidoElegido: this.state.itemsDePedidoElegido
-    }
+    },()=>this.forceUpdate()
       // , () => console.log("willunPedido", this.state.pedido)
     )
   }
 
+  componentWillUpdate(nextProps){
+   if(nextProps.itemsDePedidoElegido != this.state.itemsDePedidoElegido){
+     this.setState({itemsDePedidoElegido:nextProps.itemsDePedidoElegido})
+   }
+  }
 
-  componentWillReceiveProps(props) {
+  componentWillReceiveProps(props,nextProps) {
     this.setState({ editable: props.editable })
     this.setState({ secciones: props.secciones })
     // this.setState({unPedido:props.unPedido},()=>console.log("unPedido",this.state.unPedido))
     this.setState({ confirmar: props.confirmar })
-    this.setState({ pedidos: props.pedidos }, () => console.log("pedidos_tbl", props.pedidos))
-    this.setState({ pedido: props.pedido }, () => console.log("pedido_tbl", props.pedido))
-    this.setState({ items: props.items },)
+    this.setState({ pedidos: props.pedidos },
+      //  () => console.log("pedidos_tbl", props.pedidos)
+       )
+    this.setState({ pedido: props.pedido },
+      //  () => console.log("pedido_tbl", props.pedido)
+    )
+    this.setState({ items: props.items })
     this.setState({ item: props.item },)
     this.setState({ idPedidoTabla: props.idPedidoTabla },)
-    this.setState({ itemsDePedidoElegido: props.itemsDePedidoElegido })
+    // if(nextProps.itemsDePedidoElegido != props.itemsDePedidoElegido){
+    // this.setState({ itemsDePedidoElegido:nextProps.itemsDePedidoElegido }
+    //   ,()=>console.log("IPE_TBL",this.state.itemsDePedidoElegido))
+    // }
     this.setState({ responsablesDeMesa: props.responsablesDeMesa })
     this.setState({ responsable: props.responsable })
     this.setState({ limpiarPedidoEditar: props.limpiarPedidoEditar })
@@ -140,10 +152,9 @@ class TablaPedido extends React.Component {
   };
   limpiarTabla = () => {
     this.setState({seccionEditable:"",observacionesEditable:""
-    ,pedido:{id:null,seccion:"",observaciones:""},responsable:{}
+    ,pedido:{id:null,seccion:"",seccion:"",observaciones:"",secciones:[]},responsable:{}
     ,itemsDePedidoElegido:[]})
-    document.getElementById("id").value = "";
-    // this.setState({idPedidoTabla:""})
+    document.getElementById(this.state.pedido.id).value = "";
     this.props.limpiarItemsDePedidoElegidoDeTabla()
     this.props.listadoPedidos()
     this.props.listadoResponsables()
@@ -152,9 +163,10 @@ class TablaPedido extends React.Component {
   handleChange = (e) => {
     var nuevoPedido = Object.assign({}, this.state.pedido);
     nuevoPedido[e.target.name] = e.target.value;
+    this.props.elegirId(nuevoPedido.id)
       this.setState(
-        { pedido: nuevoPedido }, () => this.props.elegirId(nuevoPedido.id)) 
-        // this.props.confirmarPedidoTablaEditar(nuevoPedido)  
+        { pedido: nuevoPedido }) 
+        
   };
 
   onChangeDataList = (e) => {
@@ -171,14 +183,14 @@ class TablaPedido extends React.Component {
   render() {
     let pedidos = this.state.pedidos;
     let editable = this.state.editable;
-    // console.log("itemsTabla", this.state.itemsDePedidoElegido)
-    var listaIdsPedidos = this.state.pedidos.map((pedido) => {
+    console.log("itemsRENDER-TABLA", this.state.itemsDePedidoElegido)
+    var listaIdsPedidos = this.state.pedidos.map((pedido,index) => {
       let unPedido = this.state.pedido;
       unPedido = pedido;
       // console.log("id listaIds",pedido)
       return (
         <div>
-          <option data-value="" value={pedido.id} id={pedido.id} />
+          <option key={index} value={pedido.id} id={pedido.id} />
         </div>
       );
     });
@@ -193,29 +205,19 @@ class TablaPedido extends React.Component {
                   <Col xs="12" md="9">
                     <Input
                       type="number"
-                      id="id"
+                      id={this.state.pedido.id}
+                      ref={this.props.handleRef(this.props.ref)}
                       name="id"
                       value={this.state.pedido.id}
                       placeholder="Elegir id"
-                      onChange={this.state.limpiarPedidoEditar === true ? this.onChangeDataList : this.handleChange}
+                      onChange={this.handleChange}
                       list="pedidos"
                     />
                   </Col>
-                  <datalist id="pedidos" onChange={this.onChangeDataList } >{listaIdsPedidos}</datalist>
+                  <datalist id="pedidos">{listaIdsPedidos}</datalist>
                 </FormGroup>
                 <div className="row">
                   <div className="input-field col s12 m12">
-                    {/* <Button
-                      type="button"
-                      style={{ margin: "2px" }}
-                      color="info"
-                      outline
-                      onClick={() =>
-                        this.elegirId(this.state.id)
-                      }
-                    >
-                      <i className="fa fa-dot-circle-o"></i> Elegir Pedido
-                    </Button> */}
                     <Button
                       type="button"
                       style={{ margin: "2px" }}

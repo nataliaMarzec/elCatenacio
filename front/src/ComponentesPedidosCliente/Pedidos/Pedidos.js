@@ -114,6 +114,8 @@ class Pedidos extends React.Component {
 
 
 
+
+
     };
     this.listadoPedidos = this.listadoPedidos.bind(this)
     this.listadoItemsPedido = this.listadoItemsPedido.bind(this);
@@ -147,12 +149,10 @@ class Pedidos extends React.Component {
     this.limpiarIdTabla = this.limpiarIdTabla = this.limpiarIdTabla.bind(this)
     this.actualizarAlEliminar = this.actualizarAlEliminar.bind(this)
     this.encontrarItemsIdPedido = this.encontrarItemsIdPedido.bind(this)
-    this.confirmarPedidoTablaEditar = this.confirmarPedidoTablaEditar.bind(this)
+    this.confirmarPedidoEditado = this.confirmarPedidoEditado.bind(this)
     this.tablaPedido = React.createRef()
-    this.getReferenceChildTablaPedido = this.getReferenceChildTablaPedido.bind(this)
-    // this.pedidoElegido=this.pedidoElegido.bind(this)
-    // this.verPlantilla=this.verPlantilla(this)
-    // this.limpiar=this.limpiar.bind(this)
+    this.handleRef = this.handleRef.bind(this)
+    this.myDomNode = null;
   }
 
   estadoInicial = () => {
@@ -196,10 +196,10 @@ class Pedidos extends React.Component {
     }
     if (modal == false && boolean.value == true) {
       this.setState({
-        editable: true, itemsDePedidoElegido: [], items: [], pedido: {}, item: {}
-        , limpiarPedidoEditar: false
+        editable: true
+        , limpiarPedidoEditar: false,pedido:{} 
       }
-        , () => this.forceUpdate()
+        , () => console.log("getCollapse", this.state.itemsDePedidoElegido, this.state.pedido)
       )
       // this.setState({ codigoPedido: this.state.codigoPedido }, () =>
       //   this.uniqueCodigo(idPedido)
@@ -221,14 +221,29 @@ class Pedidos extends React.Component {
     this.setState({
       selectedValuesEditar: [], SelectedItemEditar: {}, responsable: {}, pedido: {}
       , idPedidoTabla: this.state.idPedidoTabla
-      , itemsDePedidoElegido: this.state.itemsDePedidoElegido, item: this.state.item
+      , itemsDePedidoElegido: [], item: this.state.item
       , limpiarPedidoEditar: this.state.limpiarPedidoEditar
     }
-      , () => this.forceUpdate())
+      , () => console.log("IPE_WILL", this.state.itemsDePedidoElegido))
     this.setState({
       confirmar: false, fecha: this.state.fecha, hora: this.state.hora,
       verPlantilla: this.state.verPlantilla
     })
+  }
+  handleRef(ref) {
+    this.myDomNode = ref;
+  }
+  componentDidMount() {
+    var DOMNode = this.myDomNode;
+    DOMNode = this.tablaPedido.current;
+
+    console.log("DOM", DOMNode)
+  }
+
+  getLimpiarTabla() {
+    console.log("getlimpiarTablaDOM", this.tablaPedido.current.limpiarTabla)
+    this.setState({ pedido: { id: "" }, itemsDePedidoElegido: [], pedidos: [] })
+    return this.tablaPedido.current.limpiarTabla()
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -420,38 +435,71 @@ class Pedidos extends React.Component {
   settingDescripcionesEditar = (selectedValuesEditar, SelectedItemEditar) => {
     let nuevaListaDescripcionesEditar = this.state.nuevaListaDescripcionesEditar;
     this.setState(
-      { selectedValuesEditar: selectedValuesEditar, SelectedItemEditar: SelectedItemEditar },
+      {
+        selectedValuesEditar: selectedValuesEditar, SelectedItemEditar: SelectedItemEditar
+        , itemsDePedidoElegido: this.state.itemsDePedidoElegido
+      },
       this.handleAddRowEditar(SelectedItemEditar),
+      () => console.log("IPE_SETTINGdESCRIP", this.state.itemsDePedidoElegido)
       // nuevaListaDescripcionesEditar.push(SelectedItemEditar.descripcion)
     );
   }
 
   handleAddRowEditar = (SelectedItemEditar) => {
-    let item = {
-      pedidoId: this.state.pedido.id, productoId: SelectedItemEditar.id,
-      cantidad: 1,
-      importe: SelectedItemEditar.precioUnitario, observaciones: null, listo: false
-    }
-    fetch("http://localhost:8383/itemsPedido/nuevo", {
-      method: "post",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(item),
-    })
-      .then((res) => res.json())
-      .then((res) =>
-        this.setState((prevState, state) => {
-          let row = res
-          return {
-            item: res, itemsDePedidoElegido: [...this.state.itemsDePedidoElegido, row]
+    console.log("cocinaADD", SelectedItemEditar.categoria)
+    if (SelectedItemEditar.categoria == "Cocina") {
+      let item = {
+        pedidoId: this.state.pedido.id, productoId: SelectedItemEditar.id,
+        cantidad: 1,
+        importe: SelectedItemEditar.precioUnitario, observaciones: null, listoCocina: true
+      }
+      fetch("http://localhost:8383/itemsPedido/nuevo", {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(item),
+      })
+        .then((res) => res.json())
+        .then((res) =>
+          this.setState((prevState, state) => {
+            let row = res
+            return {
+              item: res, itemsDePedidoElegido: [...this.state.itemsDePedidoElegido, row]
+            }
           }
-        }
-          // ,()=>console.log("itemhandleADD", this.state.item, this.state.itemsDePedidoElegido)
-        ))
-      .then(this.listadoItemsPedido())
-  };
+            , () => console.log("itemhandleADD", this.state.item, this.state.itemsDePedidoElegido)
+          ))
+        .then(this.listadoItemsPedido())
+    }
+    else {
+      let item = {
+        pedidoId: this.state.pedido.id, productoId: SelectedItemEditar.id,
+        cantidad: 1, importe: SelectedItemEditar.precioUnitario,
+        observaciones: null, listoParrilla: true
+      }
+      fetch("http://localhost:8383/itemsPedido/nuevo", {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(item),
+      })
+        .then((res) => res.json())
+        .then((res) =>
+          this.setState((prevState, state) => {
+            let row = res
+            return {
+              item: res, itemsDePedidoElegido: [...this.state.itemsDePedidoElegido, row]
+            }
+          }
+            , () => console.log("itemhandleADD", this.state.item, this.state.itemsDePedidoElegido)
+          ))
+        .then(this.listadoItemsPedido())
+    }
+  }
 
   onRemoveEditar = (selectedValuesEditar, SelectedItemEditar) => {
 
@@ -500,7 +548,7 @@ class Pedidos extends React.Component {
     var listaActualizada = this.state.itemsDePedidoElegido.filter(
       (item) => unItem !== item);
     itemsDePedidoElegido = listaActualizada
-    this.setState({ itemsDePedidoElegido: itemsDePedidoElegido, item: {} })
+    this.setState({ itemsDePedidoElegido: itemsDePedidoElegido, item: {} }, () => console.log("IPE-Rem-actz", this.state.itemsDePedidoElegido))
     this.setState({ selectedValuesEditar: selectedValuesEditar, SelectedItemEditar: {} })
     // this.state.nuevaListaDescripcionesEditar.pop(1)
     this.resetValuesEditar();
@@ -649,7 +697,7 @@ class Pedidos extends React.Component {
         console.log(error, "error......", id);
       });
   };
-  //falta fecha y hora
+  //falta fecha y hora cocina y parrilla
   editarPedido(id) {
     let nombre = this.state.responsable.nombre
     let seccion = this.state.seccionEditable || this.state.pedido.seccion;
@@ -658,7 +706,6 @@ class Pedidos extends React.Component {
     let hora = this.state.hora
     let horaFormato = moment(hora).format('HH-mm');
     console.log("nombreResponsable", id, nombre, seccion, observaciones)
-
     fetch(`http://localhost:8383/pedidos/editar/${id}/${nombre}`, {
       method: "put",
       headers: {
@@ -667,43 +714,34 @@ class Pedidos extends React.Component {
       },
       body: JSON.stringify({ seccion, observaciones }),
     })
-      .then((res) => res.json())
-      .then((res) => this.setState({ idPedido: res.id, pedido: res }), () => console.log("itemsPedido", this.state.itemsDePedidoElegido))
-      .then((res) => this.state.itemsDePedidoElegido.map(i => this.editarPedidoYProductoAItem(this.state.idPedido,
-        i.productoId, i.cantidad, i.importe, i.observaciones)))
+      .then(this.state.itemsDePedidoElegido.map(i => this.editarItemConProductoDePedido(id,i.codigo,
+        i.productoId, i.cantidad, i.importe, i.observaciones, i.listoCocina, i.listoParrilla)))
       .catch(function (error) {
         console.log(error);
       });
   }
-
-  editarPedidoYProductoAItem = (id, productoId, cantidad, importe, observaciones) => {
+//falta cargar observaciones de items
+  editarItemConProductoDePedido = (id,codigo, productoId, cantidad, importe, observaciones, listoCocina, listoParrilla) => {
     let producto = this.state.productos.find(p => p.id === productoId)
     console.log("editarDescripcion", producto.descripcion, "+++", cantidad, importe, observaciones)
     fetch(
-      `http://localhost:8383/pedidos/items/pedido/${id}/producto/${producto.descripcion}`,
+      `http://localhost:8383/pedidos/editar/${id}/${codigo}/${producto.descripcion}`,
       {
         method: "put",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ cantidad, importe, observaciones }),
+        body: JSON.stringify({ cantidad, importe, observaciones, listoCocina, listoParrilla }),
       }
-    ).then((res) =>
-
-      this.setState({
-        pedidos: this.state.pedidos.filter(p => p.id != id), pedido: {}
-      }), () => this.forceUpdate())
-      // .then((res) =>
-      //   this.setState({
-      //     pedidoId: id,
-      //   }))
+    )
       .catch(function (error) {
-        // console.log(error, "error......", id);
+        console.log(error, "error......", id);
       });
   };
 
   eliminarItem = (codigo) => {
+    console.log("eliminarCodigo", codigo)
     fetch("http://localhost:8383/itemsPedido/eliminar/" + codigo, {
       method: "delete",
       headers: {
@@ -711,26 +749,11 @@ class Pedidos extends React.Component {
         "Content-Type": "application/json",
       },
     })
-      .then((res) => this.setState({ itemsDePedidoElegido: this.state.itemsDePedidoElegido }
-        , () => this.nuevaLista()), console.log("ipeEliminar", this.state.itemsDePedidoElegido
-        ))
+    // .then((res) => this.setState({ itemsDePedidoElegido: this.state.itemsDePedidoElegido }
+    //   ),()=> console.log("ipeEliminar", this.state.itemsDePedidoElegido
+    //   ))
     // .then(this.listadoItemsPedido())
   };
-
-  signOut(e) {
-    e.preventDefault();
-    this.props.history.push("./Editar/EditarPedido");
-    // console.log("propsSigout", this.props);
-  }
-
-  // pedidoElegido(pedido,items){
-  //  this.setState({pedido:pedido,itemsDePedidoElegido:items}
-  //   ,()=>console.log("pedidoElegido-PEDDIDOS",this.state.pedido,this.state.itemsDePedidoElegido))
-  // }
-  getReferenceChildTablaPedido() {
-    this.ref.tablaPedido.eliminarDetallesPedido(this.state.id);
-
-  }
 
 
   encontrarItemsIdPedido(idPedido) {
@@ -752,6 +775,9 @@ class Pedidos extends React.Component {
     }
     // }
   }
+
+
+
 
 
   render() {
@@ -860,7 +886,8 @@ class Pedidos extends React.Component {
                     </Row>
                   </CardHeader>
                   <TablaPedido
-                    ref="tablaPedido"
+                    ref={this.tablaPedido}
+                    handleRef={this.handleRef}
                     editable={this.state.editable}
                     envioDePedido={this.envioDePedido}
                     envioDeEstadoResponsable={this.envioDeEstadoResponsable}
@@ -893,7 +920,7 @@ class Pedidos extends React.Component {
                     idPedidoTabla={this.state.idPedidoTabla}
                     elegirId={this.elegirId}
                     limpiarPedidoEditar={this.state.limpiarPedidoEditar}
-                    confirmarPedidoTablaEditar={this.confirmarPedidoTablaEditar}
+                    confirmarPedidoEditado={this.confirmarPedidoEditado}
                   ></TablaPedido>
                   <React.Fragment>{editable == false && (
                     <CardBody>
@@ -1180,7 +1207,6 @@ class Pedidos extends React.Component {
     );
   }
 
-
   actualizarEstadosAlGuardar() {
     this.guardarVistaPrevia()
 
@@ -1225,66 +1251,29 @@ class Pedidos extends React.Component {
     console.log("id", id, this.state.pedidos)
     // this.setState({pedido:{},itemsDePedidoElegido:[],responsablesDeMesa:[],selectedValuesEditar:[]})
     var pedido = this.state.pedidos.find(
-      (pedido) => pedido.id == id
-    );
+      (pedido) => pedido.id == id);
     console.log("pedido", pedido)
     let responsable = this.state.responsablesDeMesa.find(r => r.id_responsable === pedido.responsableId)
-    let items = this.state.items.filter(i => i.pedidoId === pedido.id)
+    let itemsPedido = pedido.ItemsPedido
     this.setState({
-      pedido: pedido, responsable: responsable, itemsDePedidoElegido: items
+      pedido: pedido, responsable: responsable, itemsDePedidoElegido:itemsPedido
       , responsablesDeMesa: this.state.responsablesDeMesa, secciones: this.state.secciones,
       selectedValuesEditar: this.state.selectedValuesEditar,
     }
-      , () => console.log("pedidoelegido", this.state.itemsDePedidoElegido)
+      , () => console.log("pedidoelegido", this.state.itemsDePedidoElegido,"itemsP",itemsPedido)
     );
-    // this.encontrarItemsIdPedido(pedido.id)
   }
 
+  //usado
   limpiarItemsDePedidoElegidoDeTabla() {
     this.setState({
       itemsDePedidoElegido: [], selectedValuesEditar: []
       , SelectedItemEditar: {}, pedido: {}
     })
   }
-  confirmarPedidoTablaEditar(idVacio) {
-    if (this.state.limpiarPedidoEditar === true) {
-      this.setState({ pedido: idVacio })
-    }
-  }
   confirmarPedidoEditado(id) {
-    // if (id !== undefined) {
-
     this.editarPedido(id);
-    // this.setState({itemsDePedidoElegido:[]})
-    // this.limpiarEditado(id)
-    // this.listadoPedidos()
-    // this.listadoItemsPedido()
-    // this.setState({
-    //   pedidos: [], pedido: {}, idPedidoTabla: "", itemsDePedidoElegido: [], pedido: { id: "", seccion: "", observaciones: "" }
-    //   , selectedValuesEditar: [], responsable: { nombre: "" }, responsablesDeMesa: [],
-    //   seccionEditable: "", observacionesEditable: ""
-    // }, () =>console.log("limpiarPedido",this.state.limpiarPedidoEditar));
-    // this.setState({limpiarPedidoEditar :true})
-    this.getCollapse();
-
-    // } else {
-    //   if (id === undefined) {
-    //     var answer = window.confirm(
-    //       "Por favor selecciona un pedido"
-    //     );
-    //     return answer
-    //   }
-    // }
-  }
-  limpiarEditado(id) {
-    var listaActualizada = this.state.pedidos.filter(
-      (pedido) => id !== pedido.id
-    );
-    this.setState({
-      pedidos: listaActualizada, pedido: { id: null, seccion: "", observaciones: "" }
-      , responsable: { nombre: "" },
-      seccionEditable: "", observacionesEditable: "", responsablesDeMesa: [], itemsDePedidoElegido: []
-    })
+    this.getLimpiarTabla()
   }
 
   envioDePedido(estadoSeccion) {

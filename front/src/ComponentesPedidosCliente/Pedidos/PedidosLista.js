@@ -194,10 +194,10 @@ class PedidosLista extends React.Component {
                     <Row>
                         <Col xs="12" lg="12">
                             <Card>
-                                <CardHeader>
+                                <CardHeader style={{ backgroundColor: "#0972F9" }}>
                                     <i className="fa fa-align-justify"></i> Pedidos Lista
                                 </CardHeader>
-                                <CardHeader>
+                                <CardHeader style={{ backgroundColor: "#7E98BB" }}>
                                     <Form onSubmit={this.handleSubmit} id="formulario">
                                         <FormGroup row>
                                             <Col xs="12" md="9">
@@ -253,6 +253,7 @@ class PedidosLista extends React.Component {
                                                 <th>Cantidad</th>
                                                 <th>Observaciones</th>
                                                 <th>Importe</th>
+                                                <th></th>
                                                 {/* <th>Importe total</th> */}
                                             </tr>
                                         </thead>

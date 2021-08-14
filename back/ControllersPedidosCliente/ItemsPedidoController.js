@@ -202,6 +202,7 @@ module.exports = {
       return res.status(200).json(item);
     }
   },
+
   //bien
   encontrarProductoPorProductoId: async (req, res) => {
     var item = await ItemsPedido.findOne({
@@ -216,7 +217,6 @@ module.exports = {
       return res.status(200).json(producto);
     }
   },
-
 
   //bien no tocar
   addProducto: async (req, res) => {
@@ -278,7 +278,6 @@ module.exports = {
       },
       {
         include: [
-
           {
             model: Productos,
             as: "Productos",

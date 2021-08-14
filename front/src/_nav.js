@@ -10,33 +10,33 @@ export default {
     {
       name: "Productos",
       url: "/productos",
-      icon: "icon-people",
+      icon: "cui-bookmark",
     },
     {
-      name: "VistaDeProductosParaClientes",
+      name: "Productos-Clientes",
       url: "/vistaDeProductosParaClientes",
-      icon: "icon-people",
-    },
-    {
-      name: "PedidosLista",
-      url: "/pedidosLista",
-      icon: "icon-people",
+      icon: "cui-basket-loaded",
     },
     {
       name: "Pedidos",
-      url: "/pedidos",
-      icon: "icon-people",
+      url: "/pedidosLista",
+      icon: "cui-list",
     },
     {
-      name: "UnPedido",
+      name: "Cargar pedidos",
+      url: "/pedidos",
+      icon: "cui-note",
+    },
+    {
+      name: "Un Pedido",
       url: "/unPedido",
-      icon: "icon-people",
+      icon: "cui-puzzle",
     },
 
     {
-      name: "CocinaDetalles",
+      name: "Cocina",
       url: "/cocinaDetalles",
-      icon: "icon-people",
+      icon: "cui-speedometer",
     },
 
    

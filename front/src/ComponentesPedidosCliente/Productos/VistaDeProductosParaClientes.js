@@ -54,41 +54,43 @@ class VistaDeProductosParaClientes extends React.Component {
 
   render() {
     var listaProductos = this.state.productos;
-    if(listaProductos.length){
-    return listaProductos.map((producto, index) => (
-      <div>
-     
-            {/* <Row className="col-md-4"> */}
-            <ul>{this.renderRows(producto, index)}</ul>
-            {/* <Button type="submit" color="success" outline>
+    if (listaProductos.length) {
+    //  <React.Fragment></React.Fragment>
+      return listaProductos.map((producto, index) => (
+        // <Row>
+        // <div className="col-sm-4">
+        <div>
+          {/* <Row className="col-md-4"> */}
+          <ul>{this.renderRows(producto, index)}</ul>
+          {/* <Button type="submit" color="success" outline>
                     <i className="fa fa-dot-circle-o"></i> Comprar
                   </Button>
             */}
-     </div>
-    ));
-          }else{
-            return(
-            <div className="container">
-            <div className="jumbotron mt-5">
-              <div className="col-sm-8 mx-auto">
-                <h1 className="text-center">No hay productos para mostrar</h1>
-              </div>
+         </div>
+      // </Row>
+      ));
+    } else {
+      return (
+        <div className="container">
+          <div className="jumbotron mt-5">
+            <div className="col-sm-8 mx-auto">
+              <h1 className="text-center">No hay productos para mostrar</h1>
             </div>
           </div>
-            )
-          }
+        </div>
+      )
+    }
   }
 
   renderRows(producto, index) {
     var productosLista = this.state.productos;
-    var listaActualizada = productosLista.filter((item) => producto == item);
-    console.log("renderRows", listaActualizada);
+    var listaActualizada = productosLista.filter((p) => producto == p);
     return (
-      <VistaDeProductosParaClientesCard
-        key={index}
-        producto={producto}
-        productos={listaActualizada}
-      />
+          <VistaDeProductosParaClientesCard
+            key={index}
+            producto={producto}
+            productos={listaActualizada}
+          />
     );
   }
 }

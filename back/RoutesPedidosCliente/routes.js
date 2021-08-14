@@ -16,7 +16,8 @@ router.get("/pedidos/entregado/:id/", controllerPedido.updatePedidoEntregado);
 router.get("/pedidos/preparadoCocina/:id/", controllerPedido.todoListoPedidoPreparadoDeCocina);
 router.get("/pedidos/preparadoParrilla/:id/", controllerPedido.todoListoPedidoPreparadoDeParrilla);
 router.put("/pedidos/editar/:id/:nombre", controllerPedido.editarPedido);
-router.put("/pedidos/items/editar/:id/producto/:descripcion",controllerPedido.editarItemConProductoDePedido)
+//este
+router.put("/pedidos/editar/:id/:codigo/:descripcion",controllerPedido.editarItemConProductoDePedido)
 router.delete("/pedido/delete/:id", controllerPedido.eliminarPedidoConItems);
 
 router.get("/pedidos", controllerPedido.getPedidos);

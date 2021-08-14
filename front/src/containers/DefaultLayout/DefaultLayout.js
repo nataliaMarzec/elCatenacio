@@ -36,16 +36,16 @@ class DefaultLayout extends Component {
   render() {
     return (
       <div className="app"  >
-        <AppHeader style={{ backgroundColor: "#441f4c" }} fixed>
+        <AppHeader style={{ backgroundColor: "#041024" }} fixed>
             <DefaultHeader  onLogout={e=>this.signOut(e)}/>
         </AppHeader>
         <div className="app-body" >
-          <AppSidebar style={{ backgroundColor: "#441f4c" }} fixed display="lg">
-            <AppSidebarHeader style={{ backgroundColor: "#441f4c" }} />
-            <AppSidebarForm style={{ backgroundColor: "#441f4c" }}/>
-            <AppSidebarNav style={{ backgroundColor: "#441f4c" }} navConfig={navigation} {...this.props} router={router}/>
+          <AppSidebar style={{ backgroundColor: "#071835" }} fixed display="lg">
+            <AppSidebarHeader style={{ backgroundColor: "#071835" }} />
+            <AppSidebarForm style={{ backgroundColor: "#071835" }}/>
+            <AppSidebarNav style={{ backgroundColor: "#071835" }} navConfig={navigation} {...this.props} router={router}/>
             <AppSidebarFooter />
-            <AppSidebarMinimizer style={{ backgroundColor: "#ed1106" }} />
+            <AppSidebarMinimizer style={{ backgroundColor: "#091C3D" }} />
           </AppSidebar>
           <main className="main">
             <AppBreadcrumb style={{ backgroundColor: "#ac7c54" }}  appRoutes={routes} router={router}/>
@@ -67,11 +67,11 @@ class DefaultLayout extends Component {
                 </Switch>
             </Container>
           </main>
-          <AppAside style={{ backgroundColor: "#9d6e47" }} fixed>
-              <DefaultAside     style={{ backgroundColor: "#ac7c54" }} />
+          <AppAside style={{ backgroundColor: "#879CC5" }} fixed>
+              <DefaultAside     style={{ backgroundColor: "#879CC5" }} />
           </AppAside>
         </div>
-        <AppFooter style={{ backgroundColor: "#a18065" }}>
+        <AppFooter style={{ backgroundColor: "#879CC5" }}>
             <DefaultFooter />
         </AppFooter>
       </div>
