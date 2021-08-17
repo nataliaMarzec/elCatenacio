@@ -24,7 +24,10 @@ module.exports = function (sequelize, DataTypes) {
         type:DataTypes.STRING,
       },
       codigo: DataTypes.INTEGER,
-      habilitado: DataTypes.STRING,
+      habilitado:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:false,
+      },
     
     },
 

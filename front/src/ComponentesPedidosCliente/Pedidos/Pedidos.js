@@ -72,7 +72,6 @@ class Pedidos extends React.Component {
       secciones: [
         { id: 1, name: "Abierta" },
         { id: 2, name: "Carpa" },
-        { id: 3, name: "" },
       ],
       seccion: "",
       seccionEditable: "",
@@ -145,6 +144,7 @@ class Pedidos extends React.Component {
     this.guardarVistaPrevia = this.guardarVistaPrevia.bind(this)
     this.elegirId = this.elegirId.bind(this)
     this.calcularEditar = this.calcularEditar.bind(this)
+    this.restaurarProductoEditar=this.restaurarProductoEditar.bind(this)
     this.limpiarItemsDePedidoElegidoDeTabla = this.limpiarItemsDePedidoElegidoDeTabla.bind(this)
     this.limpiarIdTabla = this.limpiarIdTabla = this.limpiarIdTabla.bind(this)
     this.actualizarAlEliminar = this.actualizarAlEliminar.bind(this)
@@ -433,7 +433,6 @@ class Pedidos extends React.Component {
   };
 
   settingDescripcionesEditar = (selectedValuesEditar, SelectedItemEditar) => {
-    let nuevaListaDescripcionesEditar = this.state.nuevaListaDescripcionesEditar;
     this.setState(
       {
         selectedValuesEditar: selectedValuesEditar, SelectedItemEditar: SelectedItemEditar
@@ -441,7 +440,6 @@ class Pedidos extends React.Component {
       },
       this.handleAddRowEditar(SelectedItemEditar),
       () => console.log("IPE_SETTINGdESCRIP", this.state.itemsDePedidoElegido)
-      // nuevaListaDescripcionesEditar.push(SelectedItemEditar.descripcion)
     );
   }
 
@@ -667,7 +665,7 @@ class Pedidos extends React.Component {
       body: JSON.stringify({ seccion, observaciones, fecha, hora }),
     })
       .then((res) => res.json())
-      .then((res) => this.setState({ idPedido: res.id, pedido: res }, console.log("listaitems", listaItems)))
+      .then((res) => this.setState({ idPedido: res.id, unPedido: res }, console.log("listaitems", listaItems)))
       .then((res) => listaItems.map(i => this.settearPedidoYProductoAItem(this.state.idPedido,
         i.descripcion, i.cantidad, i.importe, i.observaciones, i.listoCocina, i.listoParrilla)))
       .catch(function (error) {
@@ -1097,8 +1095,9 @@ class Pedidos extends React.Component {
                                       pedido={pedido}
                                       productos={this.state.productos}
                                       producto={producto}
-                                      // descripcion={this.state.SelectedItemEditar ? this.state.SelectedItemEditar.descripcion : producto.descripcion}
+                                      // producto={this.state.producto}
                                       calcularEditar={this.calcularEditar}
+                                      restaurarProductoEditar={this.restaurarProductoEditar}
                                     />
                                   )
                                 })
@@ -1348,6 +1347,10 @@ class Pedidos extends React.Component {
   calcularEditar = (nuevoItem, producto) => {
     this.setState(function (state, props) {
       var total = 0;
+      var productoI=state.productos.find(p=>p.descripcion == producto.descripcion)
+     let nuevoItemRestaurado=nuevoItem.pedidoId
+      nuevoItemRestaurado=""
+      console.log("productoCalcular",producto,this.state.producto,nuevoItemRestaurado)
       return {
         itemsDePedidoElegido: state.itemsDePedidoElegido.forEach(function (i) {
           if (producto.id == i.productoId) {
@@ -1355,14 +1358,29 @@ class Pedidos extends React.Component {
             total = (i.cantidad * producto.precioUnitario);
             i.importe = total;
           }
+          // if (productoI.id != i.productoId) {
+          //   i.productoId = productoI.id
+          //   i.cantidad = 1;
+          //   total = (i.cantidad * productoI.precioUnitario)
+          //   i.importe = total;
+          // }
         }),
         itemsDePedidoElegido: state.itemsDePedidoElegido,
         item: {
           importe: total,
         },
+        
       };
     })
   }
+
+   restaurarProductoEditar =(nuevoProducto)=>{
+     let producto= this.state.productos.find(p=>p.descripcion == nuevoProducto.descripcion)
+     console.log("Restaurar-nuevoProducto",nuevoProducto,producto)
+     this.setState({producto:producto},()=>console.log("REST-state-prod",nuevoProducto,
+     this.state.producto))
+
+   }
 
 
   actualizarAlEliminar = (unItem) => {

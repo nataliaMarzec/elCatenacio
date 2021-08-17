@@ -26,14 +26,15 @@ class VistaDeProductosParaClientes extends React.Component {
     });
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.listadoProductos();
   }
 
   listadoProductos = () => {
-    fetch(`http://localhost:8383/productos`)
+    fetch(`http://localhost:8383/productos/habilitados`)
       .then((res) => res.json())
-      .then((pds) => this.setState({ productos: pds, producto: {} }));
+      .then((pds) => this.setState({ productos: pds, producto: {} }
+        ,()=>console.log("habilitados",this.state.productos)));
   };
 
   actualizarAlEliminar = (unProducto) => {

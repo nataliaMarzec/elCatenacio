@@ -55,10 +55,11 @@ class PedidoListaRow extends React.Component {
   }
 
 
-
   render = () => {
     let items = this.state.items
-    let listaProductos = items.map((i,index) => <tr key={index}>
+    
+    let listaProductos = items.map((i,index) =>
+      <tr key={index}>
       {i.productoId}</tr>)
     let listaCantidad = items.map((i,index) => <tr key={index}>
       {i.cantidad}</tr>)

@@ -26,8 +26,9 @@ module.exports = {
       codigo: {
         type: Sequelize.INTEGER,
       },
-      habilitado: {
-        type: Sequelize.STRING,
+      habilitado:{
+        type:Sequelize.BOOLEAN,
+        defaultValue:false,
       },
       createdAt: {
         allowNull: false,

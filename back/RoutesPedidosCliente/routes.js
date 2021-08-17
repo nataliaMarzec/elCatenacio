@@ -32,6 +32,7 @@ router.post("/productos/nuevo", controllerProducto.create);
 router.delete("/productos/:id", controllerProducto.delete);
 router.put("/productos/:id", controllerProducto.update);
 router.get("/productos", controllerProducto.getProductos);
+router.get("/productos/habilitados", controllerProducto.getProductosHabilitados);
 
 router.get("/productos/busqueda/:codigo", controllerProducto.encontrarProductoPorCodigo);
 router.get("/productos/buscar/:productoFk", controllerProducto.encontrarProductoPorForeingKey);

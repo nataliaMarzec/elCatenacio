@@ -32,7 +32,7 @@ class PedidosLista extends React.Component {
             editable: false,
             id: "",
         };
-        this.seleccionar=this.seleccionar.bind(this)
+        this.seleccionar = this.seleccionar.bind(this)
     }
 
     toggle = () => {
@@ -77,9 +77,9 @@ class PedidosLista extends React.Component {
     listadoPedidos = () => {
         fetch("http://localhost:8383/pedidos")
             .then((res) => res.json())
-            .then((res) => this.setState({ pedidos:res, pedido: {} }),
-           
-            );
+            .then((res) => this.setState({ pedidos: res, pedido: {} }),
+
+        );
     };
     listadoProductos = () => {
         fetch(`http://localhost:8383/productos`)
@@ -151,121 +151,125 @@ class PedidosLista extends React.Component {
             </ModalHeader>
         );
     };
-    
+
 
     render(props) {
-        var listaIdsPedidos = this.state.pedidos.map((pedido) => {
-            return (
-                <div>
-                    <option value={pedido.id} />
-                </div>
-            );
-        });
-        // console.log("listaIdsPedidos", this.state.pedido);
+        if (this.state.pedidos.length > 0) {
+            var listaIdsPedidos = this.state.pedidos.map((pedido) => {
+                return (
+                    <div>
+                        <option value={pedido.id} />
+                    </div>
+                );
+            });
+            // console.log("listaIdsPedidos", this.state.pedido);
 
-        return (
-            <div className="container">
-                <div></div>
-                <Row>&nbsp;</Row>
-                <Container fluid>
-                    <Button color="success" onClick={this.toggle}>
-                        Nuevo pedido
-                    </Button>
-                    <Modal
-                        isOpen={this.state.modal}
-                        toggle={this.toggle}
-                        className={this.props.className}
-                    >
-                        <this.ModalHeaderStrong></this.ModalHeaderStrong>
-                        <CargarPedido
-                            pedido={this.state.pedido}
-                            pedidos={this.state.pedidos}
-                            listadoPedidos={this.listadoPedidos}
-                            listadoProductos={this.listadoProductos}
-                            listadoItemsPedido={this.listadoItemsPedido}
-                            seleccionar={this.seleccionar}
-                        />
-                    </Modal>
+            return (
+                <div className="container">
+                    <div></div>
                     <Row>&nbsp;</Row>
-                </Container>
-                <div className="animated fadeIn">
-                    {/* {Boolean(
+                    <Container fluid>
+                        <Button color="success" onClick={this.toggle}>
+                            Nuevo pedido
+                        </Button>
+                        <Modal
+                            isOpen={this.state.modal}
+                            toggle={this.toggle}
+                            className={this.props.className}
+                        >
+                            <this.ModalHeaderStrong></this.ModalHeaderStrong>
+                            <CargarPedido
+                                pedido={this.state.pedido}
+                                pedidos={this.state.pedidos}
+                                listadoPedidos={this.listadoPedidos}
+                                listadoProductos={this.listadoProductos}
+                                listadoItemsPedido={this.listadoItemsPedido}
+                                seleccionar={this.seleccionar}
+                            />
+                        </Modal>
+                        <Row>&nbsp;</Row>
+                    </Container>
+                    <div className="animated fadeIn">
+                        {/* {Boolean(
             this.state.pedidos.length ? */}
-                    <Row>
-                        <Col xs="12" lg="12">
-                            <Card>
-                                <CardHeader style={{ backgroundColor: "#0972F9" }}>
-                                    <i className="fa fa-align-justify"></i> Pedidos Lista
-                                </CardHeader>
-                                <CardHeader style={{ backgroundColor: "#7E98BB" }}>
-                                    <Form onSubmit={this.handleSubmit} id="formulario">
-                                        <FormGroup row>
-                                            <Col xs="12" md="9">
-                                                <Input
-                                                    type="number"
-                                                    id="id"
-                                                    name="id"
-                                                    placeholder="Elegir id"
-                                                    onChange={this.handleChange}
-                                                    list="pedido"
-                                                />
-                                            </Col>
-                                            <datalist id="pedido">{listaIdsPedidos}</datalist>
-                                        </FormGroup>
-                                        <div className="row">
-                                            <div className="input-field col s12 m12">
-                                                <Button
-                                                    type="button"
-                                                    style={{ margin: "2px" }}
-                                                    color="info"
-                                                    outline
-                                                    onClick={() =>
-                                                        this.verDetallePedido(this.state.id)
-                                                    }
-                                                >
-                                                    <i className="fa fa-dot-circle-o"></i>Ver detalles
-                                                    de pedido
-                                                </Button>
-                                                <Button
-                                                    type="button"
-                                                    style={{ margin: "2px" }}
-                                                    color="success"
-                                                    outline
-                                                    onClick={this.limpiarTabla}
-                                                >
-                                                    <i className="fa fa-dot-circle-o"></i>Ver pedidos
-                                                </Button>
+                        <Row>
+                            <Col xs="12" lg="12">
+                                <Card>
+                                    <CardHeader style={{ backgroundColor: "#0972F9" }}>
+                                        <i className="fa fa-align-justify"></i> Pedidos Lista
+                                    </CardHeader>
+                                    <CardHeader style={{ backgroundColor: "#7E98BB" }}>
+                                        <Form onSubmit={this.handleSubmit} id="formulario">
+                                            <FormGroup row>
+                                                <Col xs="12" md="9">
+                                                    <Input
+                                                        type="number"
+                                                        id="id"
+                                                        name="id"
+                                                        placeholder="Elegir id"
+                                                        onChange={this.handleChange}
+                                                        list="pedido"
+                                                    />
+                                                </Col>
+                                                <datalist id="pedido">{listaIdsPedidos}</datalist>
+                                            </FormGroup>
+                                            <div className="row">
+                                                <div className="input-field col s12 m12">
+                                                    <Button
+                                                        type="button"
+                                                        style={{ margin: "2px" }}
+                                                        color="info"
+                                                        outline
+                                                        onClick={() =>
+                                                            this.verDetallePedido(this.state.id)
+                                                        }
+                                                    >
+                                                        <i className="fa fa-dot-circle-o"></i>Ver detalles
+                                                        de pedido
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        style={{ margin: "2px" }}
+                                                        color="success"
+                                                        outline
+                                                        onClick={this.limpiarTabla}
+                                                    >
+                                                        <i className="fa fa-dot-circle-o"></i>Ver pedidos
+                                                    </Button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </Form>
-                                </CardHeader>
-                                <CardBody>
-                                    <Table responsive bordered size="sm">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                {/* <th>Fecha</th>
+                                        </Form>
+                                    </CardHeader>
+                                    <CardBody>
+                                        <Table responsive bordered size="sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    {/* <th>Fecha</th>
                             <th>Hora</th>
                             <th>Responsable de mesa</th> */}
-                                                <th>Sección</th>
-                                                <th>Observaciones</th>
-                                                <th>Producto</th>
-                                                <th>Cantidad</th>
-                                                <th>Observaciones</th>
-                                                <th>Importe</th>
-                                                <th></th>
-                                                {/* <th>Importe total</th> */}
-                                            </tr>
-                                        </thead>
-                                        <tbody>{this.renderRows()}</tbody>
-                                    </Table>
-                                </CardBody>
-                            </Card>
-                        </Col>
-                    </Row>
+                                                    <th>Sección</th>
+                                                    <th>Observaciones</th>
+                                                    <th>Producto</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Observaciones</th>
+                                                    <th>Importe</th>
+                                                    <th></th>
+                                                    {/* <th>Importe total</th> */}
+                                                </tr>
+                                            </thead>
+                                            <tbody>{this.renderRows()}</tbody>
+                                        </Table>
+                                    </CardBody>
+                                </Card>
+                            </Col>
+                        </Row>
+                    </div>
                 </div>
-            </div>
-        );
+            )
+        }else{
+            return <p>No hay pedidos para mostrar</p>
+        }
     }
 
     renderRows() {
@@ -276,7 +280,6 @@ class PedidosLista extends React.Component {
             ? console.log("NULL", null)
             : pedidos.map((unPedido, index) => {
                 let itemsLista = items.filter(i => i.pedidoId == unPedido.id)
-                // console.log("rowUNPEDIDO+++", unPedido)
                 return (
                     <PedidosListaRow
                         key={index}

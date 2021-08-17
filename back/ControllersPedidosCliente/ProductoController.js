@@ -3,49 +3,56 @@ const { models } = require("../SequelizeConnection");
 const Producto = models.Producto;
 const ItemsPedido = models.ItemsPedido;
 module.exports = {
-  
+
   create: async (req, res) => {
     const producto = req.body;
-    var existe=await Producto.findOne({
-      where: { descripcion:producto.descripcion },
+    var existe = await Producto.findOne({
+      where: { descripcion: producto.descripcion },
     });
-    if(!existe){
-    const { id, descripcion,categoria,codigo, habilitado } = await Producto.create(
-      producto
-    );
-    return res.status(200).json({
-      id,
-      descripcion,
-      categoria,
-      codigo,
-      habilitado,
-    });
-  }else{
-    return res.status(400).json("ya existe producto")
-  }
+    if (!existe) {
+      const { id, descripcion, precioUnitario, categoria, codigo, habilitado } =
+        await Producto.create(producto);
+      return res.status(200).json({
+        id,
+        descripcion,
+        precioUnitario,
+        categoria,
+        codigo,
+        habilitado,
+      });
+    } else {
+      return res.status(404).json("ya existe producto")
+    }
   },
 
   delete: async (req, res) => {
     const producto = await Producto.findByPk(req.params.id);
-    await producto.destroy();
-    return res.json({ delete: "Producto eliminado" });
+    if (producto) {
+      await producto.destroy();
+      return res.status(200).json({ delete: "Producto eliminado" });
+    } else {
+      return res.status(404).json({ messagge: "No exite producto con id" })
+    }
   },
 
   update: async (req, res) => {
     const producto = await Producto.findByPk(req.params.id);
-    const { id, productoId,categoria, codigo, habilitado } = await producto.update(
-      req.body
-    );
-
-    return res
-      .json({
-        id,
-        productoId,
-        categoria,
-        codigo,
-        habilitado,
-      })
-      .res.send(200, "producto editado");
+    if (producto.id) {
+      const { id, descripcion, precioUnitario, categoria, codigo, habilitado } = await producto.update(
+        req.body
+      );
+      return res.status(200)
+        .json({
+          id,
+          descripcion,
+          precioUnitario,
+          categoria,
+          codigo,
+          habilitado,
+        })
+    } else {
+      return res.status(404).json({ messagge: "No encontró producto con id" })
+    }
   },
 
 
@@ -53,17 +60,25 @@ module.exports = {
     return Producto
       .findAll({
         include: [{
-          model:ItemsPedido,
+          model: ItemsPedido,
           as: 'ItemsPedido'
         }],
       })
       .then((Producto) => res.status(200).send(Producto))
       .catch((error) => { res.status(400).send(error); });
-      
+
   },
- 
+
   getProductos: async (req, res, next) => {
     const productos = await Producto.findAll({});
+    if (![req.body.values]) {
+      res.status(400).json({ err: "no obtiene lista de productos" });
+    } else {
+      return res.status(200).json(productos);
+    }
+  },
+  getProductosHabilitados: async (req, res, next) => {
+    const productos = await Producto.findAll({ where: { habilitado: true } });
     if (![req.body.values]) {
       res.status(400).json({ err: "no obtiene lista de productos" });
     } else {
@@ -126,7 +141,7 @@ module.exports = {
     }
   },
 
-//funciona para pedidoid y menus|
+  //funciona para pedidoid y menus|
   getProductosTodos: async (req, res, next) => {
     const productos = await Producto.findAll();
     const fk = await productos.map((producto) => producto.productoId);
@@ -193,7 +208,7 @@ module.exports = {
     }
   },
 
-  
+
   encontrarProductoPorForeingKey: async (req, res) => {
     var producto = await Producto.findOne({
       where: { productoId: req.params.productoId },
@@ -286,5 +301,5 @@ module.exports = {
   //               through: { attributes: [] },
   //           }],
   //       });
- 
+
 };

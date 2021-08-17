@@ -25,10 +25,11 @@ class CargarProducto extends React.Component {
     this.state = {
       producto: props.producto || {},
       productos: props.productos || [],
+      categorias:props.categorias,
       modal: false,
       codigo: "",
       onClick: false,
-   
+
     };
   }
 
@@ -37,12 +38,30 @@ class CargarProducto extends React.Component {
       producto: {
         codigo: "",
         descripcion: "",
-        categoria:"",
+        categoria: "",
         precioUnitario: "",
         habilitado: "",
       },
     });
   };
+  componentWillMount() {
+    this.setState({ productos: this.state.productos, producto: this.state.producto })
+  }
+
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (nextProps.productos !== this.props.productos) {
+      this.setState({ productos: nextProps.productos },
+        () => console.log("CargarProductos-props", this.state.productos));
+    }
+    if (nextProps.producto !== this.props.producto) {
+      this.setState({ producto: nextProps.producto }
+        , () => console.log("CargarProductoprops", this.state.producto));
+    }
+    if (nextProps.descripcion !== this.props.descripcion) {
+      this.setState({ descripcion: nextProps.descripcion });
+    }
+
+  }
 
   handleSubmit = (event) => {
     const id = this.state.producto.id;
@@ -50,13 +69,13 @@ class CargarProducto extends React.Component {
       this.editarProducto(id);
     } else {
       this.crearProducto();
-      
+
     }
     event.preventDefault(event);
   };
 
-  
- 
+
+
 
   listadoBusqueda = (busqueda) => {
     if (busqueda != null) {
@@ -80,7 +99,7 @@ class CargarProducto extends React.Component {
       },
       body: JSON.stringify(this.state.producto),
     })
-       
+
       .then(this.props.listadoProductos)
       .then(this.estadoInicial());
   };
@@ -97,10 +116,10 @@ class CargarProducto extends React.Component {
       .then(this.props.listadoProductos)
       .then(this.estadoInicial());
   };
- 
+
 
   render() {
-  
+
     return (
       <Col xs="12" md="12">
         <ModalBody>
@@ -126,7 +145,7 @@ class CargarProducto extends React.Component {
                     <CardText></CardText>
                   </CardBody>
                 </Card>
-                
+
 
                 <CardBody>
                   <FormGroup row>
@@ -155,10 +174,10 @@ class CargarProducto extends React.Component {
                         id="descripcion"
                         name="descripcion"
                         placeholder="Completa descripción..."
-                        required={false}
                         value={this.state.producto.descripcion}
+                        // style="text-transform:uppercase"
                         onChange={this.handleChange}
-                      />
+                      ></Input>
                     </Col>
                   </FormGroup>
                   <FormGroup row>
@@ -171,10 +190,20 @@ class CargarProducto extends React.Component {
                         id="categoria"
                         name="categoria"
                         placeholder="Completa categoría..."
+                        list="categorias"
                         required={false}
                         value={this.state.producto.categoria}
                         onChange={this.handleChange}
                       />
+                     
+                        <datalist id="categorias">
+                          {this.state.categorias.map((categoria, index) => {
+                            return (
+                              <option id={index} value={categoria.name} />
+                            );
+                          })}
+                        </datalist>
+                
                     </Col>
                   </FormGroup>
 
@@ -235,7 +264,7 @@ class CargarProducto extends React.Component {
     var nuevoProducto = Object.assign({}, this.state.producto);
     nuevoProducto[e.target.name] =
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
-    this.setState({ producto: nuevoProducto });
+    this.setState({ producto: nuevoProducto },()=>console.log("nuevoProducto",nuevoProducto));
   };
 }
 

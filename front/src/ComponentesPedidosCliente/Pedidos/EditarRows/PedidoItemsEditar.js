@@ -40,10 +40,22 @@ class PedidoItems extends React.Component {
   handleChangeItem(e) {
     var nuevoItem = Object.assign({}, this.state.item);
     nuevoItem[e.target.name] = e.target.value;
-    this.setState({ item:nuevoItem}
-    ,() => console.log("nuevoItem/key", this.state.item, nuevoItem)
-    );
-    this.props.calcularEditar(nuevoItem,this.state.producto)
+    // if(this.state.producto.id != nuevoItem.productoId){
+    //   let find= this.state.itemsDePedidoElegido.find(i=>i.productoId == this.state.producto.id)
+    // this.setState({ item:find}
+    // ,() => console.log("nuevoItem/key", this.state.item, nuevoItem)
+    // );
+    
+    // this.props.calcularEditar(this.state.item,this.state.producto)
+    // }
+    // else{
+      this.setState({ item:nuevoItem}
+        ,() => console.log("nuevoItem/key", this.state.item, nuevoItem)
+        );
+        
+        this.props.calcularEditar(nuevoItem,this.state.producto)
+    // }
+
   };
 
   handleChangeProducto(e) {
@@ -52,6 +64,7 @@ class PedidoItems extends React.Component {
     this.setState({producto:nuevoProducto}
     ,() => console.log("nuevoProducto/key", this.state.producto, nuevoProducto)
     );
+    this.props.restaurarProductoEditar(nuevoProducto)
   };
 
   listaDescripciones(){
@@ -71,8 +84,8 @@ class PedidoItems extends React.Component {
         <td>{this.props.item.codigo}</td>
         <td>
           <input
-            key="descripcion"
-            id="producto"
+            key={this.state.producto.id}
+            id={this.state.producto.id}
             type="text"           
             name="descripcion"
             list="descripciones"

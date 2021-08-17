@@ -19,12 +19,13 @@ class Productos extends React.Component {
     this.state = {
       producto: {},
       productos: [],
+      categorias: [{ id: 1, name: "Cocina" }, { id: 2, name: "Parrilla" }],
       modal: false,
       editable: false,
       titulo: "Nuevo",
       mostrarTabla: false,
     };
-    this.listadoProductos=this.listadoProductos.bind(this)
+    this.listadoProductos = this.listadoProductos.bind(this)
   }
 
   toggle = () => {
@@ -35,6 +36,7 @@ class Productos extends React.Component {
 
   componentDidMount() {
     this.listadoProductos();
+    this.setState({categorias:this.state.categorias,categoria:this.state.categoria})
   }
 
   listadoProductos = () => {
@@ -100,8 +102,9 @@ class Productos extends React.Component {
             <this.ModalHeaderStrong></this.ModalHeaderStrong>
             <CargarProducto
               listadoProductos={this.listadoProductos}
-              producto={this.state.producto}
               productos={this.state.productos}
+              producto={this.state.producto}
+              categorias={this.state.categorias}
               toggle={this.toogle}
             />
           </Modal>
@@ -111,27 +114,27 @@ class Productos extends React.Component {
         <div className="animated fadeIn">
           {/* {Boolean(
             this.state.productos.length>1 && ( */}
-              <Row>
-                <Col xs="12" lg="12">
-                  <Card>
-                    <CardBody>
-                      <Table responsive bordered size="sm">
-                        <thead>
-                          <tr>
-                            <th>Código</th>
-                            <th>Descripcion</th>
-                            <th>Categoría</th>
-                            <th>Precio</th>
-                            <th>Habilitado</th>
-                          </tr>
-                        </thead>
-                        <tbody>{this.renderRows()}</tbody>
-                      </Table>
-                    </CardBody>
-                  </Card>
-                </Col>
-              </Row>
-            {/* )
+          <Row>
+            <Col xs="12" lg="12">
+              <Card>
+                <CardBody>
+                  <Table responsive bordered size="sm">
+                    <thead>
+                      <tr>
+                        <th>Código</th>
+                        <th>Descripcion</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Habilitado</th>
+                      </tr>
+                    </thead>
+                    <tbody>{this.renderRows()}</tbody>
+                  </Table>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+          {/* )
           )} */}
         </div>
       </div>
@@ -143,18 +146,18 @@ class Productos extends React.Component {
     return !productos
       ? console.log("NULL", null)
       : productos.map((unProducto, index) => {
-          return (
-            <Producto
-              key={index}
-              producto={unProducto}
-              productos={this.state.productos}
-              selector={this.seleccionar}
-              actualizarAlEliminar={this.actualizarAlEliminar}
-              eliminarProducto={this.eliminarProducto.bind(this)}
-              toggle={this.toggle}
-            />
-          );
-        });
+        return (
+          <Producto
+            key={index}
+            producto={unProducto}
+            productos={this.state.productos}
+            selector={this.seleccionar}
+            actualizarAlEliminar={this.actualizarAlEliminar}
+            eliminarProducto={this.eliminarProducto.bind(this)}
+            toggle={this.toggle}
+          />
+        );
+      });
   }
 }
 
