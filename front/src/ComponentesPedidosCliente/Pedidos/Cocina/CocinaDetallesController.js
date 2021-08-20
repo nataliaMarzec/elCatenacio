@@ -1,17 +1,57 @@
 import React, { Component, useState } from 'react';
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import es from 'date-fns/locale/es';
+import {
+  Table, TabContent, TabPane, Nav, NavItem, NavLink, Card, Button,
+  CardColumns, CardText, Container, Row, Col, Pagination, PaginationItem, PaginationLink
+} from 'reactstrap';
+import classnames from 'classnames';
 import CocinaDetallesRow from './CocinaDetallesRow';
 import VistaDePedidosParaCocinaRow from './VistaDePedidosParaCocinaRow';
 import VistaDePedidosParaParrillaRow from './VistaDePedidosParaParrillaRow';
-
-import { Table, TabContent, TabPane, Nav, NavItem, NavLink, Card, Button, CardColumns, CardText, Container, Row, Col } from 'reactstrap';
-import classnames from 'classnames';
+import Paginacion from './Paginacion';
+registerLocale('es', es)
+var moment = require('moment');
 
 const CocinaDetallesController = (props) => {
   const [activeTab, setActiveTab] = useState('1');
+  const [startDate, setStartDate] = useState(new Date());
+  const [currentPageCocina, setCurrentPageCocina] = useState(0)
+  const [currentPageParrilla, setCurrentPageParrilla] = useState(0)
+  const [currentPagePreparados, setCurrentPagePreparados] = useState(0)
+  const [currentPageEntregados, setCurrentPageEntregados] = useState(0)
+
 
   const toggle = tab => {
     if (activeTab !== tab) setActiveTab(tab);
   }
+ 
+
+  const pedidosEnEspera = (date, value) => {
+    console.log("pedidosEspera", date, value)
+    // const [value, onChange] = useState(date);
+
+  }
+
+  const highlightWithRanges = [
+    {
+      "react-datepicker__day--highlighted-custom-1": [
+        // pedidosEnEspera(startDate, 4),
+        // subDays(new Date(), 3),
+        // subDays(new Date(), 2),
+        // subDays(new Date(), 1),
+      ],
+    },
+    {
+      "react-datepicker__day--highlighted-custom-2": [
+        // addDays(new Date(), 1),
+        // addDays(new Date(), 2),
+        // addDays(new Date(), 3),
+        // addDays(new Date(), 4),
+      ],
+    },
+  ];
 
 
   const itemsListaCocina = () => {
@@ -86,10 +126,31 @@ const CocinaDetallesController = (props) => {
     // console.log("Cocina", nuevaLista)
     return nuevaLista
   }
+  console.log("DATE", props.date)
+
 
   return (
     <div>
-      <Container>
+      <Container className="border rounded  shadow-lg p-3 bg-body mb-5 rounded" key="padre">
+        <div style={{ padding: "16px", background: "#216ba5", color: "#fff" }}>
+          <DatePicker
+            className="row border offset-sm-3 rounded ml-3 shadow-lg p-3 mb-3 bg-body rounded" key="data-pickers"
+            selected={startDate}
+            onSelect={props.handleDateSelect}
+            onChange={(date) => setStartDate(date)}
+            locale="es"
+            dateFormat="dd/MM/yyyy"
+            // timeInputLabel="Hora:"
+            peekNextMonth
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
+            yearDropdownItemNumber={15}
+            // showTimeInput
+            highlightDates={highlightWithRanges}
+
+          />
+        </div>
         <Nav tabs>
           <NavItem>
             <NavLink
@@ -127,35 +188,41 @@ const CocinaDetallesController = (props) => {
         <TabContent activeTab={activeTab}>
 
           <TabPane tabId="1">
+            <Paginacion estadoPage={'Cocina'} pedidosCocina={props.pedidos.filter(p => p.entregado == false &&
+              p.preparadoCocina == false && p.fecha == moment(startDate).format('DD/MM/yyyy'))}
+              currentPageCocina={currentPageCocina} setCurrentPageCocina={setCurrentPageCocina}
+              >
+              </Paginacion>
             <Row>
-
               <React.Fragment>{
-                props.pedidos.filter(p => p.entregado == false && p.preparadoCocina == false).length > 0 &&
+                props.pedidos.filter(p => p.entregado == false && p.preparadoCocina == false && p.ItemsPedido.length > 0 && p.fecha == moment(startDate).format('DD/MM/yyyy')).length > 0 &&
 
-                props.pedidos.filter(p => p.entregado == false && p.preparadoCocina == false).map((unPedido, index) => {
-                  let itemsListoCocina = itemsListaCocina()
-                    .filter((i) => i.pedidoId == unPedido.id && i.listoCocina == true)
-                  let filter = unPedido.ItemsPedido.filter(i => i.listoCocina == true)
-                  {/* console.log("pedidoCocina++", filter) */ }
-                  if (filter.length > 0) {
-                    return (
-                      <div className="col-sm-4">
-                        <VistaDePedidosParaCocinaRow
-                          index={index}
-                          itemsCocina={itemsListoCocina}
-                          item={props.item}
-                          productos={props.productos}
-                          producto={props.producto}
-                          pedidoCocina={unPedido}
-                          pedidos={props.pedidos}
-                          listadoPedidos={props.listadoPedidos}
-                          listadoItemsPedido={props.listadoItemsPedido}
-                          entregado={unPedido.entregado}
-                        />
-                      </div>
-                    )
-                  }
-                })}{
+                props.pedidos.filter(p => p.entregado == false && p.preparadoCocina == false && p.fecha == moment(startDate).format('DD/MM/yyyy'))
+                  .slice(currentPageCocina, currentPageCocina + 2)
+                  .map((unPedido, index) => {
+                    let itemsListoCocina = itemsListaCocina()
+                      .filter((i) => i.pedidoId == unPedido.id && i.listoCocina == true)
+                    let filter = unPedido.ItemsPedido.filter(i => i.listoCocina == true)
+                    console.log("pedidoCocina++", unPedido.fecha, "+++++", moment(startDate).format('DD/MM/yyyy'))
+                    if (filter.length > 0) {
+                      return (
+                        <div className="col-sm-4">
+                          <VistaDePedidosParaCocinaRow
+                            index={index}
+                            itemsCocina={itemsListoCocina}
+                            item={props.item}
+                            productos={props.productos}
+                            producto={props.producto}
+                            pedidoCocina={unPedido}
+                            pedidos={props.pedidos}
+                            listadoPedidos={props.listadoPedidos}
+                            listadoItemsPedido={props.listadoItemsPedido}
+                            entregado={unPedido.entregado}
+                          />
+                        </div>
+                      )
+                    }
+                  })}{
                   props.pedidos.filter(p => p.entregado == false && p.preparadoCocina === false).length === 0 &&
                   <Container><CardText>No hay productos para preparar</CardText></Container>
                 }
@@ -164,34 +231,42 @@ const CocinaDetallesController = (props) => {
           </TabPane>
 
           <TabPane tabId="2">
+            <Paginacion estadoPage={'Parrilla'} pedidosParrilla={props.pedidos.filter(p => p.entregado == false &&
+              p.preparadoParrilla == false && p.fecha == moment(startDate).format('DD/MM/yyyy'))}
+              currentPageParrilla={currentPageParrilla} setCurrentPageParrilla={setCurrentPageParrilla}
+            >
+            </Paginacion>
             <Row>
               <React.Fragment>{
-                props.pedidos.filter(p => p.entregado == false && p.preparadoParrilla == false).length > 0 &&
+                props.pedidos.filter(p => p.entregado == false && p.preparadoParrilla == false && p.fecha == moment(startDate).format('DD/MM/yyyy')).length > 0 &&
 
-                props.pedidos.filter(p => p.entregado == false && p.preparadoParrilla == false).map((unPedido, index) => {
-                  let itemsListoParrilla = itemsListaParrilla()
-                    .filter((i) => i.pedidoId == unPedido.id && i.listoParrilla == true)
-                  let filter = unPedido.ItemsPedido.filter(i => i.listoParrilla == true)
-                  {/* console.log("pedidoCocina++", filter) */ }
-                  if (filter.length > 0) {
-                    return (
-                      <div className="col-sm-4">
-                        <VistaDePedidosParaParrillaRow
-                          index={index}
-                          itemsParrilla={itemsListoParrilla}
-                          item={props.item}
-                          productos={props.productos}
-                          producto={props.producto}
-                          pedidoParrilla={unPedido}
-                          pedidos={props.pedidos}
-                          listadoPedidos={props.listadoPedidos}
-                          listadoItemsPedido={props.listadoItemsPedido}
-                          entregado={unPedido.entregado}
-                        />
-                      </div>
-                    )
-                  }
-                })}{
+                props.pedidos.filter(p => p.entregado == false && p.preparadoParrilla == false &&
+                  p.fecha == moment(startDate).format('DD/MM/yyyy'))
+                  .slice(currentPageParrilla, currentPageParrilla + 2)
+                  .map((unPedido, index) => {
+                    let itemsListoParrilla = itemsListaParrilla()
+                      .filter((i) => i.pedidoId == unPedido.id && i.listoParrilla == true)
+                    let filter = unPedido.ItemsPedido.filter(i => i.listoParrilla == true)
+                    {/* console.log("pedidoCocina++", filter) */ }
+                    if (filter.length > 0) {
+                      return (
+                        <div className="col-sm-4">
+                          <VistaDePedidosParaParrillaRow
+                            index={index}
+                            itemsParrilla={itemsListoParrilla}
+                            item={props.item}
+                            productos={props.productos}
+                            producto={props.producto}
+                            pedidoParrilla={unPedido}
+                            pedidos={props.pedidos}
+                            listadoPedidos={props.listadoPedidos}
+                            listadoItemsPedido={props.listadoItemsPedido}
+                            entregado={unPedido.entregado}
+                          />
+                        </div>
+                      )
+                    }
+                  })}{
                   props.pedidos.filter(p => p.entregado == false && p.preparadoParrilla === false).length === 0 &&
                   <Container><CardText>No hay productos para preparar</CardText></Container>
                 }
@@ -199,10 +274,16 @@ const CocinaDetallesController = (props) => {
             </Row>
           </TabPane>
           <TabPane tabId="3">
+          <Paginacion estadoPage={'Preparados'} 
+            pedidosPreparados={props.pedidos.filter(p => p.preparadoCocina == true && p.entregado === false && p.fecha == moment(startDate).format('DD/MM/yyyy')
+                  || p.preparadoParrilla == true && p.entregado === false && p.fecha == moment(startDate).format('DD/MM/yyyy'))}
+              currentPagePreparados={currentPagePreparados} setCurrentPagePreparados={setCurrentPagePreparados}
+            >
+            </Paginacion>
             <Container>
               <React.Fragment>{
-                props.pedidos.filter(p => p.preparadoCocina == true && p.entregado === false
-                  || p.preparadoParrilla == true && p.entregado === false).length > 0 &&
+                props.pedidos.filter(p => p.preparadoCocina == true && p.entregado === false && p.fecha == moment(startDate).format('DD/MM/yyyy')
+                  || p.preparadoParrilla == true && p.entregado === false && p.fecha == moment(startDate).format('DD/MM/yyyy')).length > 0 &&
                 <Table responsive bordered size="sm">
                   <thead>
                     <tr>
@@ -213,7 +294,7 @@ const CocinaDetallesController = (props) => {
                       <th></th>
                     </tr>
                   </thead>
-                  <tbody> {tablaPreparados(props)}</tbody>
+                  <tbody> {tablaPreparados(props,currentPagePreparados)}</tbody>
                 </Table>
               }{
                   props.pedidos.filter(p => p.preparadoCocina == true && p.entregado === false).length === 0 &&
@@ -223,9 +304,16 @@ const CocinaDetallesController = (props) => {
             </Container>
           </TabPane>
           <TabPane tabId="4">
+          <Paginacion estadoPage={'Entregados'} 
+              pedidosEntregados={props.pedidos.filter(p => p.entregado == true 
+              && p.fecha == moment(startDate).format('DD/MM/yyyy'))}
+              currentPageEntregados={currentPageEntregados} setCurrentPageEntregados={setCurrentPageEntregados}
+            >
+            </Paginacion>
             <Container>
               <React.Fragment>{
-                props.pedidos.filter(p => p.entregado == true).length > 0 &&
+                props.pedidos.filter(p => p.entregado == true && p.fecha == moment(startDate)
+                .format('DD/MM/yyyy')).length > 0 &&
                 <Table responsive bordered size="sm">
                   <thead>
                     <tr>
@@ -235,7 +323,7 @@ const CocinaDetallesController = (props) => {
                       <th>Observaciones</th>
                     </tr>
                   </thead>
-                  <tbody>{tablaEntregados(props)}</tbody>
+                  <tbody>{tablaEntregados(props, startDate,currentPageEntregados)}</tbody>
                 </Table>
               }{
                   props.pedidos.filter(p => p.entregado == true).length === 0 &&
@@ -252,11 +340,12 @@ const CocinaDetallesController = (props) => {
 }
 
 
-function tablaPreparados(props) {
+function tablaPreparados(props,currentPagePreparados) {
   return (
     <React.Fragment>{
       props.pedidos.filter(p => p.entregado === false && p.preparadoCocina === true ||
-        p.entregado === false && p.preparadoParrilla === true).map((unPedido, index) => {
+        p.entregado === false && p.preparadoParrilla === true).slice(currentPagePreparados, currentPagePreparados + 2)
+        .map((unPedido, index) => {
           let itemsListoCocina = unPedido.ItemsPedido.filter(i => i.pedidoId == unPedido.id && i.listoCocina == true && unPedido.preparadoCocina == true)
           let itemsListoParrilla = unPedido.ItemsPedido.filter(i => i.pedidoId == unPedido.id && i.listoParrilla == true && unPedido.preparadoParrilla == true)
           let array = props.itemsPreparados
@@ -282,10 +371,12 @@ function tablaPreparados(props) {
     </React.Fragment>
   )
 };
-function tablaEntregados(props) {
+function tablaEntregados(props,startDate,currentPageEntregados) {
   return (
     <React.Fragment>{
-      props.pedidos.filter(p => p.entregado === true).map((unPedido, index) => {
+      props.pedidos.filter(p => p.entregado === true && p.fecha == moment(startDate).format('DD/MM/yyyy'))
+      .slice(currentPageEntregados, currentPageEntregados + 2)
+      .map((unPedido, index) => {
         let itemsLista = props.items.filter(i => i.pedidoId == unPedido.id)
         return (
           <CocinaDetallesRow
@@ -302,6 +393,9 @@ function tablaEntregados(props) {
   )
 
 }
+
+
+
 export default CocinaDetallesController;
 
 

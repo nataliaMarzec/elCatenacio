@@ -140,12 +140,14 @@ class VistaDePedidosParaParrillaRow extends React.Component {
         return (
             <Card className="border-info">
                 <CardHeader className="border-warning">
-                    Nro pedidoCocina: &nbsp; {this.props.pedidoParrilla.id}</CardHeader>
+                    Nro pedido: &nbsp; {this.props.pedidoParrilla.id}</CardHeader>
                 <CardBody>
                     {itemsParrilla.map((i, index) => {
+                        let producto = this.props.productos.find(p => p.id == i.productoId)
                         return (
-                            <div key={i.codigo} id={i.codigo} data-arg1={i.codigo} style={style} onChange={this.getComponent.bind(this)}>
-                                <Col >Producto: {i.productoId}</Col>
+                            <div key={i.codigo} id={i.codigo} data-arg1={i.codigo} style={style}
+                                onChange={this.getComponent.bind(this)}>
+                                <Col>Producto: {i.productoId} / {producto.descripcion}</Col>
                                 <Col>Cantidad: {i.cantidad}</Col>
                                 <Col >Observaciones: {i.observaciones} </Col>
                                 <Button key={i.codigo} id={i.codigo}

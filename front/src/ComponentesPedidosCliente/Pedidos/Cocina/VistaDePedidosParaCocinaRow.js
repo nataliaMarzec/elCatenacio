@@ -98,23 +98,23 @@ class VistaDePedidosParaCocinaRow extends React.Component {
         });
     };
 
-    getItemsCocina(id) {
-        console.log("getListos", this.props.itemsCocina)
-        fetch(`http://localhost:8383/itemsPedido/listos/cocina/${id}`, {
-            method: "get",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        })
-            .then((res) => res.json())
-            .then((res) => this.setState({ itemsCocina: res, pedidoCocina: { preparadoCocina: true } },
-                () => this.forceUpdate()
-            ))
-            .catch(function (error) {
-                console.log(error, "error......", id);
-            })
-    };
+    // getItemsCocina(id) {
+    //     console.log("getListos", this.props.itemsCocina)
+    //     fetch(`http://localhost:8383/itemsPedido/listos/cocina/${id}`, {
+    //         method: "get",
+    //         headers: {
+    //             Accept: "application/json",
+    //             "Content-Type": "application/json",
+    //         },
+    //     })
+    //         .then((res) => res.json())
+    //         .then((res) => this.setState({ itemsCocina: res, pedidoCocina: { preparadoCocina: true } },
+    //             () => this.forceUpdate()
+    //         ))
+    //         .catch(function (error) {
+    //             console.log(error, "error......", id);
+    //         })
+    // };
 
 
     updateListo(codigo, listoCocina) {
@@ -165,17 +165,18 @@ class VistaDePedidosParaCocinaRow extends React.Component {
         let itemsCocina = this.props.itemsCocina
         return (
             //     <div className="col-sm-6 bg-light mt-3" >
-            // <div className="row border offset-sm-3 rounded mr-3 shadow-lg p-3 mb-5 bg-body rounded" key="uebaEmpresa" >
+            // <div className="row border offset-sm-3 rounded mr-3 shadow-lg p-3 mb-5 bg-body rounded" key="cocina" >
             // <div className="row border offset-sm-1">
             <Card className="border-info">
                 <CardHeader className="border-warning">
-                    Nro pedidoCocina: &nbsp; {this.props.pedidoCocina.id}</CardHeader>
+                    Nro pedido: &nbsp; {this.props.pedidoCocina.id}</CardHeader>
                 <CardBody>
-
+                       
                     {itemsCocina.map((i, index) => {
+                       let producto =this.props.productos.find(p=>p.id == i.productoId)
                         return (
                             <div key={i.codigo} id={i.codigo} data-arg1={i.codigo} style={style} onChange={this.getComponent.bind(this)}>
-                                <Col >Producto: {i.productoId}</Col>
+                                <Col >Producto:{i.productoId} / {producto.descripcion}</Col>
                                 <Col>Cantidad: {i.cantidad}</Col>
                                 <Col >Observaciones: {i.observaciones} </Col>
                                 <Button key={i.codigo} id={i.codigo}
