@@ -25,12 +25,17 @@ class CargarProducto extends React.Component {
     this.state = {
       producto: props.producto || {},
       productos: props.productos || [],
-      categorias:props.categorias,
+      categorias: props.categorias,
       modal: false,
       codigo: "",
       onClick: false,
+      imagen:props.imagen,
+      vista:props.vista,
+      imagenCargada:props.imagenCargada,
 
     };
+    this.onChangeImagen = this.onChangeImagen.bind(this)
+    this.crearProductoConImagen = this.crearProductoConImagen.bind(this)
   }
 
   estadoInicial = () => {
@@ -42,6 +47,7 @@ class CargarProducto extends React.Component {
         precioUnitario: "",
         habilitado: "",
       },
+      imagen:{}
     });
   };
   componentWillMount() {
@@ -68,8 +74,8 @@ class CargarProducto extends React.Component {
     if (id) {
       this.editarProducto(id);
     } else {
-      this.crearProducto();
-
+      this.crearProductoConImagen(event)
+      this.setState({imagen:{}})
     }
     event.preventDefault(event);
   };
@@ -90,8 +96,9 @@ class CargarProducto extends React.Component {
     }
   };
 
-  crearProducto = () => {
-    fetch("http://localhost:8383/productos/nuevo", {
+  crearProducto = (id_imagen) => {
+    console.log("id_imagen",id_imagen)
+    fetch("http://localhost:8383/productos/"+id_imagen, {
       method: "post",
       headers: {
         Accept: "application/json",
@@ -99,7 +106,6 @@ class CargarProducto extends React.Component {
       },
       body: JSON.stringify(this.state.producto),
     })
-
       .then(this.props.listadoProductos)
       .then(this.estadoInicial());
   };
@@ -116,6 +122,32 @@ class CargarProducto extends React.Component {
       .then(this.props.listadoProductos)
       .then(this.estadoInicial());
   };
+  onChangeImagen = (e) => {
+    console.log("event-onChange", e.target.files[0])
+    this.setState({ imagen: e.target.files[0] }, console.log('image-console', this.state.imagen))
+    this.setState({ vista: URL.createObjectURL(e.target.files[0]) }
+      , () => { console.log("file-onCha", this.state.vista) });
+    this.setState({ imagenCargada: true }, console.log("imgCargada", this.state.imagenCargada));
+    this.props.envioDeImagen(this.state.imagen,this.state.vista,this.state.imagenCargada)
+
+  }
+  crearProductoConImagen(event) {
+    const formData = new FormData();
+    formData.append('imagen', this.state.imagen);
+    console.log("sendImagen", formData)
+    fetch("http://localhost:8383/imagen/", {
+      method: "post",
+      body: formData,
+    })
+      .then(res => res.json())
+      .then((resBody)=>{
+        console.log("resBody",resBody.Imagen)
+        this.setState({imagen:resBody.Imagen},
+          this.crearProducto(resBody.Imagen.id_imagen))
+      })
+      .then(this.setState({imagen:{descripcion:null},vista:null}))
+      .catch((error) => error, {});
+  }
 
 
   render() {
@@ -130,40 +162,20 @@ class CargarProducto extends React.Component {
             <Col max-width="%100">
               <Card className="border-warning">
                 <Card style={{ border: "1px solid red" }}>
-                  <CardImg
-                    // top height="150px" src={asado}
-                    type="img"
-                    id="img"
-                    name="img"
-                    placeholder="Agrega una imagen..."
-                    required={false}
-                    value={this.state.producto.img}
-                    onChange={this.handleChange}
-                  />
-                  <CardBody>
-                    <CardSubtitle>Cargar imagen</CardSubtitle>
-                    <CardText></CardText>
-                  </CardBody>
+                    <input top width="100%"
+                      type="file"
+                      name="imagen"
+                      id="imagen"
+                      enctype=" multipart/form-data "
+                      className="form-control-file border"
+                      // value={this.state.imagen.descripcion}
+                      onChange={this.onChangeImagen}
+                    />
+                    <CardImg top max-width="100%" src={this.state.vista}></CardImg>
                 </Card>
 
 
                 <CardBody>
-                  <FormGroup row>
-                    <Col md="3">
-                      <Label for="codigo">Código</Label>
-                    </Col>
-                    <Col xs="12" md="9">
-                      <Input
-                        type="number"
-                        id="codigo"
-                        name="codigo"
-                        placeholder="Completa Código..."
-                        required={true}
-                        value={this.state.producto.codigo}
-                        onChange={this.handleChange}
-                      />
-                    </Col>
-                  </FormGroup>
                   <FormGroup row>
                     <Col md="3">
                       <Label for="descripcion">Descripción</Label>
@@ -195,15 +207,15 @@ class CargarProducto extends React.Component {
                         value={this.state.producto.categoria}
                         onChange={this.handleChange}
                       />
-                     
-                        <datalist id="categorias">
-                          {this.state.categorias.map((categoria, index) => {
-                            return (
-                              <option id={index} value={categoria.name} />
-                            );
-                          })}
-                        </datalist>
-                
+
+                      <datalist id="categorias">
+                        {this.state.categorias.map((categoria, index) => {
+                          return (
+                            <option id={index} value={categoria.name} />
+                          );
+                        })}
+                      </datalist>
+
                     </Col>
                   </FormGroup>
 
@@ -213,7 +225,7 @@ class CargarProducto extends React.Component {
                     </Col>
                     <Col xs="12" md="9">
                       <Input
-                        type="text"
+                        type="number"
                         id="precioUnitario"
                         name="precioUnitario"
                         placeholder="Completa precio..."
@@ -230,7 +242,6 @@ class CargarProducto extends React.Component {
                         className={"float-left mb-0"}
                         label
                         color={"info"}
-                        // defaultChecked
                         size={"sm"}
                         name="habilitado"
                         checked={this.state.producto.habilitado}
@@ -264,7 +275,7 @@ class CargarProducto extends React.Component {
     var nuevoProducto = Object.assign({}, this.state.producto);
     nuevoProducto[e.target.name] =
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
-    this.setState({ producto: nuevoProducto },()=>console.log("nuevoProducto",nuevoProducto));
+    this.setState({ producto: nuevoProducto }, () => console.log("nuevoProducto", nuevoProducto));
   };
 }
 

@@ -9,20 +9,20 @@ module.exports = {
       id: {
         allowNull: false,
         autoIncrement: true,
-        primaryKey:true,
+        primaryKey: true,
         type: Sequelize.INTEGER,
       },
       clienteId: {
         allowNull: true,
         foreignKey: true,
         type: Sequelize.INTEGER,
-        references: { model: "Clientes", key: "id_cliente", constraints:false, },
+        references: { model: "Clientes", key: "id_cliente", constraints: false, },
       },
       responsableId: {
         allowNull: true,
         foreignKey: true,
         type: Sequelize.INTEGER,
-        references: { model: "ResponsableDeMesa", key: "id_responsable", constraints:false, },
+        references: { model: "ResponsableDeMesa", key: "id_responsable", constraints: false, },
       },
       codigoPedido: {
         type: Sequelize.INTEGER,
@@ -33,31 +33,37 @@ module.exports = {
       observaciones: {
         type: Sequelize.STRING,
       },
-      preparadoCocina:{
-        type:Sequelize.BOOLEAN,
-        defaultValue:false,
+      preparadoCocina: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
-      preparadoParrilla:{
-        type:Sequelize.BOOLEAN,
-        defaultValue:false,
+      preparadoParrilla: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
-      entregado:{
-        type:Sequelize.BOOLEAN,
-        defaultValue:false,
+      entregado: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
-      fecha:{
-        type:Sequelize.DATE,
+      fecha: {
+        type: Sequelize.DATE,
         get() {
           return moment(this.getDataValue('fecha')).format('DD/MM/YYYY');
-      }
+        }
       },
-      hora:{
-        type:Sequelize.DATE,
+      hora: {
+        type: Sequelize.DATE,
         get() {
           return moment(this.getDataValue('hora')).format('HH:mm');
+        }
       }
-      }
-    });
+    },
+      {
+        sync: { force: true },
+        timestamps: false,
+        createdAt: false,
+        updatedAt: false,
+      });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("Pedidos");

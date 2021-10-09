@@ -62,7 +62,7 @@ class PedidoItemsDos extends React.Component {
             type="text"
             id={this.state.observaciones}
             name="observaciones"
-            placeholder="observaciones"
+            placeholder="sin observaciones"
             value={this.state.unItem.observaciones}
             // defaultValue="Sin observaciones"
             onChange={this.handleChange}

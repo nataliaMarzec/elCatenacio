@@ -41,7 +41,13 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
-    });
+    },
+      {
+        sync: { force: true },
+        timestamps: false,
+        createdAt: false,
+        updatedAt: false,
+      });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("ItemsPedido");

@@ -11,9 +11,11 @@ module.exports = function (sequelize, DataTypes) {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      dni: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      rolClienteId: {
+        allowNull: true,
+        foreignKey: true,
+        type: DataTypes.INTEGER,
+        references: { model: "Roles", key: "id_rol"},
       },
       nombre: {
         type: DataTypes.STRING,
@@ -32,17 +34,31 @@ module.exports = function (sequelize, DataTypes) {
           msg: "El nombre tiene que ser entre 2 y 255 caracteres",
         },
       },
-      apellido: DataTypes.STRING,
       direccion: DataTypes.STRING,
       telefono: DataTypes.STRING,
+      username: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       email: {
         type: DataTypes.STRING,
       },
+      rol:{
+        type:DataTypes.STRING,
+        defaultValue:"CLIENTE",
+      },
+      registrado:DataTypes.BOOLEAN,
+
     },
 
     {
       tableName: "Clientes",
       modelName: "Clientes",
+      timestamps: false,
+      createdAt: false,
+      updatedAt: false,
+    
+    
     }
   );
 

@@ -11,6 +11,9 @@ class PedidoListaRow extends React.Component {
       item: props.item,
       producto: props.unProducto,
       pedido: props.pedido,
+      campoVisible: false,
+      inputVisible: true,
+      edit: {}
     };
     this.eliminarPedidoConItems = this.eliminarPedidoConItems.bind(this);
     this.seleccionarPedido = this.seleccionarPedido.bind(this);
@@ -54,18 +57,43 @@ class PedidoListaRow extends React.Component {
     }
   }
 
+  handleVisibility = (e, id) => {
+    const mayEdit = this.state.edit[`input-${id}`] || false
+    console.log("visibility",id,this.state.edit,mayEdit)
+    var nuevoPedido = Object.assign({}, this.state.pedido);
+    nuevoPedido[e.target.name] =
+      e.target.type === "checkbox" ? e.target.checked : e.target.value;
+    this.setState({ pedido: nuevoPedido });
+    this.setState({
+      edit: Object.assign({}, this.state.edit, { [`input-${id}`]: !mayEdit })
+    })
+  }
+
+  handleChangePedido = (e) => {
+    var nuevoPedido = Object.assign({}, this.state.pedido);
+    nuevoPedido[e.target.name] =
+      e.target.type === "checkbox" ? e.target.checked : e.target.value;
+    this.setState({ pedido: nuevoPedido });
+    // console.log("item handle change", this.state.pedido.ItemsPedido);
+    // console.log("productos", this.state.productos);
+  }
+  // <Mutation  mutation={DELETE_CURRENT_PRODUCT}>
+  // {(deleteproduct, { data }) => (
+  //   <td><button onClick={() => deleteproduct({variables: {_id: product._id }})}>Eliminar</button></td>
+  // )}
+  // </Mutation> 
 
   render = () => {
     let items = this.state.items
-    
-    let listaProductos = items.map((i,index) =>
+
+    let listaProductos = items.map((i, index) =>
       <tr key={index}>
-      {i.productoId}</tr>)
-    let listaCantidad = items.map((i,index) => <tr key={index}>
+        {i.productoId}</tr>)
+    let listaCantidad = items.map((i, index) => <tr key={index}>
       {i.cantidad}</tr>)
-    let listaObservaciones = items.map((i,index)=> <tr key={index}>
+    let listaObservaciones = items.map((i, index) => <tr key={index}>
       {i.observaciones}</tr>)
-    let listaImporte = items.map((i,index) => <tr key={index}>
+    let listaImporte = items.map((i, index) => <tr key={index}>
       ${i.importe}</tr>)
 
     return (
@@ -75,22 +103,39 @@ class PedidoListaRow extends React.Component {
         <td>{this.props.pedido.Hora}</td>
         <td>{this.props.pedido.responsableDeMesa}</td> */}
         <td key="seccion">{this.props.pedido.seccion}</td>
-        <td key="observacionesPedido">{this.props.pedido.observaciones}</td>
+        {/* <td key="observacionesPedido">{this.props.pedido.observaciones}</td> */}
+        <td onClick={(e) => this.handleVisibility(e, this.props.pedido.id)}>
+          <p>{this.state.edit[`input-${this.props.pedido.id}`] ?
+            <input value={this.props.pedido.observaciones}
+              type="text"
+              id="observaciones"
+              name="observaciones"
+              onChange={this.handleChangePedido}
+               />
+            : this.props.pedido.observaciones}</p>
+        </td>
         <td key="producto">{listaProductos}</td>
         <td key="cantidad">{listaCantidad}</td>
         <td key="observaciones">{listaObservaciones}</td>
         <td key="importe">{listaImporte}</td>
         {/* <td key="importeTotal">{}</td> */}
-        {Boolean(this.props.pedidos.length) && (    
+        {Boolean(this.props.pedidos.length) && (
           <td>
-          <Button
-            color="danger"
-            size="btn-xs"
-            onClick={() => this.eliminarPedidoConItems(this.props.pedido.id)}
-          >
-            <i className="cui-trash icons font-1xl d-block mt-1"></i>
-          </Button>{" "}
-        </td>
+            <Button
+              color="danger"
+              size="btn-xs"
+              onClick={() => this.eliminarPedidoConItems(this.props.pedido.id)}
+            >
+              <i className="cui-trash icons font-1xl d-block mt-1"></i>
+            </Button>{" "}
+            &nbsp;&nbsp;
+            <Button
+              className="btn #e65100 orange darken-4"
+              onClick={this.seleccionarPedido}
+            >
+              <i className="fa fa-dot-circle-o">{""} Editar</i>
+            </Button>
+          </td>
         )}
       </tr>
     );

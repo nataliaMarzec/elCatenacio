@@ -5,21 +5,7 @@ import {
 
 
 const Paginacion = (props) => {
-  // const [search, setSearch] = useState('');
   const [estadoPage, setEstadoPage] = useState('')
-
-
-
-  // const filteredPedidos = () => {
-
-  //     if (search.length === 0)
-  //         return props.pedidos.slice(currentPage, currentPage + 5);
-
-  //     // Si hay algo en la caja de texto
-  //     const filtered = props.pedidos.filter(p => p.fecha.includes(search));
-  //     return filtered.slice(currentPage, currentPage + 5);
-  // }
-
 
   const nextPage = (estado) => {
     if (estado === 'Cocina') {
@@ -62,33 +48,6 @@ const Paginacion = (props) => {
       props.setCurrentPageEntregados(props.currentPageEntregados - 2);
     }
   }
-
-
-  // const onSearchChange = ({ target }) => {
-  //     setCurrentPage(0);
-  //     setSearch(target.value);
-  // }
-
-  // const usePedidos = () => {
-
-  //     const [ isLoading, setisLoading ] = useState(true);
-  //     const [ pedidos, setPedidos ] = useState([])
-
-  //     useEffect(() => {
-  //         // Carga de los Pedidos
-  //         props.listadoPedidos()
-  //             .then( pedidos => {
-  //                 setisLoading(false);
-  //                 setPedidos( pedidos );
-  //             })
-  //     }, [])
-
-
-  //     return {
-  //         isLoading,
-  //         pedidos
-  //     }
-  // }
 
   const onClickPrev = () => {
     console.log("estadoPrev", props.estadoPage)

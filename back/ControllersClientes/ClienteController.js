@@ -8,22 +8,61 @@ module.exports = {
     const {
       id_cliente,
       nombre,
-      apellido,
-      dni,
       direccion,
       telefono,
+      username,
       email,
+      password,
+      rol="CLIENTE",
+      registrado=false,
     } = await Cliente.create(cliente);
 
     return res.json({
       id_cliente,
       nombre,
-      apellido,
-      dni,
       direccion,
       telefono,
+      username,
       email,
+      password,
+      rol,
+      registrado,
     });
+  },
+
+  async update(req, res) {
+    const cliente = await Cliente.findByPk(req.params.id_cliente);
+    const {
+      id_cliente,
+      nombre,
+      direccion,
+      telefono,
+      username,
+      email,
+      password,
+      rol="CLIENTE",
+      registrado=false,
+    } = await cliente.update(req.body);
+
+    return res
+      .json({
+        id_cliente,
+        nombre,
+        direccion,
+        telefono,
+        username,
+        email,
+        password,
+        rol,
+        registrado,
+      })
+      .res.send(200, "cliente editado");
+  },
+
+  delete: async (req, res) => {
+    const cliente = await Cliente.findByPk(req.params.id_cliente);
+    await cliente.destroy();
+    return res.json({ delete: "Cliente eliminado" });
   },
 
   getClientes: async (req, res, next) => {
@@ -47,38 +86,6 @@ module.exports = {
         .then(console.log(cliente.id_cliente));
     }
   },
-
-  deleteClienteById: async (req, res) => {
-    const cliente = await Cliente.findByPk(req.params.id_cliente);
-    await cliente.destroy();
-    return res.json({ delete: "Cliente eliminado" });
-  },
-
-  async update(req, res) {
-    const cliente = await Cliente.findByPk(req.params.id_cliente);
-    const {
-      id_cliente,
-      nombre,
-      apellido,
-      dni,
-      direccion,
-      telefono,
-      email,
-    } = await cliente.update(req.body);
-
-    return res
-      .json({
-        id_cliente,
-        nombre,
-        apellido,
-        dni,
-        direccion,
-        telefono,
-        email,
-      })
-      .res.send(200, "cliente editado");
-  },
-
   async encontrarClientePorId(req, res) {
     const cliente = await Cliente.findOne({ where: { id_cliente: req.params.id_cliente } });
     if (cliente === null) {
@@ -93,10 +100,10 @@ module.exports = {
     }
   },
 
-  encontrarClientePorDni: async (req, res) => {
-    var cliente = await Cliente.findOne({ where: { dni: req.params.dni } });
+  encontrarClientePorUserName: async (req, res) => {
+    var cliente = await Cliente.findOne({ where: { userName: req.params.userName } });
     if (![req.body.values]) {
-      res.status(400).json({ err: "No hay cliente con dni" });
+      res.status(400).json({ err: "No hay cliente con userName" });
     } else {
       return res.status(200).json(cliente);
     }

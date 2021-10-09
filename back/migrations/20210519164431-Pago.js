@@ -14,6 +14,12 @@ module.exports = {
       },
       montoCobrado: Sequelize.INTEGER,
       pagado: Sequelize.BOOLEAN,
+    },
+    {
+      sync: { force: true },
+      timestamps: false,
+      createdAt: false,
+      updatedAt: false,
     });
   },
   down: async (queryInterface, Sequelize) => {

@@ -11,45 +11,49 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      descripcion:{
-      allowNull:true,
-      type:Sequelize.STRING,
-    },
-      precioUnitario:{
-        allowNull:true,
-        type:Sequelize.INTEGER,
+      imagenId: {
+        allowNull: true,
+        foreignKey: true,
+        type: Sequelize.INTEGER,
+        references: { model: "Imagen", key: "id_imagen" },
       },
-      categoria:{
-        allowNull:true,
-        type:Sequelize.STRING,
+      descripcion: {
+        allowNull: true,
+        type: Sequelize.STRING,
+      },
+      precioUnitario: {
+        allowNull: true,
+        type: Sequelize.INTEGER,
+      },
+      categoria: {
+        allowNull: true,
+        type: Sequelize.STRING,
       },
       codigo: {
         type: Sequelize.INTEGER,
       },
-      habilitado:{
-        type:Sequelize.BOOLEAN,
-        defaultValue:false,
+      habilitado: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-    })
-    // .then(() => {
-    //   queryInterface.addConstraint('Productos', ['pedidoId'], {
-    //     type: 'foreign key',
-    //     references: {
-    //       name: 'Pedidos_ibfk_1',
-    //       table: 'Pedidos',
-    //       field: 'pedidoId'
-    //     },
-    //   })
-    // })
-;
+    },
+      {
+        sync: { force: true },
+        timestamps: false,
+        createdAt: false,
+        updatedAt: false,
+      })
+      // .then(() => {
+      //   queryInterface.addConstraint('Productos', ['pedidoId'], {
+      //     type: 'foreign key',
+      //     references: {
+      //       name: 'Pedidos_ibfk_1',
+      //       table: 'Pedidos',
+      //       field: 'pedidoId'
+      //     },
+      //   })
+      // })
+      ;
     // await queryInterface.addColumn("Productos", "pedidoId", {
     //   type: Sequelize.INTEGER,
     //   references: { model: "Pedidos", key: "id", foreingKey: "pedidoId",constraints:false  },

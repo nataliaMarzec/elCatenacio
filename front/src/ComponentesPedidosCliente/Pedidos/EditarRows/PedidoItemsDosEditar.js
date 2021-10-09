@@ -28,7 +28,7 @@ class PedidoItemsDosEditar extends React.Component {
     this.setState({ item: nuevoItem }
       , () => console.log("nuevoItem/key", this.state.item, nuevoItem)
     );
-    // this.props.envioDeEstadoObservaciones(nuevoItem) 
+    this.props.envioDeEstadoObservacionesEditar(nuevoItem) 
     // console.log("evento", `${e.target.name}:${e.target.value}`);
   };
 
@@ -68,8 +68,8 @@ class PedidoItemsDosEditar extends React.Component {
             type="text"
             id={this.props.item.id}
             name="observaciones"
-            placeholder="observaciones"
-            value={this.state.item.observaciones}
+            placeholder="sin observaciones"
+            value={this.state.item.observacionesItemEditar}
             onChange={this.handleChange}
             className="form-control"
           ></input>

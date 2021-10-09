@@ -17,28 +17,28 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         foreignKey: true,
         type: DataTypes.INTEGER,
-        references: { model: "Clientes", key: "id_cliente", constraints:false, },
+        references: { model: "Clientes", key: "id_cliente", constraints: false, },
       },
       responsableId: {
         allowNull: true,
         foreignKey: true,
         type: DataTypes.INTEGER,
-        references: { model: "ResponsableDeMesa", key: "id_responsable", constraints:false, },
+        references: { model: "ResponsableDeMesa", key: "id_responsable", constraints: false, },
       },
       codigoPedido: DataTypes.INTEGER,
       seccion: DataTypes.STRING,
       observaciones: DataTypes.STRING,
-      preparadoCocina:{
-        type:DataTypes.BOOLEAN,
-        defaultValue:false,
+      preparadoCocina: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
-      preparadoParrilla:{
-        type:DataTypes.BOOLEAN,
-        defaultValue:false,
+      preparadoParrilla: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
-      entregado:{
-        type:DataTypes.BOOLEAN,
-        defaultValue:false,
+      entregado: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
       fecha: {
         type: DataTypes.DATE,
@@ -58,6 +58,9 @@ module.exports = function (sequelize, DataTypes) {
     {
       tableName: "Pedidos",
       modelName: "Pedidos",
+      timestamps: false,
+      createdAt: false,
+      updatedAt: false,
     }
   );
 

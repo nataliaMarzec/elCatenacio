@@ -1,6 +1,7 @@
 import React from "react";
 import Cliente from "./Cliente";
 import CargarCliente from "./CargarCliente";
+import WrapperConsumer,{ContextUsuario} from "../../componentesSesion/Context/ContextUsuario";
 import {
   Table,
   Container,
@@ -18,17 +19,21 @@ import {
 } from "reactstrap";
 
 class Clientes extends React.Component {
+  static contextType = ContextUsuario;
+
   constructor(props) {
     super(props);
     this.state = {
       seleccionado: {},
       cliente: {},
       clientes: [],
+      usuariosClientes:[],
       ventasACliente: [],
       pagosDeCliente: [],
       modal: false,
       editable: false,
-      dni: "",
+      username: "",
+      detalleClientes:[],
     };
   }
 
@@ -38,11 +43,14 @@ class Clientes extends React.Component {
     });
   };
 
-  verDetallesCliente(dni) {
-    var listaActualizada = this.state.clientes.filter(
-      (item) => dni == item.dni
+  verDetallesCliente(username) {
+    let data1 = this.props.context.usuarios
+    let data2 = this.state.clientes
+    var nuevaLista=data1.concat(data2)
+    var listaActualizada = nuevaLista.filter(
+      (u) => username == u.username
     );
-    this.setState({ clientes: listaActualizada });
+    this.setState({clientes: listaActualizada });
   }
 
   handleChange = (e) => {
@@ -54,6 +62,8 @@ class Clientes extends React.Component {
 
   componentDidMount() {
     this.listadoClientes();
+    this.listadoUsuarios();
+    this.usuariosClientes()
     console.log("listadoClientes", this.listadoClientes());
   }
 
@@ -79,18 +89,55 @@ class Clientes extends React.Component {
       );
   };
 
+  listadoUsuarios = () => {
+    fetch(`http://localhost:8383/usuarios`)
+      .then((res) => res.json())
+      .then(
+        (res) => this.props.context.setStateUsuarios(res),
+        console.log("Usuarios", this.props.context.usuarios)
+      );
+  }
+  usuariosClientes = () => {
+    let data1 = this.props.context.usuarios
+    console.log("data1+++++++",data1)
+    let data2 = this.state.clientes
+    // var nuevaLista = data1.filter(function (el) {
+    //   var found = false, x = 0;
+    //   while (x < data2.length && !found) {
+    //     if (el.productoId == data2[x].id && data2[x].categoria != "Cocina") found = true;
+    //     x++;
+    //   }
+    //   if (!found) return el;
+    // });
+    var nuevaLista=data1.concat(data2)
+    // console.log("nuevaLista1",nuevaLista)
+    // nuevaLista = nuevaLista.concat(data2.filter(function (el) {
+    //   var found = false, x = 0;
+    //   while (x < data1.length && !found) {
+    //     if (el.id == data1[x].productoId) found = true;
+    //     // data1[x].listoCocina=true;
+    //     x++;
+    //   }
+    //   if (!found) return el;
+    // }));
+    // this.setState({usuariosClientes:nuevaLista})
+    console.log("nuevaLista",this.state.usuariosClientes)
+    return nuevaLista
+  }
+
   limpiarTabla = () => {
-    document.getElementById("dni").value = "";
+    document.getElementById("username").value = "";
     this.listadoClientes();
+    // this.listadoUsuarios();
   };
 
   handleSubmit = (e) => {
     var busqueda;
-    if (this.state.dni === "") {
+    if (this.state.username === "") {
       this.listadoBusqueda(busqueda);
     }
-    if (this.state.dni !== "") {
-      busqueda = '?busqueda=dni=="' + this.state.dni + '"';
+    if (this.state.username !== "") {
+      busqueda = '?busqueda=username=="' + this.state.username + '"';
       this.listadoBusqueda(busqueda);
     }
     e.preventDefault(e);
@@ -129,14 +176,17 @@ class Clientes extends React.Component {
   };
 
   render(props) {
-    var listaDNIClientes = this.state.clientes.map((cliente) => {
+    let data1 = this.state.clientes
+    let data2= this.props.context.usuarios
+    var nuevaLista=data1.concat(data2)
+    var listaUserNames = nuevaLista.map((cliente) => {
       return (
         <div>
-          <option value={cliente.dni} />
+          <option value={cliente.username} />
         </div>
       );
     });
-    // console.log("listaDNIClientes", listaDNIClientes);
+    console.log("renderData1",data1,"renderData1",data2);
     return (
       <div className="container">
         <div></div>
@@ -173,15 +223,15 @@ class Clientes extends React.Component {
                         <FormGroup row>
                           <Col xs="12" md="9">
                             <Input
-                              type="number"
-                              id="dni"
-                              name="dni"
-                              placeholder="Elegir dni"
+                              type="username"
+                              id="username"
+                              name="username"
+                              placeholder="Elegir username"
                               onChange={this.handleChange}
-                              list="cliente"
+                              list="nuevaLista"
                             />
                           </Col>
-                          <datalist id="cliente">{listaDNIClientes}</datalist>
+                          <datalist id="nuevaLista">{listaUserNames}</datalist>
                         </FormGroup>
                         <div className="row">
                           <div className="input-field col s12 m12">
@@ -191,7 +241,7 @@ class Clientes extends React.Component {
                               color="info"
                               outline
                               onClick={() =>
-                                this.verDetallesCliente(this.state.dni)
+                                this.verDetallesCliente(this.state.username)
                               }
                             >
                               <i className="fa fa-dot-circle-o"></i>Ver detalles
@@ -215,12 +265,13 @@ class Clientes extends React.Component {
                         <thead>
                           <tr>
                             <th>ID</th>
-                            <th>DNI</th>
                             <th>Nombre</th>
-                            <th>Apellido</th>
                             <th>Dirección</th>
-                            <th>Telefono</th>
+                            <th>Teléfono</th>
+                            <th>UserName</th>
                             <th>Email</th>
+                            <th>Rol</th>
+                            <th>Registrado</th>
                           </tr>
                         </thead>
                         <tbody>{this.renderRows()}</tbody>
@@ -235,16 +286,19 @@ class Clientes extends React.Component {
   }
 
   renderRows() {
-    let clientes = this.state.clientes;
-    return !clientes
+    let data1 = this.state.clientes
+    let data2 = this.props.context.usuarios
+    console.log("data1+++++++",data1)
+    var nuevaLista=data1.concat(data2)
+    return !nuevaLista
       ? console.log("NULL", null)
-      : clientes.map((unCliente, index) => {
+      : nuevaLista.map((unUsuario, index) => {
           return (
             <Cliente
               key={index}
               index={index}
-              cliente={unCliente}
-              clientes={this.state.clientes}
+              usuario={unUsuario}
+              usuarios={nuevaLista}
               selector={this.seleccionar}
               clienteSeleccionado={this.clienteSeleccionado}
               actualizarAlEliminar={this.actualizarAlEliminar}
@@ -256,4 +310,4 @@ class Clientes extends React.Component {
   }
 }
 
-export default Clientes;
+export default WrapperConsumer(Clientes)

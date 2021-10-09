@@ -123,6 +123,54 @@ module.exports = {
         })
       }
   },
+  createPedidoCliente: async (req, res) => {
+    // console.log("req.body", req.params.id_responsable);
+    // var cliente = await Cliente.findOne({
+    //   where: { nombre: req.params.nombre },
+    // });
+    const id = req.body.id
+    const observaciones = req.body.observaciones;
+    const entregado = false;
+    const fecha = req.body.fecha;
+    const hora = req.body.hora;
+
+    const pedido = {
+      id: id,
+      // clienteId: cliente.id,
+      observaciones: observaciones,
+      entregado: entregado,
+      fecha: fecha,
+      hora: hora,
+      ItemsPedido: [],
+    };
+    return await Pedido.create(pedido)
+      .then(function (pedido) {
+        // console.log("pedido+++", pedido.responsableId);
+        pedido.save();
+        let id = pedido.id;
+        // let clienteId = pedido.clienteId;
+        let observaciones = pedido.observaciones;
+        let entregado = pedido.entregado;
+        // let fecha = pedido.fecha;
+        // let hora = pedido.hora;
+
+        return res.json({
+          message: "se guardo el pedido",
+          id,
+          // responsableId,
+          observaciones,
+          entregado,
+          // fecha,
+          // hora
+
+        });
+      })
+      .catch(function (error) {
+        console.log("pedido", error);
+      });
+  },
+
+
   updateEntregado: async (req, res) => {
     var pedido = await Pedido.findOne({
       where: { id: req.params.id },

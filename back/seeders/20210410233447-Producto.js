@@ -15,8 +15,7 @@ module.exports = {
           categoria:"Cocina",
           codigo: 1,
           habilitado: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+    
         },
         {
           descripcion: "asado",
@@ -24,8 +23,7 @@ module.exports = {
           categoria:"Parrilla",
           codigo: 2,
           habilitado: false,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+
         },
         {
           descripcion: "achuras",
@@ -33,8 +31,7 @@ module.exports = {
           categoria:"Parrilla",
           codigo: 3,
           habilitado: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+       
         },
         {
           descripcion: "tortilla",
@@ -42,8 +39,7 @@ module.exports = {
           categoria:"Cocina",
           codigo: 3,
           habilitado: false,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+
         },
       ],
       {}

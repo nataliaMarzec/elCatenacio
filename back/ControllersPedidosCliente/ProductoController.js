@@ -2,29 +2,58 @@ var { Op, Sequelize } = require("sequelize");
 const { models } = require("../SequelizeConnection");
 const Producto = models.Producto;
 const ItemsPedido = models.ItemsPedido;
-module.exports = {
+const Imagen = models.Imagen;
+var {cargarImagen}=require("../ControllerMulter/controllerImagen")
 
+module.exports = {
+  //usado devuelve id y crea seccion
   create: async (req, res) => {
-    const producto = req.body;
-    var existe = await Producto.findOne({
-      where: { descripcion: producto.descripcion },
+    var image= await Imagen.findOne({
+      where: { id_imagen: req.params.id_imagen },
     });
-    if (!existe) {
-      const { id, descripcion, precioUnitario, categoria, codigo, habilitado } =
-        await Producto.create(producto);
-      return res.status(200).json({
+    // id,id_imagen, descripcion, precioUnitario, categoria, habilitado
+  
+  const id = req.body.id
+  var imagenId =image.id_imagen;
+  const descripcion = req.body.descripcion;
+  const precioUnitario = req.body.precioUnitario;
+  const categoria = req.body.categoria;
+  const habilitado =req.body.habilitado;
+
+  const producto = {
+    id: id,
+    imagenId:imagenId,
+    descripcion: descripcion,
+    precioUnitario: precioUnitario,
+    categoria: categoria,
+    habilitado: habilitado,
+  };
+  return await Producto.create(producto)
+    .then(function (producto) {
+      console.log("producto+++", producto.imagenId);
+      producto.save();
+      let id = producto.id;
+      let imagenId = producto.imagenId;
+      let descripcion = producto.descripcion;
+      let precioUnitario = producto.precioUnitario;
+      let categoria = producto.categoria;
+      let habilitado = producto.habilitado;
+
+      return res.json({
+        message: "se guardo el producto",
         id,
+        imagenId,
         descripcion,
         precioUnitario,
         categoria,
-        codigo,
         habilitado,
-      });
-    } else {
-      return res.status(404).json("ya existe producto")
-    }
-  },
 
+      });
+    })
+    .catch(function (error) {
+      console.log("producto", error);
+    });
+},
   delete: async (req, res) => {
     const producto = await Producto.findByPk(req.params.id);
     if (producto) {
@@ -244,19 +273,7 @@ module.exports = {
       return res.status(200).json(producto);
     }
   },
-  //aca tengo que traer el idDelPedido
-  getForeingKeys: async (req, res, next) => {
-    var pedidoID = await Pedido.findByPk(req.params.id);
-    var foreingKeys = await Producto.findAll({
-      attributes: ["productoId"],
-      where: { id: pedidoID },
-    });
-    if (![req.body.values]) {
-      res.status(400).json({ err: "No hay fks" });
-    } else {
-      return res.status(200).json(foreingKeys);
-    }
-  },
+  
 
   getProductosFkeys: (req, res) => {
     var query = {};
@@ -272,27 +289,7 @@ module.exports = {
     });
   },
 
-  getFks: async (req, res, next) => {
-    const productos = await Producto.findAll({
-      include: [
-        {
-          model: Producto,
-          where: { productoId: Sequelize.col("productos.productoId") },
-        },
-      ],
-    });
-    if (![req.body.values]) {
-      res.status(400).json({ err: "no obtiene lista de fks" });
-    } else {
-      return res.status(200).json(productos);
-    }
-  },
-  getPFks: async (req, res, next) => {
-    const productos = Producto.findAll({
-      where: { productoId: req.params.productoId },
-    });
-    return res.status(200).json(productos);
-  },
+ 
 
   //           include: [{
   //               model: Pedido,
@@ -301,5 +298,28 @@ module.exports = {
   //               through: { attributes: [] },
   //           }],
   //       });
+
+
+
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 };

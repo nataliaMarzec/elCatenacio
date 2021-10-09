@@ -14,6 +14,7 @@ import {
   Container,
   Label,
   Row,
+  
 } from "reactstrap";
 import logo from "../../assets/img/brand/logo.svg";
 
@@ -56,11 +57,17 @@ class VistaDeProductosParaClientesRow extends React.Component {
     super(props);
     this.state = {
       editar: false,
-      toogle: this.props.toggle,
+      toogle: props.toggle,
+      producto: props.producto,
+      modal: false,
+      selector:props.selector
     };
     this.eliminarProducto = this.eliminarProducto.bind(this);
-    this.editarProducto = this.editarProducto.bind(this);
+    this.elegirProducto = this.elegirProducto.bind(this);
   }
+
+
+
 
   eliminarProducto = (id) => {
     fetch("http://localhost:8383/productos/" + id, {
@@ -72,13 +79,9 @@ class VistaDeProductosParaClientesRow extends React.Component {
     }).then(this.props.actualizarAlEliminar(this.props.producto));
   };
 
-  editarProducto() {
-    this.props.selector(this.props.producto);
-    console.log("seleccionar___", this.props.producto);
-    this.props.toggle();
-  }
 
-  comprar() {}
+
+  comprar() { }
 
   // handleMovieClick() {
   //   dispatch({ type: "MOVIE_CLICKED", payload: props.movie });
@@ -120,70 +123,27 @@ class VistaDeProductosParaClientesRow extends React.Component {
     }
   }
 
-  // {/* <div className="container"> */}
-  //   {/* <CardGroup>
-  //
-
-  //     {/* <Button
-  //       color="danger"
-  //       size="btn-xs"
-  //       onClick={() => this.eliminarProducto(this.props.producto.id)}
-  //     >
-  //       <i className="cui-trash icons font-1xl d-block mt-1"></i>
-  //     </Button>{" "}
-  //     &nbsp;&nbsp;
-  //     <Button
-  //       className="btn #e65100 orange darken-4"
-  //       color="warning"
-  //       onClick={this.editarProducto}
-  //     >
-  //       <i className="fa fa-dot-circle-o">{""} Editar</i>
-  //     </Button>
-  //     <Button
-  //       className="btn #e65100 orange darken-4"
-  //       color="info"
-  //       onClick={this.comprar}
-  //     >
-  //       <i className="fa fa-dot-circle-o">{""} Comp</i>
-  //     </Button>
-  //     &nbsp;&nbsp; */}
-  //     {/* <Button
-  //       className="btn #e65100 orange darken-4"
-  //       // onClick={}
-  //       color="info"
-  //     >
-  //       <i className="fa fa-dot-circle-o">{""} Habilitar</i>
-  //     </Button> */}
-  //   {/* </CardGroup>
-  // </div>
+  elegirProducto() {
+    this.props.selector(this.props.producto);
+    console.log("seleccionar___", this.props.producto);
+    this.props.toggle();
+  }
 
   render = () => {
     return (
-      <Container>
-      <Row xs="6" sm="6">
-        <Col xs="10" sm="6">
-          <Card className="border-warning" style={{color:"info"}}>
-          {/* <CardBody> */}
-            {/* <CardTitle>Cargar imagen</CardTitle> */}
-            <CardImg top src={logo} style={{ border: "1px solid red"}} />
-             
-            {/* </CardBody> */}
+      <div>
+       
+        <Card className="border-warning" style={{ color: "info" }} onClick={this.elegirProducto}>
+          <CardImg top src={logo} style={{ border: "1px solid red" }} />
+          <CardTitle><b className="ml-2">{this.props.producto.id} / {this.props.producto.descripcion}</b>
+          </CardTitle>
+          <Label className="ml-1"></Label>
+          <Label className="ml-1"><b>${this.props.producto.precioUnitario}</b></Label>
+          <CardFooter>
+          </CardFooter>
+        </Card>
+      </div>
 
-            {/* <CardBody> */}
-              <CardTitle>{this.props.producto.descripcion}</CardTitle>
-              <Label>&nbsp;Código n° &nbsp;{this.props.producto.codigo}</Label>
-              <Label>&nbsp;Precio $&nbsp;&nbsp;{this.props.producto.precioUnitario}</Label><ul></ul>
-            {/* </CardBody> */}
-            <CardFooter>
-            <Button>Comprar</Button>
-            </CardFooter>
-          </Card>
- 
-          {/* <Label>Habilitado</Label>
-          <ul>{this.props.producto.habilitado ? "si" : "no"}</ul> */}
-      </Col>
-      </Row>
-      </Container>
     );
   };
 }

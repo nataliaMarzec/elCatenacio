@@ -24,8 +24,12 @@ class Productos extends React.Component {
       editable: false,
       titulo: "Nuevo",
       mostrarTabla: false,
+      imagen: {},
+      vista: null,
+      imagenCargada: false,
     };
     this.listadoProductos = this.listadoProductos.bind(this)
+    this.envioDeImagen=this.envioDeImagen.bind(this)
   }
 
   toggle = () => {
@@ -36,7 +40,7 @@ class Productos extends React.Component {
 
   componentDidMount() {
     this.listadoProductos();
-    this.setState({categorias:this.state.categorias,categoria:this.state.categoria})
+    this.setState({ categorias: this.state.categorias, categoria: this.state.categoria })
   }
 
   listadoProductos = () => {
@@ -68,21 +72,9 @@ class Productos extends React.Component {
     );
   };
 
-  //   onEditable() {
-  //     this.setState({
-  //       editable: !this.state.editable,
-  //     });
-  //     this.setState({titulo:"Modificar"})
-  //   }
-
-  //     ModalHeaderStrong = () => {
-  //     var titulo = this.state.titulo;
-  //       return (
-  //         <ModalHeader onEditable={this.onEditable} toggle={this.toggle}>
-  //           <strong>{titulo}</strong>Producto
-  //         </ModalHeader>
-  //       );
-  //   };
+  envioDeImagen(imagen,vista,imagenCargada){
+    this.setState({imagen:imagen,vista,imagenCargada},()=>console.log("envioImg",this.state.imagen))
+  }
 
   render(props) {
     let mostrarTabla = this.state.mostrarTabla;
@@ -106,6 +98,10 @@ class Productos extends React.Component {
               producto={this.state.producto}
               categorias={this.state.categorias}
               toggle={this.toogle}
+              imagen={this.state.imagen}
+              vista={this.state.vista}
+              imagenCargada={this.state.imagenCargada}
+              envioDeImagen={this.envioDeImagen}
             />
           </Modal>
 
@@ -121,11 +117,13 @@ class Productos extends React.Component {
                   <Table responsive bordered size="sm">
                     <thead>
                       <tr>
-                        <th>Código</th>
+                        <th>Id</th>
+                        <th>ImagenId</th>
                         <th>Descripcion</th>
                         <th>Categoría</th>
                         <th>Precio</th>
                         <th>Habilitado</th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>{this.renderRows()}</tbody>
@@ -140,6 +138,7 @@ class Productos extends React.Component {
       </div>
     );
   }
+ 
 
   renderRows() {
     let productos = this.state.productos;
@@ -155,6 +154,9 @@ class Productos extends React.Component {
             actualizarAlEliminar={this.actualizarAlEliminar}
             eliminarProducto={this.eliminarProducto.bind(this)}
             toggle={this.toggle}
+            imagen={this.state.imagen}
+            vista={this.state.vista}
+            imagenCargada={this.state.imagenCargada}
           />
         );
       });

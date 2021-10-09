@@ -17,19 +17,19 @@ class CargarCliente extends React.Component {
       cliente: props.cliente || {},
       clientes: props.clientes || [],
       modal: false,
-      dniCreado: {},
     };
   }
 
   estadoInicial = () => {
     this.setState({
       cliente: {
-        dni: "",
         nombre: "",
-        apellido: "",
         direccion: "",
         telefono: "",
+        username:"",
         email: "",
+        rol: "CLIENTE",
+        registrado:false,
       },
     });
   };
@@ -52,26 +52,26 @@ class CargarCliente extends React.Component {
   };
 
   encontrarCliente = (cliente) => {
-    console.log("dniEncontrar", cliente.nombre, cliente);
-    fetch("http://localhost:8383/clientes/busqueda/:" + cliente.nombre)
+    console.log("dniEncontrar", cliente.username, cliente);
+    fetch("http://localhost:8383/clientes/busqueda/:" + cliente.username)
       .then((res) => res.json())
       .then((unCliente) =>
         this.setState(
           { cliente: unCliente },
-          console.log("encontrar:", cliente.nombre, { cliente: unCliente })
+          console.log("encontrar:", cliente.username, { cliente: unCliente })
           // this.crearCliente(cliente, false)
         )
       );
     // .catch((error) =>
     //   this.setState({
     //     error: "no encontrado",
-    //     dniCreado: false,
+    //     : false,
     //   })
     // );
   };
 
   crearCliente = () => {
-    fetch("http://localhost:8383/clientes/nuevo", {
+    fetch("http://localhost:8383/cliente/nuevo", {
       method: "post",
       headers: {
         Accept: "application/json",
@@ -84,7 +84,7 @@ class CargarCliente extends React.Component {
   };
 
   editarcliente = (id) => {
-    fetch("http://localhost:8383/clientes/" + id, {
+    fetch("http://localhost:8383/cliente/" + id, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -103,23 +103,7 @@ class CargarCliente extends React.Component {
           <Form className="form-horizontal">
             <FormGroup row>
               <Col md="3">
-                <Label for="dni">DNI</Label>
-              </Col>
-              <Col xs="12" md="9">
-                <Input
-                  type="number"
-                  id="dni"
-                  name="dni"
-                  placeholder="Completa Dni..."
-                  required={true}
-                  value={this.state.cliente.dni}
-                  onChange={this.handleChange}
-                />
-              </Col>
-            </FormGroup>
-            <FormGroup row>
-              <Col md="3">
-                <Label for="nombre">Nombre</Label>
+                <Label for="nombre">Nombre completo</Label>
               </Col>
               <Col xs="12" md="9">
                 <Input
@@ -133,33 +117,17 @@ class CargarCliente extends React.Component {
                 />
               </Col>
             </FormGroup>
-            <FormGroup row>
-              <Col md="3">
-                <Label for="apellido">apellido</Label>
-              </Col>
-              <Col xs="12" md="9">
-                <Input
-                  type="text"
-                  id="apellido"
-                  name="apellido"
-                  placeholder="Completa Apellido..."
-                  // required
-                  value={this.state.cliente.apellido}
-                  onChange={this.handleChange}
-                />
-              </Col>
-            </FormGroup>
 
             <FormGroup row>
               <Col md="3">
-                <Label for="direccion">direccion</Label>
+                <Label for="direccion">Dirección</Label>
               </Col>
               <Col xs="12" md="9">
                 <Input
                   type="text"
                   id="direccion"
                   name="direccion"
-                  placeholder="Completa razon social..."
+                  placeholder="Completa dirección..."
                   // required
                   value={this.state.cliente.direccion}
                   onChange={this.handleChange}
@@ -169,16 +137,32 @@ class CargarCliente extends React.Component {
 
             <FormGroup row>
               <Col md="3">
-                <Label for="telefono">Nro&nbsp;telefono</Label>
+                <Label for="telefono">Nro&nbsp;teléfono</Label>
               </Col>
               <Col xs="12" md="9">
                 <Input
                   type="number"
                   id="telefono"
                   name="telefono"
-                  placeholder="Completa telefono..."
+                  placeholder="Completa teléfono..."
                   required={false}
                   value={this.state.cliente.telefono}
+                  onChange={this.handleChange}
+                />
+              </Col>
+            </FormGroup>
+            <FormGroup row>
+              <Col md="3">
+                <Label for="username">UserName</Label>
+              </Col>
+              <Col xs="12" md="9">
+                <Input
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="Completa UserName..."
+                  // required
+                  value={this.state.cliente.username}
                   onChange={this.handleChange}
                 />
               </Col>
@@ -199,6 +183,22 @@ class CargarCliente extends React.Component {
                 />
               </Col>
             </FormGroup>
+            {/* <FormGroup row>
+              <Col md="3">
+                <Label for="password">Password</Label>
+              </Col>
+              <Col xs="12" md="9">
+                <Input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Completa Email..."
+                  // required={true}
+                  value={this.state.cliente.password}
+                  onChange={this.handleChange}
+                />
+              </Col>
+            </FormGroup> */}
             <Button
               type="submit"
               color="success"

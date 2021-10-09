@@ -3,12 +3,13 @@ const router = new express.Router();
 const controllerCliente = require("../ControllersClientes/ClienteController");
 
 
-router.post("/clientes/nuevo", controllerCliente.create);
+router.post("/cliente/nuevo", controllerCliente.create);
+router.route("/cliente/:id_cliente")
+    .delete(controllerCliente.delete)
+    .put(controllerCliente.update)
 router.get("/clientes/:id_cliente", controllerCliente.getClienteId);
 router.get("/clientes", controllerCliente.getClientes);
-router.delete("/clientes/:id_cliente", controllerCliente.deleteClienteById);
-router.put("/clientes/:id_cliente", controllerCliente.update);
-router.get("/clientes/busqueda/:dni", controllerCliente.encontrarClientePorDni);
+router.get("/clientes/busqueda/:userName", controllerCliente.encontrarClientePorUserName);
 
 
 

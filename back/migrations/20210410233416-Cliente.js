@@ -10,14 +10,13 @@ module.exports = {
           primaryKey: true,
           type: Sequelize.INTEGER,
         },
-        dni: {
-          type: Sequelize.STRING,
-          allowNull: false,
+        rolClienteId: {
+          allowNull: true,
+          foreignKey: true,
+          type: Sequelize.INTEGER,
+          references: { model: "Roles", key: "id_rol" },
         },
         nombre: {
-          type: Sequelize.STRING,
-        },
-        apellido: {
           type: Sequelize.STRING,
         },
         direccion: {
@@ -26,19 +25,27 @@ module.exports = {
         telefono: {
           type: Sequelize.STRING,
         },
+        username: {
+          type: Sequelize.STRING,
+          allowNull: false,
+        },
         email: {
           type: Sequelize.STRING,
         },
-        createdAt: {
-          allowNull: false,
-          type: Sequelize.DATE,
+        rol: {
+          type: Sequelize.STRING,
+          defaultValue: "cliente",
         },
-        updatedAt: {
-          allowNull: false,
-          type: Sequelize.DATE,
-        },
+        registrado:Sequelize.BOOLEAN,
+
       },
-      { sync: { force: true } }
+
+      {
+        sync: { force: true },
+        timestamps: false,
+        createdAt: false,
+        updatedAt: false,
+      }
     );
   },
   down: async (queryInterface, Sequelize) => {

@@ -9,22 +9,16 @@ module.exports = {
           montoCobrado: 100,
           pagado: true,
 
-          createdAt: new Date(),
-          updatedAt: new Date(),
         },
         {
           montoCobrado: 200,
           pagado: false,
 
-          createdAt: new Date(),
-          updatedAt: new Date(),
         },
         {
           montoCobrado: 300,
           pagado: true,
 
-          createdAt: new Date(),
-          updatedAt: new Date(),
         },
       ],
       {}

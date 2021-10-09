@@ -1,4 +1,7 @@
 import React from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import es from 'date-fns/locale/es';
 import PedidosListaRow from "./PedidosListaRow";
 import CargarPedido from "./CargarPedido";
 import {
@@ -16,7 +19,9 @@ import {
     FormGroup,
     Input,
 } from "reactstrap";
-
+import CardColumns from "reactstrap/lib/CardColumns";
+registerLocale('es', es)
+var moment = require('moment');
 class PedidosLista extends React.Component {
     constructor(props) {
         super(props);
@@ -31,6 +36,7 @@ class PedidosLista extends React.Component {
             modal: false,
             editable: false,
             id: "",
+            startDate: new Date()
         };
         this.seleccionar = this.seleccionar.bind(this)
     }
@@ -152,6 +158,9 @@ class PedidosLista extends React.Component {
         );
     };
 
+    setStartDate(startDate) {
+        this.setState({ startDate })
+    }
 
     render(props) {
         if (this.state.pedidos.length > 0) {
@@ -197,69 +206,95 @@ class PedidosLista extends React.Component {
                                 <Card>
                                     <CardHeader style={{ backgroundColor: "#0972F9" }}>
                                         <i className="fa fa-align-justify"></i> Pedidos Lista
+
                                     </CardHeader>
                                     <CardHeader style={{ backgroundColor: "#7E98BB" }}>
+
+
                                         <Form onSubmit={this.handleSubmit} id="formulario">
-                                            <FormGroup row>
-                                                <Col xs="12" md="9">
-                                                    <Input
-                                                        type="number"
-                                                        id="id"
-                                                        name="id"
-                                                        placeholder="Elegir id"
-                                                        onChange={this.handleChange}
-                                                        list="pedido"
+                                            <Row>
+                                                <CardColumns>
+                                                    <DatePicker
+                                                        className="border rounded ml-1 shadow-lg p-2 mb-1 rounded" key="data-pickers"
+                                                        selected={this.state.startDate}
+                                                        // onSelect={props.handleDateSelect}
+                                                        onChange={(date) => this.setStartDate(date)}
+                                                        locale="es"
+                                                        dateFormat="dd/MM/yyyy"
+                                                        // timeInputLabel="Hora:"
+                                                        peekNextMonth
+                                                        showMonthDropdown
+                                                        showYearDropdown
+                                                        dropdownMode="select"
+                                                        yearDropdownItemNumber={15}
+                                                    // showTimeInput
+                                                    // highlightDates={highlightWithRanges}
+
                                                     />
-                                                </Col>
-                                                <datalist id="pedido">{listaIdsPedidos}</datalist>
-                                            </FormGroup>
-                                            <div className="row">
-                                                <div className="input-field col s12 m12">
-                                                    <Button
-                                                        type="button"
-                                                        style={{ margin: "2px" }}
-                                                        color="info"
-                                                        outline
-                                                        onClick={() =>
-                                                            this.verDetallePedido(this.state.id)
-                                                        }
-                                                    >
-                                                        <i className="fa fa-dot-circle-o"></i>Ver detalles
-                                                        de pedido
-                                                    </Button>
-                                                    <Button
-                                                        type="button"
-                                                        style={{ margin: "2px" }}
-                                                        color="success"
-                                                        outline
-                                                        onClick={this.limpiarTabla}
-                                                    >
-                                                        <i className="fa fa-dot-circle-o"></i>Ver pedidos
-                                                    </Button>
-                                                </div>
+                                                    <FormGroup row>
+                                                        <Col xs="12" md="9">
+                                                            <Input
+                                                                className="border rounded ml-1 shadow-lg p-3 mb-1 rounded"
+                                                                type="number"
+                                                                id="id"
+                                                                name="id"
+                                                                placeholder="Elegir id"
+                                                                onChange={this.handleChange}
+                                                                list="pedido"
+                                                            />
+                                                        </Col>
+                                                        <datalist id="pedido">{listaIdsPedidos}</datalist>
+                                                    </FormGroup>
+                                                </CardColumns>
+                                            </Row>
+                                            {/* <div className="row"> */}
+                                            <div className="input-field col s12 m12">
+                                                <Button
+                                                    type="button"
+                                                    style={{ margin: "2px" }}
+                                                    color="info"
+                                                    outline
+                                                    onClick={() =>
+                                                        this.verDetallePedido(this.state.id)
+                                                    }
+                                                >
+                                                    <i className="fa fa-dot-circle-o"></i>Ver detalles
+                                                    de pedido
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    style={{ margin: "2px" }}
+                                                    color="success"
+                                                    outline
+                                                    onClick={this.limpiarTabla}
+                                                >
+                                                    <i className="fa fa-dot-circle-o"></i>Ver pedidos
+                                                </Button>
                                             </div>
+                                            {/* </div> */}
                                         </Form>
                                     </CardHeader>
                                     <CardBody>
-                                        <Table responsive bordered size="sm">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    {/* <th>Fecha</th>
+                                        {this.state.pedidos.filter(p => p.fecha == moment(this.state.startDate).format('DD/MM/yyyy')).length > 0 &&
+                                            <Table responsive bordered size="sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        {/* <th>Fecha</th>
                             <th>Hora</th>
                             <th>Responsable de mesa</th> */}
-                                                    <th>Sección</th>
-                                                    <th>Observaciones</th>
-                                                    <th>Producto</th>
-                                                    <th>Cantidad</th>
-                                                    <th>Observaciones</th>
-                                                    <th>Importe</th>
-                                                    <th></th>
-                                                    {/* <th>Importe total</th> */}
-                                                </tr>
-                                            </thead>
-                                            <tbody>{this.renderRows()}</tbody>
-                                        </Table>
+                                                        <th>Sección</th>
+                                                        <th>Observaciones</th>
+                                                        <th>Producto</th>
+                                                        <th>Cantidad</th>
+                                                        <th>Observaciones</th>
+                                                        <th>Importe</th>
+                                                        <th></th>
+                                                        {/* <th>Importe total</th> */}
+                                                    </tr>
+                                                </thead>
+                                                <tbody>{this.renderRows()}</tbody>
+                                            </Table>}
                                     </CardBody>
                                 </Card>
                             </Col>
@@ -267,7 +302,7 @@ class PedidosLista extends React.Component {
                     </div>
                 </div>
             )
-        }else{
+        } else {
             return <p>No hay pedidos para mostrar</p>
         }
     }
@@ -278,7 +313,7 @@ class PedidosLista extends React.Component {
         let productos = this.state.productos;
         return !items
             ? console.log("NULL", null)
-            : pedidos.map((unPedido, index) => {
+            : pedidos.filter(p => p.fecha == moment(this.state.startDate).format('DD/MM/yyyy')).map((unPedido, index) => {
                 let itemsLista = items.filter(i => i.pedidoId == unPedido.id)
                 return (
                     <PedidosListaRow

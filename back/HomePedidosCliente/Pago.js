@@ -13,7 +13,7 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
         unique: true,
       },
-     
+
       montoCobrado: DataTypes.INTEGER,
       pagado: DataTypes.BOOLEAN,
     },
@@ -21,6 +21,9 @@ module.exports = function (sequelize, DataTypes) {
     {
       tableName: "Pagos",
       modelName: "Pago",
+      timestamps: false,
+      createdAt: false,
+      updatedAt: false,
     }
   );
 

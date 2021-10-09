@@ -1,6 +1,5 @@
 import React from "react";
 import { Button, Collapse } from "reactstrap";
-import { limpiar } from "../funciones"
 class TablaPedidoEditarRow extends React.Component {
   constructor(props) {
     super(props);

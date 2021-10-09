@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import Full from "./views/Contactos/containers/Full/Full";
-
+import WrapperConsumer from "./componentesSesion/Context/ContextUsuario";
+import PrivateRoutes from "./PrivateRoutes";
 const Cards = React.lazy(() => import("./views/Base/Cards"));
 const Dropdowns = React.lazy(() => import("./views/Base/Dropdowns"));
 const Forms = React.lazy(() => import("./views/Base/Forms"));
@@ -25,9 +25,10 @@ const Alerts = React.lazy(() => import("./views/Notifications/Alerts"));
 const Badges = React.lazy(() => import("./views/Notifications/Badges"));
 const Modals = React.lazy(() => import("./views/Notifications/Modals"));
 const Colors = React.lazy(() => import("./views/Theme/Colors"));
+const PrincipalPage = React.lazy(() =>
+  import("./PrincipalPage.js")
+);
 
-const Usuarios = React.lazy(() => import("./views/Usuarios/Usuarios"));
-const NuevoUsuario = React.lazy(() => import("./views/Usuarios/NuevoUsuario"));
 
 const Pedidos = React.lazy(() =>
   import("./ComponentesPedidosCliente/Pedidos/Pedidos")
@@ -91,6 +92,13 @@ const VistaDePedidosParaCocinaRow = React.lazy(() =>
   import("./ComponentesPedidosCliente/Pedidos/Cocina/VistaDePedidosParaCocinaRow")
 );
 
+const Responsables = React.lazy(() =>
+import("./ComponentesPedidosCliente/Pedidos/Responsables/Responsables"));
+const ResponsableRow = React.lazy(() =>
+import("./ComponentesPedidosCliente/Pedidos/Responsables/ResponsableRow"))
+const CargarResponsable = React.lazy(() =>
+  import("./ComponentesPedidosCliente/Pedidos/Responsables/CargarResponsable"));
+
 const Clientes = React.lazy(() =>
   import("./ComponentesClientes/Clientes/Clientes")
 );
@@ -119,38 +127,43 @@ const Producto = React.lazy(() =>
   import("./ComponentesPedidosCliente/Productos/Producto")
 );
 
-const Pago = React.lazy(() => import("./componentes/Pago"));
+const Pago = React.lazy(() => import("./ComponentesPedidosCliente/Ventas/Pago"));
 
 const VentasLista = React.lazy(() =>
-  import("./componentes/Ventas/VentasLista")
+  import("./ComponentesPedidosCliente/Ventas/VentasLista.js")
 );
-const Venta = React.lazy(() => import("./componentes/Ventas/Venta"));
+const Venta = React.lazy(() => import("./ComponentesPedidosCliente/Ventas/Venta"));
 const CargarVenta = React.lazy(() =>
-  import("./componentes/Ventas/CargarVenta")
+  import("./ComponentesPedidosCliente/Ventas/CargarVenta")
 );
 const VentasAUnCliente = React.lazy(() =>
-  import("./componentes/Ventas/VentasAUnCliente")
+  import("./ComponentesPedidosCliente/Ventas/VentasAUnCliente")
 );
 
-const Contactos = React.lazy(() =>
-  import("./componentes/LoginYSesionDeUsuarios/Contactos")
-);
-const ContactoUsuario = React.lazy(() =>
-  import("./componentes/LoginYSesionDeUsuarios/ContactoUsuario")
-);
-
+const Chat =  React.lazy(() =>
+import("./Socket/Chat"))
 const Home = React.lazy(() =>
-  import("./componentes/LoginYSesionDeUsuarios/Home")
+  import("./componentesSesion/LoginYSesionDeUsuarios/Home")
 );
+//este
 const Login = React.lazy(() =>
-  import("./componentes/LoginYSesionDeUsuarios/Login")
+  import("./componentesSesion/LoginYSesionDeUsuarios/Login")
 );
 const Register = React.lazy(() =>
-  import("./componentes/LoginYSesionDeUsuarios/Register.js")
+  import("./componentesSesion/LoginYSesionDeUsuarios/Register.js")
 );
 
+const Logout = React.lazy(() =>
+  import("./componentesSesion/LoginYSesionDeUsuarios/Logout")
+);
+
+const ContextUsuario = React.lazy(() =>
+  import("./componentesSesion/Context/ContextUsuario")
+);
+
+
 const routes = [
-  { path: "/", exact: true, name: "Home" },
+  // { path: "/", exact: true, name: "Home" },
   { path: "/dashboard", name: "Dashboard", component: Dashboard },
   { path: "/theme", exact: true, name: "Theme", component: Colors },
   { path: "/theme/colors", name: "Colors", component: Colors },
@@ -194,10 +207,24 @@ const routes = [
     name: "Notifications",
     component: Alerts,
   },
-  { path: "/notifications/alerts", name: "Alerts", component: Alerts },
+  { path: "/notifications/alerts",name: "Alerts", component: Alerts },
   { path: "/notifications/badges", name: "Badges", component: Badges },
   { path: "/notifications/modals", name: "Modals", component: Modals },
+  {
+    path: "/chat",
+    exact: true,
+    key: "#chat",
+    name: "Chat",
+    component: Chat,
+  },
 
+  {
+    path: "/principalPage",
+    exact: true,
+    key: "#principalPage",
+    name: "PrincipalPage",
+    component: PrincipalPage,
+  },
   { path: "/home", exact: true, key: "#home", name: "Home", component: Home },
   {
     path: "/login",
@@ -215,11 +242,44 @@ const routes = [
   },
 
   {
+    path: "/salir",
+    exact: true,
+    key: "#logout",
+    name: "logout",
+    component: Logout,
+  },
+  {
+    path: "/contextUsuario",
+    exact: true,
+    key: "#contextUsuario",
+    name: "ContextUsuario",
+    component: ContextUsuario,
+  },
+  {
+    path: "/wrapperConsumer",
+    exact: true,
+    key: "#wrapperConsumer",
+    name: "WrapperConsumer",
+    component: WrapperConsumer,
+  },
+  {
+    path: "/privateRoutes",
+    exact: true,
+    key: "#privateRoutes",
+    name: "PrivateRoutes",
+    component: PrivateRoutes,
+  },
+
+
+
+  {
     path: "/pedidos",
     exact: true,
     key: "#pedidos",
     name: "Cargar pedidos",
     component: Pedidos,
+    permisoAdmin:true,
+    permisoResponsable:true
   },
   {
     path: "/pedidoItems",
@@ -227,6 +287,9 @@ const routes = [
     key: "#pedidoItems",
     name: "PedidoItems",
     component: PedidoItems,
+    permisoAdmin:true,
+    permisoResponsable:false
+
   },
   {
     path: "/pedidoItemsDos",
@@ -234,12 +297,17 @@ const routes = [
     key: "#pedidoItemsDos",
     name: "PedidoItemsDos",
     component: PedidoItemsDos,
+    permisoAdmin:true,
+    permisoResponsable:false
+
   },
   {
     path: "/cargarPedidos",
     exact: false,
     name: "ModificarPedido",
     component: CargarPedido,
+    permisoAdmin:true,
+    permisoResponsable:true
   },
   {
     path: "/unPedido",
@@ -258,6 +326,8 @@ const routes = [
     exact: false,
     name: "CargarUnPedido",
     component: CargarUnPedido,
+    permisoAdmin:true,
+    permisoResponsable:false
   },
   { path: "./tablaPedido", exact: false, name: "TablaPedido", component: TablaPedido },
   { path: "./tablaPedidoRow", exact: false, name: "TablaPedidoRow", component: TablaPedidoRow },
@@ -267,6 +337,8 @@ const routes = [
     key: "#pedidoItemsEditar",
     name: "PedidoItemsEditar",
     component: PedidoItemsEditar,
+    permisoAdmin:true,
+    permisoResponsable:false
   },
   {
     path: "/pedidoItemsDosEditar",
@@ -282,6 +354,9 @@ const routes = [
     key: "#plantillaPedido",
     name: "PlantillaPedido",
     component: PlantillaPedido,
+    permisoAdmin:true,
+    permisoResponsable:false
+
   },
   {
     path: "/pedidosLista",
@@ -289,6 +364,9 @@ const routes = [
     key: "#pedidosLista",
     name: "Pedidos",
     component: PedidosLista,
+    permisoAdmin:true,
+    permisoResponsable:false
+
   },
   {
     path: "/pedidosListaRow",
@@ -296,6 +374,9 @@ const routes = [
     key: "#pedidosListaRow",
     name: "PedidosListaRow",
     component: PedidosListaRow,
+    permisoAdmin:true,
+    permisoResponsable:false,
+
   },
   {
     path: "/cocinaDetalles",
@@ -303,6 +384,9 @@ const routes = [
     key: "#cocinaDetalles",
     name: "Cocina",
     component: CocinaDetalles,
+    permisoAdmin:true,
+    permisoResponsable:true,
+
   },
   {
     path: "/cocinaDetallesController",
@@ -310,6 +394,9 @@ const routes = [
     key: "#cocinaDetallesController",
     name: "CocinaDetallesController",
     component: CocinaDetallesController,
+    permisoAdmin:true,
+    permisoResponsable:true,
+
   },
   {
     path: "/cocinaDetallesRow",
@@ -317,6 +404,9 @@ const routes = [
     key: "#cocinaDetallesRow",
     name: "CocinaDetallesRow",
     component: CocinaDetallesRow,
+    permisoAdmin:true,
+    permisoResponsable:true
+
   },
   {
     path: "/vistaDePedidosParaCocinaRow",
@@ -324,15 +414,36 @@ const routes = [
     key: "#vistaDePedidosParaCocinaRow",
     name: "VistaDePedidosParaCocinaRow",
     component: VistaDePedidosParaCocinaRow,
+    permisoAdmin:true,
+    permisoResponsable:false
+
   },
-
-
+  {
+    path: "/responsables",
+    exact: true,
+    key: "#responsables",
+    name: "RegistrarResponsable",
+    component: Responsables,
+    permisoAdmin:true,
+    permisoResponsable:true,
+  },
+  { path: "/responsableRow", name: "ResponsableRow", component: ResponsableRow },
+  {
+    path: "/cargarResponsable",
+    name: "CargarResponsable",
+    component: CargarResponsable,
+    permisoAdmin:true,
+    permisoResponsable:true,
+  },
   {
     path: "/clientes",
     exact: true,
     key: "#clientes",
     name: "Clientes",
     component: Clientes,
+    permisoAdmin:true,
+    permisoResponsable:false,
+
   },
   { path: "/cliente", exact: true, name: "Cliente", component: Cliente },
   {
@@ -345,14 +456,21 @@ const routes = [
   {
     path: "/vistaDeProductosParaClientes",
     exact: true,
-    name: "VistaDeProductosParaClientes",
+    key:"productos-cliente",
+    name: "Productos-cliente",
     component: VistaDeProductosParaClientes,
+    permisoAdmin:true,
+    permisoResponsable:false
+
   },
   {
     path: "/vistaDeProductosParaClientesCard",
     exact: false,
-    name: "Productos-Clientes",
+    name: "ProductosClientes",
     component: VistaDeProductosParaClientesCard,
+    permisoAdmin:true,
+    permisoResponsable:false
+
   },
   {
     path: "/productos",
@@ -360,12 +478,18 @@ const routes = [
     key: "#productos",
     name: "Productos",
     component: Productos,
+    permisoAdmin:true,
+    permisoResponsable:false
+
   },
   {
     path: "/cargarProducto",
     exact: false,
     name: "CargarProducto",
     component: CargarProducto,
+    permisoAdmin:true,
+    permisoResponsable:false
+
   },
   { path: "./producto", exact: false, name: "Producto", component: Producto },
 
@@ -377,6 +501,9 @@ const routes = [
     key: "#ventas",
     name: "VentasLista",
     component: VentasLista,
+    permisoAdmin:true,
+    permisoResponsable:false,
+
   },
   { path: "/venta", exact: true, name: "Venta", component: Venta },
   {
@@ -393,33 +520,6 @@ const routes = [
     component: VentasAUnCliente,
   },
 
-  {
-    path: "/usuarios",
-    exact: true,
-    key: "#usuarios",
-    name: "Usuarios",
-    component: Usuarios,
-  },
-
-  {
-    path: "/contactos",
-    exact: true,
-    key: "#listadoContactos",
-    name: "Contactos",
-    component: Contactos,
-  },
-  {
-    path: "/contactoUsuario",
-    exact: false,
-    name: "ContactoUsario",
-    component: ContactoUsuario,
-  },
-
-  //  { path:'./addContact', exact: false, name:'AddContact', component:AddContact},
-
-  //  { path:'./breadcrumb', exact: false, name:'Breadcrumb', component:Breadcrumb},
-  //  {path:'./sidebars',exact:false,name:'Sidebars',component:Sidebar},
-  { path: "./", exact: false, name: "Full", component: Full },
-];
+ ];
 
 export default routes;

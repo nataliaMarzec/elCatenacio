@@ -17,7 +17,7 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         foreignKey: true,
         type: DataTypes.INTEGER,
-        references: { model: "Pedidos", key: "id", constraints:false, },
+        references: { model: "Pedidos", key: "id", constraints: false, },
       },
       productoId: {
         allowNull: true,
@@ -31,19 +31,22 @@ module.exports = function (sequelize, DataTypes) {
       },
       importe: DataTypes.INTEGER,
       observaciones: DataTypes.STRING,
-      listoCocina:{
-        type:DataTypes.BOOLEAN,
-        defaultValue:false,
+      listoCocina: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
-      listoParrilla:{
-        type:DataTypes.BOOLEAN,
-        defaultValue:false,
+      listoParrilla: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
     },
 
     {
       tableName: "ItemsPedido",
       modelName: "ItemsPedido",
+      timestamps: false,
+      createdAt: false,
+      updatedAt: false,
     }
   );
 

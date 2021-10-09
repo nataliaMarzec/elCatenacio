@@ -1,65 +1,69 @@
+
 export default {
   items: [
-  
-    
+
+
     {
       name: "Clientes",
       url: "/clientes",
       icon: "icon-people",
+      attributes: { disabled: false },
     },
     {
       name: "Productos",
       url: "/productos",
       icon: "cui-bookmark",
+      attributes: { disabled: false },
     },
     {
-      name: "Productos-Clientes",
+      name: "Productos-cliente",
       url: "/vistaDeProductosParaClientes",
       icon: "cui-basket-loaded",
+      attributes: { disabled: false },
     },
     {
       name: "Pedidos",
       url: "/pedidosLista",
       icon: "cui-list",
+      attributes: { disabled: false },
     },
     {
       name: "Cargar pedidos",
       url: "/pedidos",
       icon: "cui-note",
+      attributes: { disabled: false},
     },
     {
       name: "Un Pedido",
       url: "/unPedido",
       icon: "cui-puzzle",
+      attributes: { disabled: false },
     },
 
     {
       name: "Cocina",
       url: "/cocinaDetalles",
       icon: "cui-speedometer",
+      attributes: { disabled: false},
     },
 
-   
-
-    // {
-    //   name: "Contactos",
-    //   url: '/contactos',
-    //   icon: "icon-people",
-    // },
-    // {
-    //   name: "Ventas",
-    //   url: '/ventas',
-    //   icon: "icon-people",
-    // },
-
-   
-   
     {
-      name: "Login",
-      url: "/login",
-      key: "#login",
-     
+      url: "/responsables",
+      name: "RegistrarResponsable",
+      icon: "cui-puzzle",
+      attributes: { disabled: false},
     },
+    {
+      name: 'Chat',
+      url: '/chat',
+      icon: 'icon-bell',
+    },
+    {
+      name: 'Alerts',
+      url: '/notifications/alerts',
+      icon: 'icon-bell',
+    },
+   
     {
       name: 'Dashboard',
       url: '/dashboard',
@@ -72,11 +76,11 @@ export default {
     {
       title: true,
       name: 'Theme',
-      wrapper: {            
-        element: '',        
-        attributes: {}        
+      wrapper: {
+        element: '',
+        attributes: {}
       },
-      class: ''             
+      class: ''
     },
     {
       name: 'Colors',
@@ -133,8 +137,8 @@ export default {
           url: '/base/navs',
           icon: 'icon-puzzle',
         },
-      
-       
+
+
       ],
     },
     {
@@ -178,7 +182,7 @@ export default {
             text: 'NEW',
           },
         },
-       
+
         {
           name: 'Font Awesome',
           url: '/icons/font-awesome',
@@ -205,7 +209,7 @@ export default {
           url: '/notifications/alerts',
           icon: 'icon-bell',
         },
-      
+
         {
           name: 'Modals',
           url: '/notifications/modals',

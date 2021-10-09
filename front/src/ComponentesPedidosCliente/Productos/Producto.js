@@ -1,5 +1,5 @@
 import React from "react";
-import { Button} from "reactstrap";
+import { Button } from "reactstrap";
 
 class Producto extends React.Component {
   constructor(props) {
@@ -7,19 +7,35 @@ class Producto extends React.Component {
     this.state = {
       editar: false,
       toogle: this.props.toggle,
+      imagen: props.imagen,
+      vista: props.vista,
+      imagenCargada: props.imagenCargada,
     };
     this.eliminarProducto = this.eliminarProducto.bind(this);
     this.editarProducto = this.editarProducto.bind(this);
   }
 
-  eliminarProducto = (id) => {
+  eliminarProducto = (id_imagen,id) => {
+    this.eliminarImagen(id_imagen)
     fetch("http://localhost:8383/productos/" + id, {
       method: "DELETE",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    }).then(this.props.actualizarAlEliminar(this.props.producto));
+    })
+      .then(this.props.actualizarAlEliminar(this.props.producto));
+  };
+
+  eliminarImagen = (id) => {
+    console.log("eliminarImagen",id)
+    fetch("http://localhost:8383/imagen/" + id, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
   };
 
   editarProducto() {
@@ -31,45 +47,49 @@ class Producto extends React.Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.productos !== this.props.productos) {
       this.setState({ productos: this.props.productos });
-      console.log("productos props", this.props.productos, nextProps.productos.values());
+      // console.log("productos props", this.props.productos, nextProps.productos.values());
     }
     if (nextProps.producto !== this.props.producto) {
       this.setState({ producto: nextProps.producto });
+    }
+    if (nextProps.imagen !== this.props.imagen) {
+      this.setState({ imagen: nextProps.imagen });
+    }
+    if (nextProps.vista !== this.props.vista) {
+      this.setState({ vista: nextProps.vista });
+    }
+    if (nextProps.imagenCargada !== this.props.imagenCargada) {
+      this.setState({ imagenCargada: nextProps.imagenCargada });
     }
   }
 
   render = () => {
     return (
       <tr>
-        <td>{this.props.producto.codigo}</td>
+        <td>{this.props.producto.id}</td>
+        <td>{this.props.producto.imagenId}</td>
         <td>{this.props.producto.descripcion}</td>
         <td>{this.props.producto.categoria}</td>
         <td>{this.props.producto.precioUnitario}</td>
-        <td>{this.props.producto.habilitado == true ? "si": "no"}</td>
+        <td>{this.props.producto.habilitado == true ? "si" : "no"}</td>
 
         <td>
           <Button
             color="danger"
             size="btn-xs"
-            onClick={() => this.eliminarProducto(this.props.producto.id)}
+            onClick={() => this.eliminarProducto(this.props.producto.imagenId,this.props.producto.id)}
           >
             <i className="cui-trash icons font-1xl d-block mt-1"></i>
           </Button>{" "}
           &nbsp;&nbsp;
           <Button
-            className="btn #e65100 orange darken-4"
             color="warning"
+            size="btn-xs"
             onClick={this.editarProducto}
           >
-            <i className="fa fa-dot-circle-o">{""} Editar</i>
+            <i className="fa fa-dot-circle-o">{""}</i>
           </Button>
           &nbsp;&nbsp;
-          <Button
-            // onClick={}
-            color="info"
-          >
-            <i className="fa fa-dot-circle-o">{""} Habilitar</i>
-          </Button>
         </td>
       </tr>
     );
