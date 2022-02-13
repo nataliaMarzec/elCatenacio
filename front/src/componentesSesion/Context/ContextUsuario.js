@@ -63,7 +63,7 @@ class ContextUsuario extends Component {
         var nuevoUsuario = Object.assign({}, this.state.usuario);
         nuevoUsuario[e.target.name] = e.target.value;
         this.setState({ usuario: nuevoUsuario },
-            //  () => console.log("signin")
+             () => console.log("signin++++",nuevoUsuario)
              );
     }
 

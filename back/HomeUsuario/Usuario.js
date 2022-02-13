@@ -16,14 +16,20 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
         references: { model: "ResponsableDeMesa", key: "id_responsable" },
       },
+      // clienteId: {
+      //   allowNull: true,
+      //   foreignKey: true,
+      //   type: DataTypes.INTEGER,
+      //   references: { model: "Clientes", key: "id_cliente" },
+      // },
       nombre: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notNull: {
-            msg: "Por favor completa tu nombre",
-          },
-        },
+        allowNull:true,
+        // validate: {
+        //   notNull: {
+        //     msg: "Por favor completa tu nombre",
+        //   },
+        // },
         isAlpha: {
           args: true,
           msg: "El nombre solo puede contener letras",

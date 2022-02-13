@@ -7,50 +7,58 @@ export default {
       name: "Clientes",
       url: "/clientes",
       icon: "icon-people",
-      attributes: { disabled: false },
-    },
-    {
-      name: "Productos",
-      url: "/productos",
-      icon: "cui-bookmark",
+      variant: 'primary',
       attributes: { disabled: false },
     },
     {
       name: "Productos-cliente",
       url: "/vistaDeProductosParaClientes",
       icon: "cui-basket-loaded",
+      variant: 'primary',
       attributes: { disabled: false },
     },
+    {
+      name: "Productos",
+      url: "/productos",
+      icon: "cui-bookmark",
+      variant: 'warning',
+      attributes: { disabled: false },
+    },
+ 
     {
       name: "Pedidos",
       url: "/pedidosLista",
       icon: "cui-list",
+      variant: 'danger',
       attributes: { disabled: false },
     },
     {
       name: "Cargar pedidos",
       url: "/pedidos",
       icon: "cui-note",
+      variant: 'danger',
       attributes: { disabled: false},
-    },
-    {
-      name: "Un Pedido",
-      url: "/unPedido",
-      icon: "cui-puzzle",
-      attributes: { disabled: false },
     },
 
     {
       name: "Cocina",
       url: "/cocinaDetalles",
       icon: "cui-speedometer",
+      variant: 'info',
       attributes: { disabled: false},
     },
-
+    {
+      name: "Un Pedido",
+      url: "/unPedido",
+      icon: "cui-puzzle",
+      variant: 'success',
+      attributes: { disabled: false },
+    },
     {
       url: "/responsables",
-      name: "RegistrarResponsable",
-      icon: "cui-puzzle",
+      name: "Registrar responsable",
+      icon: 'icon-star',
+      variant: 'success',
       attributes: { disabled: false},
     },
     {

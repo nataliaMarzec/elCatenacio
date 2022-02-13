@@ -2,6 +2,7 @@ import React from 'react'
 import {Col, Row } from 'reactstrap'
 import {Link } from "react-router-dom";
 const Login = React.lazy(() => import('./componentesSesion/LoginYSesionDeUsuarios/Login.js'))
+const Password = React.lazy(() => import('./componentesSesion/LoginYSesionDeUsuarios/Password.js'))
 
 
 class PrincipalPage extends React.Component {
@@ -30,9 +31,9 @@ class PrincipalPage extends React.Component {
                         </div>
                         <Row>
                             <Col>
-                                <Link to="/login" style={{ color: "#18ecca" }} aling="aling-left" size="lg"
-                                    render={props => <Login {...props} />}>
-                                    Admin
+                                <Link to="/password" style={{ color: "#18ecca" }} aling="aling-left" size="lg"
+                                    render={props => <Password {...props} />}>
+                                    Admin 
                                 </Link>
                             </Col>
                             <Col>

@@ -61,18 +61,18 @@ class Register extends Component {
     }
 
     if (res.status === 200) {
-      console.log("Su cuenta se ha creado");
+      console.log("Su cuenta ha sido creada");
       // this.props.context.estadoInicial()
     }
     if (res.status === 403) {
       this.props.history.push("./login");
       console.log(
-        "Por favor vuelva a registrarse y complete todos los campos")
+        "Por favor vuelva a registrarse")
     }
       if (res.status === 505) {
         this.props.history.push("./login");
         console.log(
-          "Su cuenta no se ha creado. Surgió un error"
+          "Error,su cuenta no se ha creado."
         );
       // this.props.context.estadoInicial();
       this.props.history.push("./register");
@@ -207,11 +207,11 @@ class Register extends Component {
                 </CardBody>
                 <CardFooter className="p-4">
                   <Row>
-                    <Col xs="12" sm="6">
+                    {/* <Col xs="12" sm="6">
                       <Button className="btn-facebook mb-1" block>
                         <span>facebook</span>
                       </Button>
-                    </Col>
+                    </Col> */}
                     <Col xs="12" sm="6">
                       <Button className="btn-twitter mb-1" block onClick={this.salir}>
                         <span>Salir</span>

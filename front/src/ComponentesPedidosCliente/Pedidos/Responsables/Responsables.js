@@ -126,7 +126,7 @@ class Responsables extends React.Component {
         this.setState({ responsable: unResponsable });
     };
 
-
+    
     ModalHeaderStrong = (editable) => {
         if (editable) {
             return (

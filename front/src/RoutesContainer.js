@@ -11,9 +11,9 @@ const Login = React.lazy(() => import('./componentesSesion/LoginYSesionDeUsuario
 const Register = React.lazy(() => import('./componentesSesion/LoginYSesionDeUsuarios/Register'))
 const Page404 = React.lazy(() => import('./views/Pages/Page404'))
 const Page500 = React.lazy(() => import('./views/Pages/Page500'))
+const Password = React.lazy(() => import('./componentesSesion/LoginYSesionDeUsuarios/Password'))
 const Home = React.lazy(() => import('./componentesSesion/LoginYSesionDeUsuarios/Home.js'))
 const PrincipalPage = React.lazy(() => import('./PrincipalPage.js'))
-
 class RoutesContainer extends Component {
     static contextType = createContext(ContextUsuario);
     
@@ -33,6 +33,7 @@ class RoutesContainer extends Component {
           <Route exact path="/register" name="Register Page" render={props => <Register {...props} />} />
           <Route exact path="/404" name="Page 404" render={props => <Page404 {...props} />} />
           <Route exact path="/500" name="Page 500" render={props => <Page500 {...props} />} />
+          <Route exact path="/password" name="Password" render={props => <Password {...props} />} />
           <Route path="/home" name="Home" render={props => <Home {...props} />} />
           {/* <Route path="/chat" name="Chat" nombre={rol} render={props=> <Chat nombre={rol} {...props}/>}/> */}
           {/* <Route component={NotFound}/> */}
@@ -48,6 +49,7 @@ class RoutesContainer extends Component {
             ""
           )}
           <Route path="/responsables" name="Responsables" render={props=><Responsables {...props}/>}></Route>
+
         </Switch>
         <Switch>
           {auth === true && rol === "ADMIN" || auth === true && rol === "RESPONSABLE" ? (

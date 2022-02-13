@@ -134,7 +134,8 @@ class VistaDeProductosParaClientesRow extends React.Component {
       <div>
        
         <Card className="border-warning" style={{ color: "info" }} onClick={this.elegirProducto}>
-          <CardImg top src={logo} style={{ border: "1px solid red" }} />
+          <CardImg top src={'http://localhost:8383/'+'Uploads/b202aba7-69cb-4f2b-b3cb-fddf229b2148.png'}
+ style={{ border: "1px solid red" }} />
           <CardTitle><b className="ml-2">{this.props.producto.id} / {this.props.producto.descripcion}</b>
           </CardTitle>
           <Label className="ml-1"></Label>

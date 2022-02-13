@@ -71,7 +71,7 @@ router.get("/itemsPedidos/importe/:importe/:productoId", controllerItemsPedido.u
 
 router.post("/pago/nuevo", controllerPago.create);
 
-router.post("/responsable/nuevo", controllerResponsableDeMesa.create);
+router.post("/responsable/signup",controllerResponsableDeMesa.signupResponsable)
 router.route("/responsable/:id_responsable")
     .delete(controllerResponsableDeMesa.delete)
     .put(controllerResponsableDeMesa.update)

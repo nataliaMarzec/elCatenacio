@@ -17,7 +17,7 @@ import {
   Row,
 } from "reactstrap";
 
-class Login extends React.Component {
+class Password extends React.Component {
   static contextType = createContext(ContextUsuario)
 
   componentDidMount() {
@@ -40,6 +40,42 @@ class Login extends React.Component {
       console.log(error);
     }
   }
+  // verificarPassword(usuario) {
+  //   try {
+  //     fetch(`http://localhost:8383/usuario/${usuario.username}/${usuario.password}`, {
+  //       method: "get",
+  //       headers: {
+  //         Accept: "application/json",
+  //         "Content-Type": "application/json",
+  //       },
+  //     })
+  //       .then(res => res.json())
+  //       .then(res => this.rol(res))
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+  rol(usuario) {
+    if (!usuario) {
+      this.props.context.estadoInicial()
+      this.props.history.push("/password")
+    }
+    if (usuario) {
+      if (usuario.rol === "RESPONSABLE") {
+        this.login()
+        this.props.context.logueado(true)
+        this.props.context.setStateRol(usuario.rol)
+        this.props.history.push("/");
+      }
+      if (usuario.rol === "ADMIN") {
+        this.login()
+        this.props.context.logueado(true)
+        this.props.context.setStateRol(usuario.rol)
+        this.props.history.push("/");
+      }
+    }
+  }
 
   login() {
     try {
@@ -58,54 +94,30 @@ class Login extends React.Component {
     }
   }
 
-  rol(usuario) {
-    if (!usuario) {
-      this.props.context.estadoInicial()
-      this.props.history.push("/login")
-    }
-    if (usuario) {
-      if (usuario.rol === "CLIENTE") {
-        this.login()
-        this.props.context.logueado(true)
-        this.props.context.setStateRol(usuario.rol)
-        this.props.history.push("/home");
-      }
-      if (usuario.rol === "ADMIN" || usuario.rol === "RESPONSABLE") {
-        this.login()
-        this.props.context.logueado(true)
-        this.props.context.setStateRol(usuario.rol)
-        this.props.history.push("/");
-      }
-    }
-  }
-
   resStatusError = (res) => {
-    console.log("resLogin", res)
+    console.log("resLoginPASSWORD+++", res)
     if (!res) {
-      this.props.history.push(`/login`);
-      console.log("ingrese un usuario", res)
-
+      this.props.history.push(`/password`);
+      console.log("ingrese el password", res)
     }
     if (res.status == 500) {
-      this.props.history.push(`/login`);
+      this.props.history.push(`/password`);
       this.props.context.estadoInicial()
-      console.log("ingrese un usuario", res)
-
+      console.log("ingrese un password", res)
     }
     if (res.status == 404) {
-      this.props.history.push(`/login`);
+      this.props.history.push(`/password`);
       this.props.context.estadoInicial()
-      console.log("usuario no encontrado 404")
+      console.log("password no encontrado 404")
     }
     if (res.status == 401) {
-      this.props.history.push(`/login`);
+      this.props.history.push(`/password`);
       this.props.context.estadoInicial()
       console.log("Sin autorizacion")
     }
     if (res.status == 200) {
-      console.log("esta logueado", this.props.context.rol)
+      console.log("esta logueado,password correcto", this.props.context.rol)
     }
-
   }
 
   onSubmitLogin = (e) => {
@@ -124,8 +136,8 @@ class Login extends React.Component {
                 <Card className="p-4">
                   <CardBody>
                     <Form noValidate onSubmit={this.onSubmitLogin}>
-                      <h1>Accede a tu cuenta</h1>
-                      <p className="text-muted">Iniciar sesión con tu cuenta</p>
+                      <h1>Accede al Catenacio</h1>
+                      <p className="text-muted">Inicia sesión con tu password</p>
                       <InputGroup key="nombre" className="mb-3">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
@@ -177,6 +189,7 @@ class Login extends React.Component {
                           onChange={onChangeLogin}
                         />
                       </InputGroup>
+                    
                       <InputGroup className="mb-4">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
@@ -194,44 +207,17 @@ class Login extends React.Component {
                           onChange={onChangeLogin}
                         />
                       </InputGroup>
+                     
                       <Row>
                         <Col xs="6">
 
                           <Button color="primary" className="px-4" onClick={this.onSubmitLogin}>
-                            Login
+                            Ingresar
                           </Button>
                         </Col>
-                        <Col xs="6" className="text-right">
-                          <Button color="link" className="px-0">
-                            ¿Olvidaste tu contraseña?
-                          </Button>
-                        </Col>
+
                       </Row>
                     </Form>
-                  </CardBody>
-                </Card>
-                <Card
-                  className="text-white bg-primary py-5 d-md-down-none"
-                  style={{ width: "44%" }}
-                >
-                  <CardBody className="text-center">
-                    <div>
-                      <h2>Registrate</h2>
-                      <p>
-                        Si aún no tienes una cuenta,crea una y sé parte del
-                        Catenacio.
-                      </p>
-                      <Link to="/register" render={props => <Register {...props} />}>
-                        <Button
-                          color="primary"
-                          className="mt-3"
-                          active
-                          tabIndex={-1}
-                        >
-                          Registrarse Ahora!
-                        </Button>
-                      </Link>
-                    </div>
                   </CardBody>
                 </Card>
               </CardGroup>
@@ -243,4 +229,4 @@ class Login extends React.Component {
   }
 
 }
-export default WrapperConsumer(Login)
+export default WrapperConsumer(Password)

@@ -14,7 +14,7 @@ module.exports = {
       rolResponsableId: {
         allowNull: true,
         foreignKey: true,
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
         references: { model: "Roles", key: "id_rol" },
       },
       nombre: Sequelize.STRING,

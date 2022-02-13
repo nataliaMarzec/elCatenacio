@@ -116,13 +116,13 @@ class CargarResponsable extends React.Component {
   // };
 
   crearResponsable = () => {
-    fetch("http://localhost:8383/responsable/nuevo", {
+    fetch("http://localhost:8383/responsable/signup", {
       method: "post",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.state.responsable),
+      body: JSON.stringify(this.state.responsable,this.state.usuario),
     })
       .then(this.props.listadoResponsables)
       .then(this.estadoInicial());

@@ -172,6 +172,7 @@ class VistaDeProductosParaClientes extends React.Component {
               imagen={this.state.imagen}
               vista={this.state.vista}
               imagenCargada={this.state.imagenCargada}
+              // foto={this.state.vista}
             >
             </CardSeleccionadoModalRow>
           </ModalBody>

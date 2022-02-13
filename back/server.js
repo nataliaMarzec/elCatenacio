@@ -10,6 +10,7 @@ const server = express();
 var fs = require("fs")
 
 const crypto = require('crypto');
+const Pedido = require('./HomePedidosCliente/Pedido');
 const message = "With node.js we can create hash with several algoritms";
 const puerto = 443
 //Inicializamos socketio
@@ -49,6 +50,7 @@ server.use(require('./RoutesClientes/routes.js'));
 //   next();
 // });
 
+
 server.use('./Tmp', express.static(path.resolve('Tmp')))
 server.use('./Uploads', express.static(path.resolve('Uploads')))
 server.use(require('./RoutesUsuarios/routes.js'));
@@ -87,7 +89,7 @@ server.get("/", (req, res) => res.send('APP UP'));
 
 console.log("AQUI Uploads:", path.join(__dirname, `Uploads`));
 // serverChat.listen(5000, () => console.log("Servidor inicializado++++++++++++++++++++++++++++++++++++"));
-// serverChat.listen(5000,function(){
+// serverChat.listen(,5000 function(){
 //   console.log("SERVERCHAT CONECTADO+++++++++++")
 //   socketio.on("connection",function(socket){
 //     console.log("Usuario conectado" +socket.id )

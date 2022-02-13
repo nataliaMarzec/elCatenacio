@@ -72,7 +72,7 @@ class ResponsableRow extends React.Component {
             size="btn-xs"
             onClick={this.seleccionarResponsable}
           >
-            <i className="fa fa-dot-circle-o">{""} Editar</i>
+            <i className="fa fa-dot-circle-o">{""}</i>
           </Button>
          
         </td>

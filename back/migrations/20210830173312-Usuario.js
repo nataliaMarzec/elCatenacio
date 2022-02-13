@@ -17,8 +17,8 @@ module.exports = {
           references: { model: "ResponsableDeMesa", key: "id_responsable" },
         },
         nombre: {
-          type: DataTypes.STRING,
-          allowNull: false,
+          type: Sequelize.STRING,
+          allowNull: true,
           validate: {
             notNull: {
               msg: "Por favor completa tu nombre",
