@@ -64,6 +64,7 @@ class Login extends React.Component {
       this.props.history.push("/login")
     }
     if (usuario) {
+      console.log("rol",usuario.rol);
       if (usuario.rol === "CLIENTE") {
         this.login()
         this.props.context.logueado(true)
@@ -126,23 +127,6 @@ class Login extends React.Component {
                     <Form noValidate onSubmit={this.onSubmitLogin}>
                       <h1>Accede a tu cuenta</h1>
                       <p className="text-muted">Iniciar sesión con tu cuenta</p>
-                      <InputGroup key="nombre" className="mb-3">
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <i className="icon-user"></i>
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input
-                          type="text"
-                          id="nombre"
-                          name="nombre"
-                          placeholder="Nombre"
-                          autoComplete="nombre"
-                          required={true}
-                          value={usuario.nombre}
-                          onChange={onChangeLogin}
-                        />
-                      </InputGroup>
                       <InputGroup className="mb-3">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
@@ -180,7 +164,9 @@ class Login extends React.Component {
                       <InputGroup className="mb-4">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
-                            <i className="icon-lock"></i>
+                            <i className="icon-lock" 
+                            // onClick={()=>this.props.context.setStateVerPassword()}
+                            ></i>
                           </InputGroupText>
                         </InputGroupAddon>
                         <Input

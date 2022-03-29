@@ -1,7 +1,7 @@
-import React from "react";
+import React, { createContext } from "react";
 import Cliente from "./Cliente";
 import CargarCliente from "./CargarCliente";
-import WrapperConsumer,{ContextUsuario} from "../../componentesSesion/Context/ContextUsuario";
+import WrapperConsumer, { ContextUsuario } from "../../componentesSesion/Context/ContextUsuario";
 import {
   Table,
   Container,
@@ -19,7 +19,8 @@ import {
 } from "reactstrap";
 
 class Clientes extends React.Component {
-  static contextType = ContextUsuario;
+  static contextType = createContext(ContextUsuario)
+
 
   constructor(props) {
     super(props);
@@ -27,30 +28,35 @@ class Clientes extends React.Component {
       seleccionado: {},
       cliente: {},
       clientes: [],
-      usuariosClientes:[],
+      usuario: {},
+      usuarios:[],
+      usuariosClientes: [],
       ventasACliente: [],
       pagosDeCliente: [],
       modal: false,
       editable: false,
       username: "",
-      detalleClientes:[],
+      detalleClientes: [],
+      nuevosUsuarios: [],
+
     };
   }
 
   toggle = () => {
     this.setState({
-      modal: !this.state.modal,
+      modal: !this.state.modal,usuarios:this.props.context.usuarios
     });
   };
 
   verDetallesCliente(username) {
-    let data1 = this.props.context.usuarios
+    let data1 = this.props.context.usuarios.filter(u => u.rol == "CLIENTE")
     let data2 = this.state.clientes
-    var nuevaLista=data1.concat(data2)
-    var listaActualizada = nuevaLista.filter(
+    var usuario = data1.find(
       (u) => username == u.username
-    );
-    this.setState({clientes: listaActualizada });
+    )
+    var listaActualizada = data2.filter(c => c.id_cliente == usuario.clienteId)
+    this.setState({ clientes: listaActualizada },
+      () => console.log("LISTAaCTUALIZADA", listaActualizada, this.state.clientes));
   }
 
   handleChange = (e) => {
@@ -63,8 +69,8 @@ class Clientes extends React.Component {
   componentDidMount() {
     this.listadoClientes();
     this.listadoUsuarios();
-    this.usuariosClientes()
-    console.log("listadoClientes", this.listadoClientes());
+    // this.usuariosClientes()
+    // console.log("listadoClientes", this.usuariosClientes());
   }
 
   listadoBusqueda = (busqueda) => {
@@ -95,34 +101,8 @@ class Clientes extends React.Component {
       .then(
         (res) => this.props.context.setStateUsuarios(res),
         console.log("Usuarios", this.props.context.usuarios)
-      );
-  }
-  usuariosClientes = () => {
-    let data1 = this.props.context.usuarios
-    console.log("data1+++++++",data1)
-    let data2 = this.state.clientes
-    // var nuevaLista = data1.filter(function (el) {
-    //   var found = false, x = 0;
-    //   while (x < data2.length && !found) {
-    //     if (el.productoId == data2[x].id && data2[x].categoria != "Cocina") found = true;
-    //     x++;
-    //   }
-    //   if (!found) return el;
-    // });
-    var nuevaLista=data1.concat(data2)
-    // console.log("nuevaLista1",nuevaLista)
-    // nuevaLista = nuevaLista.concat(data2.filter(function (el) {
-    //   var found = false, x = 0;
-    //   while (x < data1.length && !found) {
-    //     if (el.id == data1[x].productoId) found = true;
-    //     // data1[x].listoCocina=true;
-    //     x++;
-    //   }
-    //   if (!found) return el;
-    // }));
-    // this.setState({usuariosClientes:nuevaLista})
-    console.log("nuevaLista",this.state.usuariosClientes)
-    return nuevaLista
+      )
+      .then(this.setState({ usuario: {} }))
   }
 
   limpiarTabla = () => {
@@ -143,22 +123,22 @@ class Clientes extends React.Component {
     e.preventDefault(e);
   };
 
-  actualizarAlEliminar = (unCliente) => {
-    var listaActualizada = this.state.clientes.filter(
+  actualizarAlEliminar = (unCliente, unUsuario) => {
+    var listadoClientes = this.state.clientes.filter(
       (item) => unCliente !== item
     );
-    this.setState({ clientes: listaActualizada, cliente: {} });
+    var listadoUsuarios = this.props.context.usuarios.filter(
+      (item) => unUsuario != item
+    )
+    this.setState({
+      clientes: listadoClientes, usuarios: listadoUsuarios,
+      usuario: {}, cliente: {}
+    });
   };
 
-  eliminarCliente(id) {
-    this.props.eliminarCliente(id);
-  }
-
-  seleccionar = (unCliente) => {
-    this.setState({ cliente: unCliente });
+  seleccionar = (unUsuario, unCliente) => {
+    this.setState({ usuario: unUsuario, cliente: unCliente });
   };
-
-  clienteSeleccionado = (unCliente) => {};
 
   ModalHeaderStrong = (editable) => {
     if (editable) {
@@ -175,18 +155,17 @@ class Clientes extends React.Component {
     );
   };
 
-  render(props) {
+  render() {
     let data1 = this.state.clientes
-    let data2= this.props.context.usuarios
-    var nuevaLista=data1.concat(data2)
-    var listaUserNames = nuevaLista.map((cliente) => {
+    let data2 = this.props.context.usuarios.filter(u => u.rol == "CLIENTE")
+    var listaUserNames = data2.map((cliente) => {
       return (
         <div>
           <option value={cliente.username} />
         </div>
       );
     });
-    console.log("renderData1",data1,"renderData1",data2);
+    console.log("renderUsuario+++", this.state.usuario);
     return (
       <div className="container">
         <div></div>
@@ -203,8 +182,11 @@ class Clientes extends React.Component {
             <this.ModalHeaderStrong></this.ModalHeaderStrong>
             <CargarCliente
               listadoClientes={this.listadoClientes}
+              listadoUsuarios={this.listadoUsuarios}
               cliente={this.state.cliente}
               clientes={this.state.clientes}
+              usuario={this.state.usuario}
+              usuarios={this.props.context.usuarios}
             />
           </Modal>
           <Row>&nbsp;</Row>
@@ -212,101 +194,114 @@ class Clientes extends React.Component {
         <div className="animated fadeIn">
           {/* {Boolean(
             this.state.clientes.length ? */}
-              <Row>
-                <Col xs="12" lg="12">
-                  <Card>
-                    <CardHeader>
-                      <i className="fa fa-align-justify"></i> Clientes Lista
-                    </CardHeader>
-                    <CardHeader>
-                      <Form onSubmit={this.handleSubmit} id="formulario">
-                        <FormGroup row>
-                          <Col xs="12" md="9">
-                            <Input
-                              type="username"
-                              id="username"
-                              name="username"
-                              placeholder="Elegir username"
-                              onChange={this.handleChange}
-                              list="nuevaLista"
-                            />
-                          </Col>
-                          <datalist id="nuevaLista">{listaUserNames}</datalist>
-                        </FormGroup>
-                        <div className="row">
-                          <div className="input-field col s12 m12">
-                            <Button
-                              type="button"
-                              style={{ margin: "2px" }}
-                              color="info"
-                              outline
-                              onClick={() =>
-                                this.verDetallesCliente(this.state.username)
-                              }
-                            >
-                              <i className="fa fa-dot-circle-o"></i>Ver detalles
-                              de cliente
-                            </Button>
-                            <Button
-                              type="button"
-                              style={{ margin: "2px" }}
-                              color="success"
-                              outline
-                              onClick={this.limpiarTabla}
-                            >
-                              <i className="fa fa-dot-circle-o"></i>Ver clientes
-                            </Button>
-                          </div>
-                        </div>
-                      </Form>
-                    </CardHeader>
-                    <CardBody>
-                      <Table responsive bordered size="sm">
-                        <thead>
-                          <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Dirección</th>
-                            <th>Teléfono</th>
-                            <th>UserName</th>
-                            <th>Email</th>
-                            <th>Rol</th>
-                            <th>Registrado</th>
-                          </tr>
-                        </thead>
-                        <tbody>{this.renderRows()}</tbody>
-                      </Table>
-                    </CardBody>
-                  </Card>
-                </Col>
-              </Row>
+          <Row>
+            <Col xs="12" lg="12">
+              <Card>
+                <CardHeader>
+                  <i className="fa fa-align-justify"></i> Clientes Lista
+                </CardHeader>
+                <CardHeader>
+                  <Form onSubmit={this.handleSubmit} id="formulario">
+                    <FormGroup row>
+                      <Col xs="12" md="9">
+                        <Input
+                          type="username"
+                          id="username"
+                          name="username"
+                          placeholder="Elegir username"
+                          onChange={this.handleChange}
+                          list="nuevaLista"
+                        />
+                      </Col>
+                      <datalist id="nuevaLista">{listaUserNames}</datalist>
+                    </FormGroup>
+                    <div className="row">
+                      <div className="input-field col s12 m12">
+                        <Button
+                          type="button"
+                          style={{ margin: "2px" }}
+                          color="info"
+                          outline
+                          onClick={() =>
+                            this.verDetallesCliente(this.state.username)
+                          }
+                        >
+                          <i className="fa fa-dot-circle-o"></i>Ver detalles
+                          de cliente
+                        </Button>
+                        <Button
+                          type="button"
+                          style={{ margin: "2px" }}
+                          color="success"
+                          outline
+                          onClick={this.limpiarTabla}
+                        >
+                          <i className="fa fa-dot-circle-o"></i>Ver clientes
+                        </Button>
+                      </div>
+                    </div>
+                  </Form>
+                </CardHeader>
+                <CardBody>
+                <React.Fragment>{
+                this.state.clientes.length >0 &&
+                  <Table responsive bordered size="sm">
+                    <thead>
+                      <tr>
+                        {/* <th>ID</th> */}
+                        <th>Nombre</th>
+                        <th>Dirección</th>
+                        <th>Teléfono</th>
+                        <th>UserName</th>
+                        <th>Email</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>{this.renderRows()}</tbody>
+                  </Table>
+                }
+                  </React.Fragment>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
         </div>
       </div>
     );
   }
-
+ 
   renderRows() {
-    let data1 = this.state.clientes
-    let data2 = this.props.context.usuarios
-    console.log("data1+++++++",data1)
-    var nuevaLista=data1.concat(data2)
-    return !nuevaLista
-      ? console.log("NULL", null)
-      : nuevaLista.map((unUsuario, index) => {
-          return (
-            <Cliente
-              key={index}
-              index={index}
-              usuario={unUsuario}
-              usuarios={nuevaLista}
-              selector={this.seleccionar}
-              clienteSeleccionado={this.clienteSeleccionado}
-              actualizarAlEliminar={this.actualizarAlEliminar}
-              eliminarCliente={this.eliminarCliente.bind(this)}
-              toggle={this.toggle}
-            />
-          );
-        });
+    let clientes = this.state.clientes
+    let usuarios = this.props.context.usuarios.filter(u => u.rol == "CLIENTE")
+    console.log("ROW CLIENTES", this.state.clientes)
+    return (
+      <React.Fragment>{
+        usuarios.map((unUsuario, index) => {
+          var cliente = clientes.find(c => c.id_cliente == unUsuario.clienteId)
+
+          if (cliente) {
+            let listaClientes = clientes.filter(c => c.id_cliente == unUsuario.clienteId)
+            return (
+              <Cliente
+                key={index}
+                index={index}
+                usuario={unUsuario}
+                usuarios={usuarios}
+                clientes={listaClientes}
+                cliente={cliente}
+                selector={this.seleccionar}
+                actualizarAlEliminar={this.actualizarAlEliminar}
+                toggle={this.toggle}
+              />
+
+            )
+          }
+          else {
+            return
+          }
+        })}
+      </React.Fragment>
+    )
   }
 }
 

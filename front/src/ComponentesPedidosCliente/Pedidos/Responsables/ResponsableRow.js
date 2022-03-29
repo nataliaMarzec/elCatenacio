@@ -23,12 +23,12 @@ class ResponsableRow extends React.Component {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-      }).then(this.props.actualizarAlEliminar(this.props.responsable));
+      }).then(this.props.actualizarAlEliminar(this.props.responsable,this.props.usuario));
     // }
   };
 
-  seleccionarResponsable() {
-    this.props.selector(this.props.responsable);
+  seleccionarResponsable(unUsuario,unResponsable) {
+    this.props.selector(unUsuario,unResponsable);
     console.log("seleccionar___", this.props.responsable);
     this.props.toggle();
   }
@@ -38,8 +38,14 @@ class ResponsableRow extends React.Component {
   };
 
   UNSAFE_componentWillReceiveProps(nextProps) {
+    if (nextProps.usuarios !== this.props.usuarios) {
+      this.setState({ usuarios:nextProps.usuarios });
+    }
+    if (nextProps.usuario !== this.props.usuario) {
+      this.setState({ usuario: nextProps.usuario });
+    }
     if (nextProps.responsables !== this.props.responsables) {
-      this.setState({ responsables: this.props.responsables });
+      this.setState({ responsables: nextProps.responsables });
     }
     if (nextProps.responsable !== this.props.responsable) {
       this.setState({ responsable: nextProps.responsable });
@@ -53,9 +59,9 @@ class ResponsableRow extends React.Component {
         <td>{this.props.responsable.nombre}</td>
         <td>{this.props.responsable.direccion}</td>
         <td>{this.props.responsable.telefono}</td>
-        <td>{this.props.responsable.username}</td>
-        <td>{this.props.responsable.email}</td>
-        <td>{this.props.responsable.rol}</td>
+        <td>{this.props.usuario.username}</td>
+        <td>{this.props.usuario.email}</td>
+        <td>{this.props.usuario.rol}</td>
         
         <td>
           <Button
@@ -70,7 +76,7 @@ class ResponsableRow extends React.Component {
           <Button
             color="info"
             size="btn-xs"
-            onClick={this.seleccionarResponsable}
+            onClick={()=>this.seleccionarResponsable(this.props.usuario,this.props.responsable)}
           >
             <i className="fa fa-dot-circle-o">{""}</i>
           </Button>

@@ -177,7 +177,7 @@ class PedidosLista extends React.Component {
                 <div className="container">
                     <div></div>
                     <Row>&nbsp;</Row>
-                    <Container fluid>
+                    {/* <Container fluid>
                         <Button color="success" onClick={this.toggle}>
                             Nuevo pedido
                         </Button>
@@ -197,7 +197,7 @@ class PedidosLista extends React.Component {
                             />
                         </Modal>
                         <Row>&nbsp;</Row>
-                    </Container>
+                    </Container> */}
                     <div className="animated fadeIn">
                         {/* {Boolean(
             this.state.pedidos.length ? */}

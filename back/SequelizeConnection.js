@@ -133,38 +133,52 @@ models.Producto.belongsTo(models.Imagen, {
   constraints: false,
 });
 
-models.Rol.hasMany(models.ResponsableDeMesa, {
-  as: "ResponsableDeMesa",
-  foreignKey: "rolResponsableId",
-  sourceKey: "id_rol",
-  constraints: false,
-  onDelete: "SET NULL",
-  onUpdate: "CASCADE"
+// models.Rol.hasMany(models.ResponsableDeMesa, {
+//   as: "ResponsableDeMesa",
+//   foreignKey: "rolResponsableId",
+//   sourceKey: "id_rol",
+//   constraints: false,
+//   onDelete: "SET NULL",
+//   onUpdate: "CASCADE"
 
-});
-models.ResponsableDeMesa.belongsTo(models.Rol, {
-  as: "Roles",
-  foreignKey: "rolResponsableId",
-  targetKey: "id_rol",
+// });
+// models.ResponsableDeMesa.belongsTo(models.Rol, {
+//   as: "Roles",
+//   foreignKey: "rolResponsableId",
+//   targetKey: "id_rol",
+//   constraints: false,
+// });
+
+// models.Rol.hasMany(models.Cliente, {
+//   as: "Clientes",
+//   foreignKey: "rolClienteId",
+//   sourceKey: "id_rol",
+//   constraints: false,
+//   onDelete: "SET NULL",
+//   onUpdate: "CASCADE"
+// });
+// models.Cliente.belongsTo(models.Rol, {
+//   as: "Roles",
+//   foreignKey: "rolClienteId",
+//   targetKey: "id_rol",
+//   constraints: false,
+// });
+
+models.Cliente.hasOne(models.Usuario, {
+  foreignKey: "clienteId",
+  as: "Usuarios",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
   constraints: false,
 });
 
-models.Rol.hasMany(models.Cliente, {
+models.Usuario.belongsTo(models.Cliente, {
+  foreignKey: "clienteId",
   as: "Clientes",
-  foreignKey: "rolClienteId",
-  sourceKey: "id_rol",
-  constraints: false,
-  onDelete: "SET NULL",
-  onUpdate: "CASCADE"
-});
-models.Cliente.belongsTo(models.Rol, {
-  as: "Roles",
-  foreignKey: "rolClienteId",
-  targetKey: "id_rol",
+  onDelete: "CASCADE",
+  // onUpdate: "CASCADE",
   constraints: false,
 });
-
-
 
 models.ResponsableDeMesa.hasOne(models.Usuario, {
   foreignKey: "responsableId",
@@ -181,6 +195,7 @@ models.Usuario.belongsTo(models.ResponsableDeMesa, {
   // onUpdate: "CASCADE",
   constraints: false,
 });
+
 
 
 sequelize

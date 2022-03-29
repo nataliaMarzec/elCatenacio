@@ -1,67 +1,87 @@
 var { Op } = require("sequelize");
 const { models } = require("../SequelizeConnection");
 const Cliente = models.Cliente;
+const Usuario = models.Usuario
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const authConfig = require('../auth');
+
 module.exports = {
+  
   create: async (req, res) => {
-    const cliente = req.body;
+    var cliente = await Cliente.create({
+        nombre: req.body.nombre,
+        direccion: req.body.direccion,
+        telefono: req.body.telefono,
+    })
+    if (![req.body.values] || !cliente) {
+        res.status(400).json({ err: "no se creo el cliente" });
+    } else {
+        console.log("CLIENTE+++++", cliente);
+        let password = bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds));
+        console.log("PASSWORD", password)
+        await Usuario.create({
+            clienteId: cliente.id_cliente,
+            username: req.body.username,
+            email: req.body.email,
+            password: password,
+            rol: "CLIENTE",
+            registrado: true,
+        }).then(usuario => {
+            let token = jwt.sign({ usuario: usuario }, authConfig.secret, {
+                expiresIn: authConfig.expires
+            });
+            console.log("TOKEN+++++++++", token)
 
-    const {
-      id_cliente,
-      nombre,
-      direccion,
-      telefono,
-      username,
-      email,
-      password,
-      rol="CLIENTE",
-      registrado=false,
-    } = await Cliente.create(cliente);
+            res.status(200).json({
+                usuario: usuario,
+                cliente:cliente,
+                token: token,
+            });
+        }).catch(err => {
+            res.status(500).json(err);
+        });
+    }
+},
 
-    return res.json({
-      id_cliente,
-      nombre,
-      direccion,
-      telefono,
-      username,
-      email,
-      password,
-      rol,
-      registrado,
+
+  update: async (req, res) => {
+    const clienteEncontrado = await Cliente.findByPk(req.params.id_cliente);
+    let password = bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds));
+    const cliente = await clienteEncontrado.update({
+      id_cliente: req.body.id_cliente,
+      nombre: req.body.nombre,
+      direccion: req.body.direccion,
+      telefono: req.body.telefono,
     });
-  },
-
-  async update(req, res) {
-    const cliente = await Cliente.findByPk(req.params.id_cliente);
-    const {
-      id_cliente,
-      nombre,
-      direccion,
-      telefono,
-      username,
-      email,
-      password,
-      rol="CLIENTE",
-      registrado=false,
-    } = await cliente.update(req.body);
-
-    return res
-      .json({
-        id_cliente,
-        nombre,
-        direccion,
-        telefono,
-        username,
-        email,
-        password,
-        rol,
-        registrado,
-      })
-      .res.send(200, "cliente editado");
+    const usuarioEncontrado = await Usuario.findOne({ where: { clienteId: cliente.id_cliente } });
+    const usuario = await usuarioEncontrado.update({
+      username: req.body.username,
+      email: req.body.email,
+      rol: "CLIENTE",
+      password: password,
+      registrado: true
+    });
+    let token = jwt.sign({ usuario: usuario }, authConfig.secret, {
+      expiresIn: authConfig.expires
+    })
+    if (cliente) {
+      return res.status(200)
+        .json({
+          cliente,
+          usuario,
+          token,
+        })
+    } else {
+      return res.status(404).json()
+    }
   },
 
   delete: async (req, res) => {
     const cliente = await Cliente.findByPk(req.params.id_cliente);
+    const usuario = await Usuario.findOne({ where: { clienteId: req.params.id_cliente}})
     await cliente.destroy();
+    await usuario.destroy();
     return res.json({ delete: "Cliente eliminado" });
   },
 
@@ -100,12 +120,23 @@ module.exports = {
     }
   },
 
-  encontrarClientePorUserName: async (req, res) => {
-    var cliente = await Cliente.findOne({ where: { userName: req.params.userName } });
-    if (![req.body.values]) {
+  // encontrarClientePorUserName: async (req, res) => {
+  //   var cliente = await Cliente.findOne({ where: { userName: req.params.userName } });
+  //   if (![req.body.values]) {
+  //     res.status(400).json({ err: "No hay cliente con userName" });
+  //   } else {
+  //     return res.status(200).json(cliente);
+  //   }
+  // },
+  encontrarClientePorUsername: async (req, res) => {
+    var usuario = await Usuario.findOne({ where: { username: req.params.username, rol: "CLIENTE" } });
+    if (!usuario || usuario == null) {
       res.status(400).json({ err: "No hay cliente con userName" });
     } else {
-      return res.status(200).json(cliente);
+      var cliente = await Cliente.findOne({ where: { id_cliente: usuario.clienteId } });
+      return res.status(200).json({ usuario, cliente });
     }
   },
+
+
 };

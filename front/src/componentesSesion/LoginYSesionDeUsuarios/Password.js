@@ -138,7 +138,7 @@ class Password extends React.Component {
                     <Form noValidate onSubmit={this.onSubmitLogin}>
                       <h1>Accede al Catenacio</h1>
                       <p className="text-muted">Inicia sesión con tu password</p>
-                      <InputGroup key="nombre" className="mb-3">
+                      {/* <InputGroup key="nombre" className="mb-3">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
                             <i className="icon-user"></i>
@@ -154,7 +154,7 @@ class Password extends React.Component {
                           value={usuario.nombre}
                           onChange={onChangeLogin}
                         />
-                      </InputGroup>
+                      </InputGroup> */}
                       <InputGroup className="mb-3">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>

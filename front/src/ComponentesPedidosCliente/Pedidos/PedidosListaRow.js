@@ -129,12 +129,12 @@ class PedidoListaRow extends React.Component {
               <i className="cui-trash icons font-1xl d-block mt-1"></i>
             </Button>{" "}
             &nbsp;&nbsp;
-            <Button
+            {/* <Button
               className="btn #e65100 orange darken-4"
               onClick={this.seleccionarPedido}
             >
               <i className="fa fa-dot-circle-o">{""} Editar</i>
-            </Button>
+            </Button> */}
           </td>
         )}
       </tr>

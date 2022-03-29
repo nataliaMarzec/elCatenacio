@@ -16,34 +16,12 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
         references: { model: "ResponsableDeMesa", key: "id_responsable" },
       },
-      // clienteId: {
-      //   allowNull: true,
-      //   foreignKey: true,
-      //   type: DataTypes.INTEGER,
-      //   references: { model: "Clientes", key: "id_cliente" },
-      // },
-      nombre: {
-        type: DataTypes.STRING,
-        allowNull:true,
-        // validate: {
-        //   notNull: {
-        //     msg: "Por favor completa tu nombre",
-        //   },
-        // },
-        isAlpha: {
-          args: true,
-          msg: "El nombre solo puede contener letras",
-        },
-        len: {
-          args: [2, 255],
-          msg: "El nombre tiene que ser entre 2 y 255 caracteres",
-        },
-      },
-      direccion: {
-        type: DataTypes.STRING,
+      clienteId: {
         allowNull: true,
+        foreignKey: true,
+        type: DataTypes.INTEGER,
+        references: { model: "Clientes", key: "id_cliente" },
       },
-      telefono: DataTypes.STRING,
       username: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -57,7 +35,6 @@ module.exports = function (sequelize, DataTypes) {
             msg: "El email tiene que ser un correo valido"
           }
         }
-
       },
       password: {
         type: DataTypes.STRING,

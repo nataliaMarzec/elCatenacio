@@ -9,7 +9,7 @@ router.route("/cliente/:id_cliente")
     .put(controllerCliente.update)
 router.get("/clientes/:id_cliente", controllerCliente.getClienteId);
 router.get("/clientes", controllerCliente.getClientes);
-router.get("/clientes/busqueda/:userName", controllerCliente.encontrarClientePorUserName);
+router.get("/clientes/busqueda/:username", controllerCliente.encontrarClientePorUsername);
 
 
 

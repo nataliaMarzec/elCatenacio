@@ -867,7 +867,6 @@ class Pedidos extends React.Component {
                   unPedido={this.state.unPedido}
                   verPlantilla={this.state.verPlantilla}
                   listaItems={this.state.listaItems}
-                  unPedido={this.state.unPedido}
                   fecha={this.state.fecha}
                   hora={this.state.hora}
                   nombre={this.state.nombre}

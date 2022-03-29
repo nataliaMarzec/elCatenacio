@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createContext } from "react";
 import {
   Button,
   Form,
@@ -9,15 +9,23 @@ import {
   ModalBody,
   ModalFooter,
 } from "reactstrap";
+import WrapperConsumer, { ContextUsuario } from "./../../componentesSesion/Context/ContextUsuario";
 
 class CargarCliente extends React.Component {
+  static contextType = createContext(ContextUsuario)
+
+
   constructor(props) {
     super(props);
     this.state = {
       cliente: props.cliente || {},
       clientes: props.clientes || [],
+      usuario: props.usuario || {},
+      usuarios: props.usuarios || [],
       modal: false,
     };
+    this.listadoClientes=this.listadoClientes.bind(this)
+    this.listadoUsuarios=this.listadoUsuarios.bind(this)
   }
 
   estadoInicial = () => {
@@ -26,16 +34,37 @@ class CargarCliente extends React.Component {
         nombre: "",
         direccion: "",
         telefono: "",
-        username:"",
-        email: "",
         rol: "CLIENTE",
-        registrado:false,
+        registrado: false,
       },
+      usuario: {
+        username: "",
+        email: "",
+        password:"",
+      }
     });
   };
-  componentDidMount(){
-    this.props.listadoClientes();
-    console.log("CLIENTES",this.state.clientes)
+  componentWillMount() {
+    this.listadoClientes();
+    this.listadoUsuarios();
+  }
+  listadoClientes = () => {
+    fetch(`http://localhost:8383/clientes`)
+      .then((res) => res.json())
+      .then(
+        (cltes) => this.setState({ clientes: cltes, cliente: {} }),
+        console.log("ClientaEnviado", this.state.clientes)
+      );
+  };
+
+  listadoUsuarios = () => {
+    fetch(`http://localhost:8383/usuarios`)
+      .then((res) => res.json())
+      .then(
+        (res) => this.setState({usuarios:res}),
+        console.log("Usuarios", this.state.usuarios)
+      )
+      .then(this.setState({ usuario: {} }))
   }
 
   handleSubmit = (event) => {
@@ -43,31 +72,9 @@ class CargarCliente extends React.Component {
     if (id) {
       this.editarcliente(id);
     } else {
-      // if(!id){
       this.crearCliente();
-      //  this.encontrarCliente(this.state.cliente);
-      // }
     }
     event.preventDefault(event);
-  };
-
-  encontrarCliente = (cliente) => {
-    console.log("dniEncontrar", cliente.username, cliente);
-    fetch("http://localhost:8383/clientes/busqueda/:" + cliente.username)
-      .then((res) => res.json())
-      .then((unCliente) =>
-        this.setState(
-          { cliente: unCliente },
-          console.log("encontrar:", cliente.username, { cliente: unCliente })
-          // this.crearCliente(cliente, false)
-        )
-      );
-    // .catch((error) =>
-    //   this.setState({
-    //     error: "no encontrado",
-    //     : false,
-    //   })
-    // );
   };
 
   crearCliente = () => {
@@ -77,11 +84,14 @@ class CargarCliente extends React.Component {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.state.cliente),
+      body: JSON.stringify(this.state.cliente,this.state.usuario),
     })
-      .then(this.props.listadoClientes)
+      // .then(this.setState({usuarios:this.props.context.usuarios}))
+      .then(this.listadoClientes)
+      .then(this.listadoUsuarios)
       .then(this.estadoInicial());
   };
+
 
   editarcliente = (id) => {
     fetch("http://localhost:8383/cliente/" + id, {
@@ -90,13 +100,17 @@ class CargarCliente extends React.Component {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.state.cliente),
+      body: JSON.stringify(this.state.usuario,this.state.cliente),
     })
-      .then(this.props.listadoClientes)
-      .then(this.estadoInicial());
+      .then(this.props.listadoClientes,this.props.listadoUsuarios)
+      .then(this.estadoInicial())
+      .catch(err => console.log("error", err), this.estadoInicial())
   };
+  
 
   render() {
+    console.log("USUARIOcargar", this.state.usuario)
+
     return (
       <Col xs="12" md="12">
         <ModalBody>
@@ -162,7 +176,7 @@ class CargarCliente extends React.Component {
                   name="username"
                   placeholder="Completa UserName..."
                   // required
-                  value={this.state.cliente.username}
+                  value={this.state.usuario.username}
                   onChange={this.handleChange}
                 />
               </Col>
@@ -178,12 +192,12 @@ class CargarCliente extends React.Component {
                   name="email"
                   placeholder="Completa Email..."
                   // required={true}
-                  value={this.state.cliente.email}
+                  value={this.state.usuario.email}
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            {/* <FormGroup row>
+            <FormGroup row>
               <Col md="3">
                 <Label for="password">Password</Label>
               </Col>
@@ -194,11 +208,11 @@ class CargarCliente extends React.Component {
                   name="password"
                   placeholder="Completa Email..."
                   // required={true}
-                  value={this.state.cliente.password}
+                  value={this.state.usuario.password}
                   onChange={this.handleChange}
                 />
               </Col>
-            </FormGroup> */}
+            </FormGroup>
             <Button
               type="submit"
               color="success"
@@ -216,12 +230,14 @@ class CargarCliente extends React.Component {
   }
 
   handleChange = (e) => {
+    var nuevoUsuario = Object.assign({}, this.state.usuario);
     var nuevoCliente = Object.assign({}, this.state.cliente);
+    nuevoUsuario[e.target.name] = e.target.value;
     nuevoCliente[e.target.name] = e.target.value;
-    this.setState({ cliente: nuevoCliente });
+    this.setState({ usuario: nuevoUsuario, cliente: nuevoCliente });
   };
 
-  
+
 }
 
-export default CargarCliente;
+export default WrapperConsumer(CargarCliente)

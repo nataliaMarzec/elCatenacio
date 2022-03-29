@@ -51,6 +51,7 @@ class VistaDeProductosParaClientes extends React.Component {
     });
   }
 
+
   componentWillMount() {
     this.listadoProductos();
     this.setState({ itemCliente: this.state.itemCliente, listaItemsCliente: [] },
@@ -151,6 +152,11 @@ class VistaDeProductosParaClientes extends React.Component {
     this.crearPedido()
     this.setState({listaItemsCliente:[]})
   }
+  //probar
+  salir(event){
+    this.props.history.push(`/`);
+    event.preventDefault(event)
+  }
 
   render() {
     console.log("itemsCLientesRenderP", this.state.listaItemsClientes)
@@ -212,6 +218,7 @@ class VistaDeProductosParaClientes extends React.Component {
               </Card>
             </Col>
           </Row>
+          <div><Button onClick={this.salir}>Volver</Button></div>
         </div>
       </React.Fragment>
     )

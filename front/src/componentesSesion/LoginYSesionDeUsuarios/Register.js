@@ -38,9 +38,10 @@ class Register extends Component {
       );
   }
 
-  registrar() {
+  registrarCliente() {
     console.log("registrar1", this.props.context.usuario)
-    fetch("http://localhost:8383/usuario/signup", {
+    // fetch("http://localhost:8383/usuario/signup", {
+          fetch("http://localhost:8383/usuario/cliente", {
       method: "post",
       headers: {
         Accept: "application/json",
@@ -82,7 +83,7 @@ class Register extends Component {
     console.log("this.context", this.props.context.usuario)
    
     if (this.props.context.usuario !== {}) {
-      this.registrar()
+      this.registrarCliente()
       this.props.history.push(`/login`);
     }
     event.preventDefault(event);

@@ -11,12 +11,6 @@ module.exports = function (sequelize, DataTypes) {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      rolClienteId: {
-        allowNull: true,
-        foreignKey: true,
-        type: DataTypes.INTEGER,
-        references: { model: "Roles", key: "id_rol"},
-      },
       nombre: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -36,19 +30,6 @@ module.exports = function (sequelize, DataTypes) {
       },
       direccion: DataTypes.STRING,
       telefono: DataTypes.STRING,
-      username: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      email: {
-        type: DataTypes.STRING,
-      },
-      rol:{
-        type:DataTypes.STRING,
-        defaultValue:"CLIENTE",
-      },
-      registrado:DataTypes.BOOLEAN,
-
     },
 
     {

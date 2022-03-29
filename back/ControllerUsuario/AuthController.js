@@ -1,27 +1,26 @@
 const { models } = require("../SequelizeConnection");
 const Usuario = models.Usuario;
 const ResponsableDeMesa = models.ResponsableDeMesa
+const Cliente = models.Cliente
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../auth');
 
 module.exports = {
-
+    //login para todos
     login(req, res) {
-        let { nombre, username, email, password } = req.body;
+        let { username, email, password } = req.body;
         Usuario.findOne({
             where: {
                 email: email,
-                nombre: nombre,
                 username: username,
             }
         }).then(usuario => {
-            if (!usuario || usuario.nombre == undefined || usuario.email == undefined
+            if (!usuario || usuario.email == undefined
                 || usuario.username == undefined) {
                 res.status(404).json({ msg: "Usuario con este username no encontrado" });
             } else {
                 if (bcrypt.compareSync(password, usuario.password)) {
-                    // Creamos el token
                     let token = jwt.sign({ usuario: usuario }, authConfig.secret, {
                         expiresIn: authConfig.expires
                     });
@@ -30,8 +29,7 @@ module.exports = {
                         token: token
                     })
                 } else {
-                    // Unauthorized Access
-                    res.status(401).json({ msg: "Contraseña incorrecta" })
+                    res.status(401).json({ msg: "Acceso no autorizado" })
                 }
             }
         }).catch(err => {
@@ -39,24 +37,16 @@ module.exports = {
         })
     },
 
-    // Registrarse
+    // Registro solo para Admin
     signUp(req, res) {
-        //HAY QUE REALIZAR UNA VALIDACION ANTES DE ENCRIPTARLO PARA QUE FUNCIONE EL VALIDATE DEL MODELO
-        // Encriptar la contraseña
         let password = bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds));
-        // console.log("PASSWORD",password)
-        // Crear un usuario
         Usuario.create({
-            nombre: req.body.nombre,
-            direccion: req.body.direccion,
-            telefono: req.body.telefono,
             username: req.body.username,
             email: req.body.email,
             password: password,
-            rol: req.body.rol,
-
+            rol: "ADMIN",
+            registrado: true,
         }).then(usuario => {
-            // Crea el token
             let token = jwt.sign({ usuario: usuario }, authConfig.secret, {
                 expiresIn: authConfig.expires
             });
@@ -64,104 +54,90 @@ module.exports = {
                 usuario: usuario,
                 token: token,
             });
-
         }).catch(err => {
             res.status(500).json(err);
         });
-
     },
-    signUpPrueba(req, res) {
-        let password = bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds));
-        console.log("PASSWORD",password)
-        
-        Usuario.create({
+
+    signupResponsable: async (req, res) => {
+        var responsable = await ResponsableDeMesa.create({
             nombre: req.body.nombre,
             direccion: req.body.direccion,
             telefono: req.body.telefono,
-            username: req.body.username,
-            email: req.body.email,
-            password: password,
-            rol: req.body.rol,
-
-        }).then(usuario => {
-            // Crea el token
-            let token = jwt.sign({ usuario: usuario }, authConfig.secret, {
-                expiresIn: authConfig.expires
-            });
-            res.json({
-                usuario: usuario,
-                token: token,
-            });
-
-        }).catch(err => {
-            res.status(500).json(err);
-        });
-
-    },
-
-
-    signUpResponsable: async (req, res) => {
-        var responsable = await ResponsableDeMesa.findOne({
-            where: { username: req.params.username, email: req.params.email },
-        });
+        })
         if (![req.body.values] || !responsable) {
-            res.status(400).json({ err: "responsable no existe" });
+            res.status(400).json({ err: "no se creo el responsable" });
         } else {
-            let password = bcrypt.hashSync(responsable.password, Number.parseInt(authConfig.rounds));
-            Usuario.create({
+            console.log("RESPONSABLE+++++", responsable);
+            let password = bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds));
+            console.log("PASSWORD", password)
+            await Usuario.create({
                 responsableId: responsable.id_responsable,
-                nombre: responsable.nombre,
-                direccion: responsable.direccion,
-                telefono: responsable.telefono,
-                username: responsable.username,
-                email: responsable.email,
+                username: req.body.username,
+                email: req.body.email,
                 password: password,
-                rol: responsable.rol,
+                rol: "RESPONSABLE",
                 registrado: true,
             }).then(usuario => {
                 let token = jwt.sign({ usuario: usuario }, authConfig.secret, {
                     expiresIn: authConfig.expires
                 });
-                res.json({
+                console.log("TOKEN+++++++++", token)
+
+                res.status(200).json({
                     usuario: usuario,
                     token: token,
                 });
-                let { nombre, username, email, password } = req.body;
-                Usuario.findOne({
-                    where: {
-                        email: email,
-                        nombre: nombre,
-                        username: username,
-                        rol: "RESPONSABLE"
-                    }
-                }).then(usuario => {
-                    if (!usuario) {
-                        res.status(404).json({ msg: "Usuario con este username no encontrado" });
-
-                    } else {
-                        if (bcrypt.compareSync(password, usuario.password)) {
-                            let token = jwt.sign({ usuario: usuario }, authConfig.secret, {
-                                expiresIn: authConfig.expires
-                            });
-                            res.status(200).json({
-                                usuario: usuario,
-                                token: token
-                            })
-                        } else {
-                            res.status(401).json({ msg: "Contraseña incorrecta" })
-                        }
-                    }
-                }).catch(err => {
-                    res.status(500).json(err);
-                })
-
             }).catch(err => {
                 res.status(500).json(err);
             });
         }
     },
 
+
+    signupCliente: async (req, res) => {
+        var cliente = await Cliente.create({
+            nombre: req.body.nombre,
+            direccion: req.body.direccion,
+            telefono: req.body.telefono,
+        })
+        if (![req.body.values] || !cliente) {
+            res.status(400).json({ err: "no se creo el cliente" });
+        } else {
+            console.log("CLIENTE+++++", cliente);
+            let password = bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds));
+            console.log("PASSWORD", password)
+            await Usuario.create({
+                clienteId: cliente.id_cliente,
+                username: req.body.username,
+                email: req.body.email,
+                password: password,
+                rol: "CLIENTE",
+                registrado: true,
+            }).then(usuario => {
+                let token = jwt.sign({ usuario: usuario }, authConfig.secret, {
+                    expiresIn: authConfig.expires
+                });
+                console.log("TOKEN+++++++++", token)
+
+                res.status(200).json({
+                    usuario: usuario,
+                    token: token,
+                });
+            }).catch(err => {
+                res.status(500).json(err);
+            });
+        }
+    },
+
+
     delete: async (req, res) => {
+        const usuario = await Usuario.findByPk(req.params.id_usuario);
+        await usuario.destroy();
+        return res.json({ delete: "Usuario eliminado" });
+    },
+    //ver /corregir 
+    deleteCliente: async (req, res) => {
         const usuario = await Usuario.findByPk(req.params.id_usuario);
         await usuario.destroy();
         return res.json({ delete: "Usuario eliminado" });
@@ -186,7 +162,7 @@ module.exports = {
             return res.status(200).json(usuario);
         }
     },
- 
+
 
     registerResponsable: async (req, res) => {
         // var responsable = await ResponsableDeMesa.findOne({
@@ -233,39 +209,41 @@ module.exports = {
             });
     },
 
-    
+
     updateResponsable: async (req, res) => {
         var responsable = await ResponsableDeMesa.findOne({
-            where: {id_responsable:req.params.id_responsable},
+            where: { id_responsable: req.params.id_responsable },
         });
         var usuario = await Usuario.findOne({
-            where: { responsableId:responsable.id_responsable,
-                username:responsable.username, email:responsable.email },
+            where: {
+                responsableId: responsable.id_responsable,
+                username: responsable.username, email: responsable.email
+            },
         });
         if (![req.body.values]) {
             res.status(400).json({ err: "usuario y responsable no encontrado" });
         } else {
             let password = bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds));
-            
+
             var usuarioUpdate = await usuario.update({
                 nombre: req.body.nombre,
                 direccion: req.body.direccion,
                 telefono: req.body.telefono,
                 username: req.body.telefono.username,
                 email: req.body.email,
-                password:password,
+                password: password,
                 rol: req.body.rol,
                 registrado: true,
-              });
-              let token = jwt.sign({usuario:usuarioUpdate }, authConfig.secret, {
+            });
+            let token = jwt.sign({ usuario: usuarioUpdate }, authConfig.secret, {
                 expiresIn: authConfig.expires
             })
-            return res.status(200).json(usuarioUpdate,token);
+            return res.status(200).json(usuarioUpdate, token);
         }
     },
     verificarPassword: async (req, res) => {
         var usuario = await Usuario.findOne({
-            where: { username: req.params.username,password: req.params.password},
+            where: { username: req.params.username, password: req.params.password },
         });
         if (![req.body.values]) {
             res.status(400).json({ err: "usuario no encontrado" });
@@ -273,15 +251,15 @@ module.exports = {
             return res.status(200).json(usuario);
         }
     },
-// A PRUEBA
+    // A PRUEBA
     loginPassword(req, res) {
-        let {username, email, password } = req.body;
+        let { username, email, password } = req.body;
         Usuario.findOne({
             where: {
                 // [Op.or]: [{
-                    $or: [{email:email}, {username:username}]
-            //    email:email,username:username
-            // }]
+                $or: [{ email: email }, { username: username }]
+                //    email:email,username:username
+                // }]
             }
         }).then(usuario => {
             if (!usuario || usuario.email == undefined

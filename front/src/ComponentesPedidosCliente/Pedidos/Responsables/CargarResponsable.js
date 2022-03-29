@@ -14,15 +14,17 @@ import {
 
 class CargarResponsable extends React.Component {
   static contextType = createContext(ContextUsuario)
+
   constructor(props) {
     super(props);
     this.state = {
       responsable: props.responsable || {},
       responsables: props.responsables || [],
+      usuario:props.usuario || {},
+      usuarios:props.usuarios || [],
       modal: false,
 
     };
-    // this.onSubmitRegistrar=this.onSubmitRegistrar.bind(this)
   }
 
   estadoInicial = () => {
@@ -31,18 +33,22 @@ class CargarResponsable extends React.Component {
         nombre: "",
         direccion: "",
         telefono: "",
+       
+      },
+      usuario:{
         username: "",
         email: "",
         password: "",
         rol: "",
-      },
+      }
     });
   };
 
   componentDidMount() {
     this.props.listadoResponsables();
-    // this.listadoUsuarios()
-    console.log("RESPONS", this.state.responsables)
+    this.props.listadoUsuarios()
+    this.setState({usuarios:this.state.usuarios,usuario:this.state.usuario})
+    console.log("RESPONS", this.state.responsables,this.state.usuarios)
   }
 
   listadoUsuarios = () => {
@@ -54,67 +60,6 @@ class CargarResponsable extends React.Component {
         );
 }
 
-  // registrar() {
-  //   fetch("http://localhost:8383/this.state.responsable/signup", {
-  //     method: "post",
-  //     headers: {
-  //       Accept: "application/json",
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify(this.props.context.this.state.responsable),
-  //   })
-  //   .then(res => this.error(res))
-  //   .then(this.props.context.setStateUsuario(this.props.context.this.state.responsable))
-  //   .then(this.props.context.setStateRol("ADMIN"))
-  //   .then(this.listadoUsuarios())
-  //   .catch(err => console.log("error", err), this.props.context.estadoInicial())
-  //   // console.log("registrarRESPONSABLE", this.props.context.this.state.responsable)
-  // }
-  // error = res => {
-  //   if (res.status === 401) {
-  //     console.log("El email ya se encuentra registrado")
-  //   }
-
-  //   if (res.status === 200) {
-  //     console.log("Su cuenta se ha creado satisfactoriamente");
-  //     // this.props.context.estadoInicial()
-  //   }
-  //   if (res.status === 403) {
-  //     console.log(
-  //       "Su cuenta no se pudo crear. Por favor vuelva a registrarse y complete todos los campos"
-  //     );
-  //     // this.props.context.estadoInicial();
-  //     this.props.history.push("./register");
-  //   }
-  // };
-  
-  // onSubmitRegistrar(event) {
-  //   if (this.props.context.usuario !== {}) {
-  //     this.registrar()
-  //     console.log("this.context", this.props.context.usuario)
-  //     // this.props.history.push(`/login`);
-  //   }
-  //   event.preventDefault(event);
-  // }
-  // encontrarResponsable = (responsable) => {
-  //   console.log("dniEncontrar", responsable.nombre, responsable);
-  //   fetch("http://localhost:8383/responsables/busqueda/:" + responsable.nombre)
-  //     .then((res) => res.json())
-  //     .then((unResponsable) =>
-  //       this.setState(
-  //         { responsable: unResponsable },
-  //         console.log("encontrar:", responsable.nombre, { responsable: unResponsable })
-  //         // this.crearResponsable(responsable, false)
-  //       )
-  //     );
-    // .catch((error) =>
-    //   this.setState({
-    //     error: "no encontrado",
-    //     : false,
-    //   })
-    // );
-  // };
-
   crearResponsable = () => {
     fetch("http://localhost:8383/responsable/signup", {
       method: "post",
@@ -124,7 +69,7 @@ class CargarResponsable extends React.Component {
       },
       body: JSON.stringify(this.state.responsable,this.state.usuario),
     })
-      .then(this.props.listadoResponsables)
+      .then(this.props.listadoResponsables(),this.props.listadoUsuarios())
       .then(this.estadoInicial());
   };
 
@@ -154,7 +99,7 @@ class CargarResponsable extends React.Component {
 
   render() {
     const { context: { usuario}} = this.props;
-    console.log("CARGAR RESPONSABLE", usuario)
+    console.log("CARGAR RESPONSABLE", usuario,this.state.usuario,this.state.responsable)
     return (
       <Col xs="12" md="12">
         <ModalBody>
@@ -218,7 +163,7 @@ class CargarResponsable extends React.Component {
                   name="username"
                   placeholder="Completa UserName..."
                   required
-                  value={this.state.responsable.username}
+                  value={this.state.usuario.username}
                   onChange={this.handleChange}
                 />
               </Col>
@@ -234,7 +179,7 @@ class CargarResponsable extends React.Component {
                   name="email"
                   placeholder="Completa Email..."
                   // required={true}
-                  value={this.state.responsable.email}
+                  value={this.state.usuario.email}
                   onChange={this.handleChange}
                 />
               </Col>
@@ -250,7 +195,7 @@ class CargarResponsable extends React.Component {
                   name="password"
                   placeholder="Completa password..."
                   // required={true}
-                  value={this.state.responsable.password}
+                  value={this.state.usuario.password}
                   onChange={this.handleChange}
                 />
               </Col>
@@ -265,18 +210,18 @@ class CargarResponsable extends React.Component {
             </Button>
           </Form>
         </ModalBody>
-
         <ModalFooter></ModalFooter>
       </Col>
     );
   }
 
-  handleChange = (e) => {
-    var nuevoResponsable = Object.assign({}, this.state.responsable);
-    nuevoResponsable.rol = "RESPONSABLE"
-    nuevoResponsable[e.target.name] = e.target.value;
-    this.setState({ responsable: nuevoResponsable });
-  };
+  handleChange=(e)=>{
+  var nuevoUsuario = Object.assign({}, this.state.usuario);
+  var nuevoResponsable = Object.assign({}, this.state.responsable);
+  nuevoUsuario[e.target.name] = e.target.value;
+  nuevoResponsable[e.target.name] = e.target.value;
+  this.setState({ usuario: nuevoUsuario,responsable: nuevoResponsable });
+};
 
 
 }

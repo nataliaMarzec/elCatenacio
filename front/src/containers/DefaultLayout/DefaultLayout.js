@@ -32,7 +32,7 @@ class DefaultLayout extends Component {
   onLogout(e) {
     e.preventDefault()
     this.props.context.estadoInicial()
-    this.props.history.push('/login')
+    this.props.history.push('/password')
   }
 
   render() {

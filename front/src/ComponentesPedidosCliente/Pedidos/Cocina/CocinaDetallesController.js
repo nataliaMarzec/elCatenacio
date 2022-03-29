@@ -104,7 +104,7 @@ const CocinaDetallesController = (props) => {
       }
       if (!found) return el;
     }));
-    // console.log("Cocina", nuevaLista)
+    console.log("Parrilla", nuevaLista)
     return nuevaLista
   }
   console.log(startDate, "DATE", props.pedidos.filter(p => p.preparadoCocina == false && p.preparadoParrilla == false)

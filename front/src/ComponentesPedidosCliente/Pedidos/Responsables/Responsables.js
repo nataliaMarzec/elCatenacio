@@ -27,11 +27,14 @@ class Responsables extends React.Component {
             seleccionado: {},
             responsable: {},
             responsables: [],
+            usuario:{},
+            usuarios:[],
             modal: false,
             editable: false,
             nombre: "",
         };
         this.listadoResponsables = this.listadoResponsables.bind(this)
+        this.listadoUsuarios=this.listadoUsuarios.bind(this)
     }
 
     
@@ -111,20 +114,27 @@ class Responsables extends React.Component {
         e.preventDefault(e);
     };
 
-    actualizarAlEliminar = (unResponsable) => {
-        var listaActualizada = this.state.responsables.filter(
-            (item) => unResponsable !== item
+    actualizarAlEliminar = (unResponsable, unUsuario) => {
+        var listadoResponsables = this.state.responsables.filter(
+          (item) => unResponsable !== item
         );
-        this.setState({ responsables: listaActualizada, responsable: {} });
-    };
+        var listadoUsuarios = this.props.context.usuarios.filter(
+          (item) => unUsuario != item
+        )
+        this.setState({
+          responsables: listadoResponsables, usuarios: listadoUsuarios,
+          usuario: {}, responsable: {}
+        });
+      };
+    
 
     eliminarResponsable(id) {
         this.props.eliminarResponsable(id);
     }
 
-    seleccionar = (unResponsable) => {
-        this.setState({ responsable: unResponsable });
-    };
+    seleccionar = (unUsuario, unResponsable) => {
+        this.setState({ usuario: unUsuario, responsable: unResponsable});
+      };
 
     
     ModalHeaderStrong = (editable) => {
@@ -167,8 +177,11 @@ class Responsables extends React.Component {
                         <this.ModalHeaderStrong></this.ModalHeaderStrong>
                         <CargarResponsable
                             listadoResponsables={this.listadoResponsables}
+                            listadoUsuarios={this.listadoUsuarios}
                             responsable={this.state.responsable}
                             responsables={this.state.responsables}
+                            usuario={this.state.usuario}
+                            usuarios={this.state.usuarios}
                         />
                     </Modal>
                     <Row>&nbsp;</Row>
@@ -249,27 +262,39 @@ class Responsables extends React.Component {
     }
 
     renderRows() {
-        let responsables = this.state.responsables;
-        // let usuarios = this.props.context.usuarios
-        // let filter = usuarios.filter(u=>u.rol == "RESPONSABLE")
-        return !responsables
-            ? console.log("NULL", null)
-            : responsables.map((unResponsable, index) => {
+        let responsables = this.state.responsables
+        let usuarios = this.props.context.usuarios.filter(u => u.rol == "RESPONSABLE")
+        console.log("ROW responsables", this.state.responsables)
+        return (
+          <React.Fragment>{
+            usuarios.map((unUsuario, index) => {
+              var responsable = responsables.find(r => r.id_responsable == unUsuario.responsableId)
+    
+              if (responsable) {
+                let listaResponsables = responsables.filter(r => r.id_responsable == unUsuario.responsableId)
                 return (
-                    <ResponsableRow
-                        key={index}
-                        index={index}
-                        responsable={unResponsable}
-                        responsables={responsables}
-                        selector={this.seleccionar}
-                        responsableSeleccionado={this.responsableSeleccionado}
-                        actualizarAlEliminar={this.actualizarAlEliminar}
-                        eliminarResponsable={this.eliminarResponsable.bind(this)}
-                        toggle={this.toggle}
-                    />
-                );
-            });
-    }
+                  <ResponsableRow
+                    key={index}
+                    index={index}
+                    usuario={unUsuario}
+                    usuarios={usuarios}
+                    responsables={listaResponsables}
+                    responsable={responsable}
+                    selector={this.seleccionar}
+                    actualizarAlEliminar={this.actualizarAlEliminar}
+                    toggle={this.toggle}
+                  />
+    
+                )
+              }
+              else {
+                return
+              }
+            })}
+          </React.Fragment>
+        )
+      }
+  
 }
 
 export default WrapperConsumer(Responsables)

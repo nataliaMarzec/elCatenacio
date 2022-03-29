@@ -16,28 +16,11 @@ module.exports = {
           type: Sequelize.INTEGER,
           references: { model: "ResponsableDeMesa", key: "id_responsable" },
         },
-        nombre: {
-          type: Sequelize.STRING,
+        clienteId: {
           allowNull: true,
-          validate: {
-            notNull: {
-              msg: "Por favor completa tu nombre",
-            },
-          },
-          isAlpha: {
-            args: true,
-            msg: "El nombre solo puede contener letras",
-          },
-          len: {
-            args: [2, 255],
-            msg: "El nombre tiene que ser entre 2 y 255 caracteres",
-          },
-        },
-        direccion: {
-          type: Sequelize.STRING,
-        },
-        telefono: {
-          type: Sequelize.STRING,
+          foreignKey: true,
+          type: Sequelize.INTEGER,
+          references: { model: "Clientes", key: "id_cliente" },
         },
         username: {
           type: Sequelize.STRING,

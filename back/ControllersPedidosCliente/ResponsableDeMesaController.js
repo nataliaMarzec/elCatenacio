@@ -8,17 +8,13 @@ const jwt = require('jsonwebtoken');
 const authConfig = require('../auth');
 
 module.exports = {
- 
+ //VER TOKEN
   signupResponsable: async (req, res) => {
     let password = bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds));
     ResponsableDeMesa.create({
         nombre: req.body.nombre,
         direccion: req.body.direccion,
         telefono: req.body.telefono,
-        username: req.body.username,
-        email: req.body.email,
-        password: password,
-        rol: "RESPONSABLE",
     }).then(responsable => {
         let token = jwt.sign({ responsable: responsable }, authConfig.secret, {
             expiresIn: authConfig.expires
@@ -26,13 +22,10 @@ module.exports = {
         if (responsable) {
             let usuario = Usuario.create({
                 responsableId: responsable.id_responsable,
-                nombre: responsable.nombre,
-                direccion: responsable.direccion,
-                telefono: responsable.telefono,
-                username: responsable.username,
-                email: responsable.email,
-                password: responsable.password,
-                rol: responsable.rol,
+                username:req.body.username,
+                email:req.body.email,
+                password:password,
+                rol:"RESPONSABLE",
                 registrado: true,
             })
             return res.status(200).json({
@@ -58,9 +51,6 @@ module.exports = {
         nombre: req.body.nombre,
         direccion: req.body.direccion,
         telefono: req.body.telefono,
-        // username: req.body.username,
-        // email: req.body.email,
-        // password: password,
         rol: "RESPONSABLE",
     }).then(responsable => {
         let token = jwt.sign({ responsable: responsable }, authConfig.secret, {
@@ -69,9 +59,6 @@ module.exports = {
         if (responsable) {
             let usuario = Usuario.create({
                 responsableId: responsable.id_responsable,
-                // nombre: responsable.nombre,
-                // direccion: responsable.direccion,
-                // telefono: responsable.telefono,
                 username: req.body.username,
                 email: req.body.email,
                 password: req.password,
@@ -101,6 +88,7 @@ module.exports = {
         res.status(400).send(error);
       });
   },
+  
   encontrarResponsablePorNombre: async (req, res) => {
     var responsable = await ResponsableDeMesa.findOne({ where: { nombre: req.params.nombre } });
     if (![req.body.values]) {
@@ -110,12 +98,14 @@ module.exports = {
     }
   },
 
-
   delete: async (req, res) => {
     const responsable = await ResponsableDeMesa.findByPk(req.params.id_responsable);
+    const usuario = await Usuario.findOne({ where: {responsableId: req.params.id_responsable}})
     await responsable.destroy();
-    return res.json({ delete: "ResponsableDeMesa eliminado" });
+    await usuario.destroy();
+    return res.json({ delete: "Responsable eliminado" });
   },
+
 
   update: async (req, res) => {
     const responsableEncontrado = await ResponsableDeMesa.findByPk(req.params.id_responsable);
@@ -125,19 +115,15 @@ module.exports = {
       nombre: req.body.nombre,
       direccion: req.body.direccion,
       telefono: req.body.telefono,
-      username: req.body.username,
-      email: req.body.email,
       rol: "RESPONSABLE",
-      password: password,
-      registrado: req.body.registrado,
     });
     const usuarioEncontrado = await Usuario.findOne({ where: { responsableId: responsable.id_responsable } });
     const usuario = await usuarioEncontrado.update({
-      nombre: responsable.nombre, direccion: responsable.direccion,
-      telefono: responsable.telefono, username: responsable.username, email: responsable.email,
-      rol: responsable.rol, password: responsable.password, registrado: responsable.registrado
+      username: req.body.username,
+      email: req.body.email,
+      rol:"RESPONSABLE", password:password, registrado:true
     });
-    let token = jwt.sign({ responsable: responsable }, authConfig.secret, {
+    let token = jwt.sign({ usuario:usuario }, authConfig.secret, {
       expiresIn: authConfig.expires
   })
     if(responsable){

@@ -43,14 +43,18 @@ class ContextUsuario extends Component {
         // console.log("Usuarios",usuarios)
         this.setState({usuarios:usuarios})
     }
+    setStateVerPassword=()=>{
+        this.setState({verPassword:!this.state.verPassword})
+    }
 
     onChangeRegistrar = (e) => {
         var nuevoUsuario = Object.assign({}, this.state.usuario);
-        nuevoUsuario.rol = "CLIENTE"
+        // nuevoUsuario.rol = "ADMIN"
         nuevoUsuario[e.target.name] = e.target.value;
         this.setState({ usuario: nuevoUsuario }
-            // , () => console.log("signup", this.state.usuario)
+            , () => console.log("signupCliente", this.state.usuario)
             );
+         
     }
     onChangeRegistrarResponsable=(e)=>{
         var nuevoUsuario = Object.assign({}, this.state.usuario);
@@ -79,6 +83,7 @@ class ContextUsuario extends Component {
         error: '',
         auth: false,
         rol: '',
+        verPassword:false,
         estadoInicial: this.estadoInicial,
         setStateUsuarios:this.setStateUsuarios,
         setStateUsuario: this.setStateUsuario,

@@ -10,12 +10,6 @@ module.exports = {
           primaryKey: true,
           type: Sequelize.INTEGER,
         },
-        rolClienteId: {
-          allowNull: true,
-          foreignKey: true,
-          type: Sequelize.INTEGER,
-          references: { model: "Roles", key: "id_rol" },
-        },
         nombre: {
           type: Sequelize.STRING,
         },
@@ -25,19 +19,7 @@ module.exports = {
         telefono: {
           type: Sequelize.STRING,
         },
-        username: {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
-        email: {
-          type: Sequelize.STRING,
-        },
-        rol: {
-          type: Sequelize.STRING,
-          defaultValue: "cliente",
-        },
-        registrado:Sequelize.BOOLEAN,
-
+     
       },
 
       {
