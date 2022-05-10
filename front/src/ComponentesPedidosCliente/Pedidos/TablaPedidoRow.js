@@ -8,24 +8,31 @@ class TablaPedidoRow extends React.Component {
       responsable: props.responsable,
       secciones: props.secciones,
       seccion: props.seccion,
+      modalidades:props.modalidades,
+      modalidad:props.modalidad,
       pedido: props.pedido,
       unPedido: props.unPedido,
       nombre: props.nombre,
     };
     this.handleChangeSeccion = this.handleChangeSeccion.bind(this);
+    this.handleChangeModalidad=this.handleChangeModalidad.bind(this)
     this.limpiar = this.limpiar.bind(this)
     this.handleChangeResponsable = this.handleChangeResponsable.bind(this)
     this.listaResponsables=this.listaResponsables.bind(this)
     this.seccionesComponent = React.createRef()
+    this.modalidadesComponent=React.createRef()
+  
 
   }
 
   componentWillMount = () => {
-    this.props.listadoResponsables();
-    this.listaResponsables()
+    this.listadoResponsables();
+    // this.listaResponsables()
     this.setState({
       responsablesDeMesa:this.state.responsablesDeMesa,
       secciones: this.state.secciones,
+      modalidades:this.state.modalidades,
+      modalidad:this.state.modalidad,
       seccion: this.state.seccion,
       nombre: this.state.nombre,
     });
@@ -67,6 +74,15 @@ class TablaPedidoRow extends React.Component {
       this.props.envioDePedido(nuevoPedido.seccion));
   };
 
+  handleChangeModalidad(e) {
+    let unPedido = this.state.unPedido
+    var nuevoPedido = Object.assign({}, this.state.unPedido);
+    nuevoPedido[e.target.name] = e.target.value;
+    unPedido = nuevoPedido
+    this.setState({ unPedido: unPedido },
+      this.props.envioDePedidoModalidad(nuevoPedido.modalidad));
+  };
+
 
   componentDidUpdate(nextProps){
     if(nextProps.responsablesDeMesa != this.props.responsablesDeMesa){
@@ -77,6 +93,10 @@ class TablaPedidoRow extends React.Component {
     }
     if (nextProps.secciones !== this.props.secciones) {
       this.setState({ secciones: nextProps.secciones });
+    }
+    if (nextProps.modalidades !== this.props.modalidades) {
+      this.setState({ modalidades: nextProps.modalidades }
+        ,()=>console.log("MODALIDADESROW-update",this.state.modalidades));
     }
     if (nextProps.unPedido !== this.props.unPedido) {
       this.setState({ unPedido: nextProps.unPedido });
@@ -123,6 +143,9 @@ class TablaPedidoRow extends React.Component {
     if (nextProps.secciones !== this.props.secciones) {
       this.setState({ secciones: nextProps.secciones });
     }
+    if (nextProps.modalidades !== this.props.modalidades) {
+      this.setState({ modalidades: nextProps.modalidades });
+    }
     if (nextProps.responsablesDeMesa !== this.props.responsablesDeMesa) {
       this.setState({ responsablesDeMesa: nextProps.responsablesDeMesa });
     }
@@ -135,13 +158,14 @@ class TablaPedidoRow extends React.Component {
     document.getElementById("nombre").value = ""
     this.listadoResponsables();
     document.getElementById("seccion").value = ""
-    this.setState({ unPedido: { seccion: "" } });
-    this.setState({ secciones: this.state.secciones });
+    document.getElementById("modalidad").value = ""
+    this.setState({ unPedido: { seccion: "",modalidad:"" } });
+    this.setState({ secciones: this.state.secciones,modalidades:this.state.modalidades });
   };
 
 
   listaResponsables(){
-    var listaResponsables = this.props.responsablesDeMesa.map((responsable) => {
+    var listaResponsables = this.state.responsablesDeMesa.map((responsable) => {
       return (
         <div key={responsable.nombre}>
           <option key={responsable.id} value={responsable.nombre} />
@@ -153,6 +177,7 @@ class TablaPedidoRow extends React.Component {
   
   render = () => {
     let secciones = this.state.secciones;
+    let modalidades = this.state.modalidades
     return (
       <tr>
         <td>
@@ -187,6 +212,28 @@ class TablaPedidoRow extends React.Component {
             })}
           </datalist>
         </td>
+        {/* <td> */}
+          {" "}
+          <th>
+            {/* type="text"
+            id="modalidad"
+            name="modalidad"
+            // onChange={this.handleChangeModalidad}
+            // list="modalidades"
+            // placeholder="Elige modalidad"
+            // className="form-control"
+            // autoComplete="true"
+            defaultValue="Mesa" */}
+            Mesa
+            </th>
+          {/* <datalist ref={this.modalidadesComponent} id="modalidades" autoComplete="on">
+            {modalidades.map((modalidad, index) => {
+              return (
+                <option key={index} id={modalidad.id} value={modalidad.name} />
+              );
+            })}
+          </datalist> */}
+        {/* </td> */}
         <td>
           <Button color="danger" size="btn-xs" onClick={() => this.limpiar()}>
             <i className="cui-trash icons font-1xl d-block mt-1"></i>

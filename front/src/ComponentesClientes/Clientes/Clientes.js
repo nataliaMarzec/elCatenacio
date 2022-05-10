@@ -29,7 +29,7 @@ class Clientes extends React.Component {
       cliente: {},
       clientes: [],
       usuario: {},
-      usuarios:[],
+      usuarios: [],
       usuariosClientes: [],
       ventasACliente: [],
       pagosDeCliente: [],
@@ -40,23 +40,27 @@ class Clientes extends React.Component {
       nuevosUsuarios: [],
 
     };
+    this.listadoClientes = this.listadoClientes.bind(this)
+    this.listadoUsuarios = this.listadoUsuarios.bind(this)
   }
 
   toggle = () => {
     this.setState({
-      modal: !this.state.modal,usuarios:this.props.context.usuarios
+      modal: !this.state.modal
     });
   };
 
   verDetallesCliente(username) {
-    let data1 = this.props.context.usuarios.filter(u => u.rol == "CLIENTE")
+    let data1 = this.state.usuarios.filter(u => u.rol == "CLIENTE")
     let data2 = this.state.clientes
     var usuario = data1.find(
       (u) => username == u.username
     )
-    var listaActualizada = data2.filter(c => c.id_cliente == usuario.clienteId)
-    this.setState({ clientes: listaActualizada },
-      () => console.log("LISTAaCTUALIZADA", listaActualizada, this.state.clientes));
+    if (usuario) {
+      var listaActualizada = data2.filter(c => c.id_cliente == usuario.clienteId)
+      this.setState({ clientes: listaActualizada },
+        () => console.log("LISTAaCTUALIZADA", listaActualizada, this.state.clientes));
+    }
   }
 
   handleChange = (e) => {
@@ -69,8 +73,6 @@ class Clientes extends React.Component {
   componentDidMount() {
     this.listadoClientes();
     this.listadoUsuarios();
-    // this.usuariosClientes()
-    // console.log("listadoClientes", this.usuariosClientes());
   }
 
   listadoBusqueda = (busqueda) => {
@@ -91,7 +93,6 @@ class Clientes extends React.Component {
       .then((res) => res.json())
       .then(
         (cltes) => this.setState({ clientes: cltes, cliente: {} }),
-        console.log("ClientaEnviado", this.state.clientes)
       );
   };
 
@@ -99,16 +100,15 @@ class Clientes extends React.Component {
     fetch(`http://localhost:8383/usuarios`)
       .then((res) => res.json())
       .then(
-        (res) => this.props.context.setStateUsuarios(res),
-        console.log("Usuarios", this.props.context.usuarios)
+        (res) => this.setState({usuarios:res}),
+        console.log("Usuarios", this.props.context.usuarios,this.state.usuarios)
       )
-      .then(this.setState({ usuario: {} }))
+      // .then(this.setState({ usuario: {} }))
   }
 
   limpiarTabla = () => {
     document.getElementById("username").value = "";
     this.listadoClientes();
-    // this.listadoUsuarios();
   };
 
   handleSubmit = (e) => {
@@ -127,7 +127,7 @@ class Clientes extends React.Component {
     var listadoClientes = this.state.clientes.filter(
       (item) => unCliente !== item
     );
-    var listadoUsuarios = this.props.context.usuarios.filter(
+    var listadoUsuarios = this.state.usuarios.filter(
       (item) => unUsuario != item
     )
     this.setState({
@@ -157,7 +157,7 @@ class Clientes extends React.Component {
 
   render() {
     let data1 = this.state.clientes
-    let data2 = this.props.context.usuarios.filter(u => u.rol == "CLIENTE")
+    let data2 = this.state.usuarios.filter(u => u.rol == "CLIENTE")
     var listaUserNames = data2.map((cliente) => {
       return (
         <div>
@@ -186,7 +186,7 @@ class Clientes extends React.Component {
               cliente={this.state.cliente}
               clientes={this.state.clientes}
               usuario={this.state.usuario}
-              usuarios={this.props.context.usuarios}
+              usuarios={this.state.usuarios}
             />
           </Modal>
           <Row>&nbsp;</Row>
@@ -215,6 +215,11 @@ class Clientes extends React.Component {
                       </Col>
                       <datalist id="nuevaLista">{listaUserNames}</datalist>
                     </FormGroup>
+                    {/* <React.Fragment>{
+                      this.state.usuario.clienteId == undefined && 
+                      this.state.username == undefined ?
+                      null : this.state.usuario.clienteId !==undefined &&
+                       this.state.username !== undefined && */}
                     <div className="row">
                       <div className="input-field col s12 m12">
                         <Button
@@ -240,26 +245,27 @@ class Clientes extends React.Component {
                         </Button>
                       </div>
                     </div>
+                    {/* } </React.Fragment> */}
                   </Form>
                 </CardHeader>
                 <CardBody>
-                <React.Fragment>{
-                this.state.clientes.length >0 &&
-                  <Table responsive bordered size="sm">
-                    <thead>
-                      <tr>
-                        {/* <th>ID</th> */}
-                        <th>Nombre</th>
-                        <th>Dirección</th>
-                        <th>Teléfono</th>
-                        <th>UserName</th>
-                        <th>Email</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>{this.renderRows()}</tbody>
-                  </Table>
-                }
+                  <React.Fragment>{
+                    this.state.clientes.length > 0 &&
+                    <Table responsive bordered size="sm">
+                      <thead>
+                        <tr>
+                          {/* <th>ID</th> */}
+                          <th>Nombre</th>
+                          <th>Dirección</th>
+                          <th>Teléfono</th>
+                          <th>UserName</th>
+                          <th>Email</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>{this.renderRows()}</tbody>
+                    </Table>
+                  }
                   </React.Fragment>
                 </CardBody>
               </Card>
@@ -269,11 +275,11 @@ class Clientes extends React.Component {
       </div>
     );
   }
- 
+
   renderRows() {
     let clientes = this.state.clientes
-    let usuarios = this.props.context.usuarios.filter(u => u.rol == "CLIENTE")
-    console.log("ROW CLIENTES", this.state.clientes)
+    let usuarios = this.state.usuarios.filter(u => u.rol == "CLIENTE")
+    console.log("ROW Usuarios", this.state.usuarios)
     return (
       <React.Fragment>{
         usuarios.map((unUsuario, index) => {

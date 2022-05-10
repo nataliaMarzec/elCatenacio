@@ -26,9 +26,10 @@ class PedidoItemsDosEditar extends React.Component {
     var nuevoItem = Object.assign({}, this.state.item);
     nuevoItem[e.target.name] = e.target.value;
     this.setState({ item: nuevoItem }
-      , () => console.log("nuevoItem/key", this.state.item, nuevoItem)
+      ,()=>this.props.envioDeEstadoObservacionesEditar(nuevoItem) ,
+      console.log("observaciones+++++",nuevoItem.observaciones)
     );
-    this.props.envioDeEstadoObservacionesEditar(nuevoItem) 
+  
     // console.log("evento", `${e.target.name}:${e.target.value}`);
   };
 
@@ -60,6 +61,7 @@ class PedidoItemsDosEditar extends React.Component {
   };
 
   render = () => {
+    console.log("PEDIDDODOSEDIT",this.props.item.observacionesItemEditar,this.state.item.observaciones)
     return (
       <tr key={this.props.pedido.id}>
         <td key="observaciones">
@@ -69,7 +71,7 @@ class PedidoItemsDosEditar extends React.Component {
             id={this.props.item.id}
             name="observaciones"
             placeholder="sin observaciones"
-            value={this.state.item.observacionesItemEditar}
+            value={this.state.item.observaciones}
             onChange={this.handleChange}
             className="form-control"
           ></input>

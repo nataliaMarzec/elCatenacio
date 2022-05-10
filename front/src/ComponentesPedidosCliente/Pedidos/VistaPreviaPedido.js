@@ -3,7 +3,7 @@ import {
   Button, Container, CardHeader, Card, CardBody, Col, Row, Table
 } from "reactstrap";
 var moment = require('moment');
-class PlantillaPedido extends React.Component {
+class VistaPreviaPedido extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -111,6 +111,8 @@ class PlantillaPedido extends React.Component {
                   {/* <th>#Código</th> */}
                   <th>Responsable de mesa</th>
                   <th>Sección</th>
+                  <th>Tipo</th>
+                  <th>Nro mesa</th>
                   <th>Horario</th>
                 </tr>
               </thead>
@@ -118,6 +120,8 @@ class PlantillaPedido extends React.Component {
                 <tr>
                   <td>{this.state.nombre}</td>
                   <td>{this.state.unPedido.seccion}</td>
+                  <td>{this.state.unPedido.tipo}</td>
+                  {/* <td>{this.state.mesa.id_mesa}</td> */}
                   <td>{moment(this.state.hora).format('HH:mm')}</td>
                 </tr>
                 <tr align="left">
@@ -184,4 +188,4 @@ class PlantillaPedido extends React.Component {
 
 }
 
-export default PlantillaPedido;
+export default VistaPreviaPedido;

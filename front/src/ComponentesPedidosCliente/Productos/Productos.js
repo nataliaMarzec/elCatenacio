@@ -78,6 +78,7 @@ class Productos extends React.Component {
 
   render(props) {
     let mostrarTabla = this.state.mostrarTabla;
+    console.log("mostrar table")
     return (
       <div className="container">
         <div></div>

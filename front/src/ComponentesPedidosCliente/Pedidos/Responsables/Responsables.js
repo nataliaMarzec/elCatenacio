@@ -42,15 +42,27 @@ class Responsables extends React.Component {
         this.setState({
             modal: !this.state.modal,
         });
-        // this.props.context.estadoInicial()
     };
 
-    verDetallesResponsable(nombre) {
-        var listaActualizada = this.state.responsables.filter(
-            (item) => nombre == item.nombre
-        );
-        this.setState({ responsables: listaActualizada });
+    // verDetallesResponsable(nombre) {
+    //     var listaActualizada = this.state.responsables.filter(
+    //         (item) => nombre == item.nombre
+    //     );
+    //     this.setState({ responsables: listaActualizada });
+    // }
+
+  verDetallesResponsable(username) {
+    let data1 = this.state.usuarios.filter(u => u.rol == "RESPONSABLE")
+    let data2 = this.state.responsables
+    var usuario = data1.find(
+      (u) => username == u.username
+    )
+    if (usuario) {
+      var listaActualizada = data2.filter(r => r.id_responsable == usuario.responsableId)
+      this.setState({responsables: listaActualizada },
+        () => console.log("LISTAaCTUALIZADA", listaActualizada, this.state.responsables));
     }
+  }
 
     handleChange = (e) => {
         const target = e.target;
@@ -62,8 +74,6 @@ class Responsables extends React.Component {
     componentDidMount() {
         this.listadoResponsables();
         this.listadoUsuarios()
-        // this.props.context.estadoInicial()
-        console.log("listadoResponsables",this.props.context.usuario);
     }
 
     listadoUsuarios = () => {
@@ -92,23 +102,32 @@ class Responsables extends React.Component {
         fetch(`http://localhost:8383/responsables`)
             .then((res) => res.json())
             .then(
-                (resps) => this.setState({ responsables: resps, responsable: {} }),
+                (res) => this.setState({ responsables: res, responsable: {} }),
                 console.log("ResponsableEnviado", this.state.responsables)
             );
     };
 
+    listadoUsuarios = () => {
+        fetch(`http://localhost:8383/usuarios`)
+          .then((res) => res.json())
+          .then(
+            (res) => this.setState({usuarios:res}),
+            console.log("Usuarios", this.props.context.usuarios,this.state.usuarios)
+          )
+      }
+
     limpiarTabla = () => {
-        document.getElementById("nombre").value = "";
+        document.getElementById("username").value = "";
         this.listadoResponsables();
     };
 
     handleSubmit = (e) => {
         var busqueda;
-        if (this.state.nombre === "") {
+        if (this.state.username === "") {
             this.listadoBusqueda(busqueda);
         }
-        if (this.state.nombre !== "") {
-            busqueda = '?busqueda=nombre=="' + this.state.nombre + '"';
+        if (this.state.username !== "") {
+            busqueda = '?busqueda=username=="' + this.state.username + '"';
             this.listadoBusqueda(busqueda);
         }
         e.preventDefault(e);
@@ -118,20 +137,15 @@ class Responsables extends React.Component {
         var listadoResponsables = this.state.responsables.filter(
           (item) => unResponsable !== item
         );
-        var listadoUsuarios = this.props.context.usuarios.filter(
-          (item) => unUsuario != item
-        )
-        this.setState({
-          responsables: listadoResponsables, usuarios: listadoUsuarios,
-          usuario: {}, responsable: {}
-        });
+        var listadoUsuarios = this.state.usuarios.filter(
+            (item) => unUsuario != item
+          )
+          this.setState({
+            responsables: listadoResponsables, usuarios: listadoUsuarios,
+            usuario: {}, responsable: {}
+          });
       };
-    
-
-    eliminarResponsable(id) {
-        this.props.eliminarResponsable(id);
-    }
-
+  
     seleccionar = (unUsuario, unResponsable) => {
         this.setState({ usuario: unUsuario, responsable: unResponsable});
       };
@@ -151,16 +165,16 @@ class Responsables extends React.Component {
             </ModalHeader>
         );
     };
-
     render(props) {
-        var listaNombres = this.state.responsables.map((responsable,index) => {
+        let usuarios = this.state.usuarios.filter(u => u.rol == "RESPONSABLE")
+        var listaUserNames = usuarios.map((u,index) => {
             return (
                 <div key={index}>
-                    <option value={responsable.nombre} />
+                    <option value={u.username} />
                 </div>
             );
         });
-        console.log("listaNombres", listaNombres);
+        console.log("listaUserNames", listaUserNames);
         return (
             <div className="container">
                 <div></div>
@@ -201,14 +215,14 @@ class Responsables extends React.Component {
                                             <Col xs="12" md="9">
                                                 <Input
                                                     type="text"
-                                                    id="nombre"
-                                                    name="nombre"
-                                                    placeholder="Elegir nombre"
+                                                    id="username"
+                                                    name="username"
+                                                    placeholder="Elegir username"
                                                     onChange={this.handleChange}
-                                                    list="responsable"
+                                                    list="nuevaLista"
                                                 />
                                             </Col>
-                                            <datalist id="responsable">{listaNombres}</datalist>
+                                            <datalist id="nuevaLista">{listaUserNames}</datalist>
                                         </FormGroup>
                                         <div className="row">
                                             <div className="input-field col s12 m12">
@@ -218,7 +232,7 @@ class Responsables extends React.Component {
                                                     color="info"
                                                     outline
                                                     onClick={() =>
-                                                        this.verDetallesResponsable(this.state.nombre)
+                                                        this.verDetallesResponsable(this.state.username)
                                                     }
                                                 >
                                                     <i className="fa fa-dot-circle-o"></i>Ver detalles
@@ -263,7 +277,7 @@ class Responsables extends React.Component {
 
     renderRows() {
         let responsables = this.state.responsables
-        let usuarios = this.props.context.usuarios.filter(u => u.rol == "RESPONSABLE")
+        let usuarios = this.state.usuarios.filter(u => u.rol == "RESPONSABLE")
         console.log("ROW responsables", this.state.responsables)
         return (
           <React.Fragment>{

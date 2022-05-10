@@ -121,7 +121,7 @@ class UnPedido extends React.Component {
           <thead>
             <tr>
               <th>Código</th>
-              <th>Mesero</th>
+              <th>Responsable de Mesa</th>
               <th>Sección</th>
               {/* <th>Menú/codigo</th> */}
               <th>Cantidad</th>
@@ -170,11 +170,13 @@ class UnPedido extends React.Component {
     var unPedido = this.state.seleccionado;
     console.log("renderRows", unPedido);
     return (
-      <TablaPedidoRow
-        key={unPedido.id}
-        pedido={unPedido}
-        pedidoSeleccionado={this.pedidoSeleccionado}
-      />
+      <div>hola unpedido</div>
+      // <TablaPedidoRow
+      //   key={unPedido.id}
+      //   pedido={unPedido}
+      //   pedidoSeleccionado={this.pedidoSeleccionado}
+       //    responsablesDeMesa={this.state.responsablesDeMesa}
+      // />
     );
   }
 }

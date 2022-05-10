@@ -16,7 +16,6 @@ module.exports = {
         rol:"ADMIN",
         registrado:true,
       },
-
     ],
     {}
   );

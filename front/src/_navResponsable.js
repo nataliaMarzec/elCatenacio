@@ -14,9 +14,16 @@ export default {
         variant: 'primary',
         attributes: { disabled: false},
       },
+      // {
+      //   name: "Un Pedido",
+      //   url: "/unPedido",
+      //   icon: "cui-puzzle",
+      //   variant: 'success',
+      //   attributes: { disabled: false },
+      // },
       {
-        name: "Un Pedido",
-        url: "/unPedido",
+        name: "Pedido de responsable",
+        url: "/pedidoDeResponsable",
         icon: "cui-puzzle",
         variant: 'success',
         attributes: { disabled: false },
@@ -27,6 +34,13 @@ export default {
         url: "/cocinaDetalles",
         icon: "cui-speedometer",
         variant: 'warning',
+        attributes: { disabled: false},
+      },
+      {
+        name: "Mesas",
+        url: "/mesas",
+        icon: "cui-speedometer",
+        variant: 'info',
         attributes: { disabled: false},
       },
   

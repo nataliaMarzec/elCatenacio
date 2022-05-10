@@ -98,7 +98,7 @@ class PedidoItems extends React.Component {
             id={this.props.key}
             style={{ backgroundColor: "#eee363" }}
             type="number"
-            id="cantidad"
+            // id="cantidad"
             name="cantidad"
             min={1}
             value={this.state.unItem.cantidad}

@@ -1,10 +1,16 @@
 var { Sequelize, Op } = require("sequelize");
 var { encontrarItemsPorPedidoId } = require("./ItemsPedidoController");
 const { models } = require("../SequelizeConnection");
+// const Cliente = require("../HomeClientes/Cliente");
+// const Usuario = require("../HomeUsuario/Usuario");
 const Producto = models.Producto;
 const ItemsPedido = models.ItemsPedido;
 const Pedido = models.Pedido;
 const Responsable = models.ResponsableDeMesa
+const Usuario = models.Usuario
+const Cliente = models.Cliente
+
+
 
 module.exports = {
   //usado devuelve id y crea seccion
@@ -22,6 +28,7 @@ module.exports = {
     const entregado = false;
     const fecha = req.body.fecha;
     const hora = req.body.hora;
+    const modalidad=req.body.modalidad;
 
     const pedido = {
       id: id,
@@ -32,6 +39,7 @@ module.exports = {
       entregado: entregado,
       fecha: fecha,
       hora: hora,
+      modalidad:modalidad,
       ItemsPedido: [],
     };
     return await Pedido.create(pedido)
@@ -46,6 +54,7 @@ module.exports = {
         let entregado = pedido.entregado;
         let fecha = pedido.fecha;
         let hora = pedido.hora;
+        let modalidad = pedido.modalidad;
 
         return res.json({
           message: "se guardo el pedido",
@@ -56,7 +65,8 @@ module.exports = {
           codigoPedido,
           entregado,
           fecha,
-          hora
+          hora,
+          modalidad
 
         });
       })
@@ -123,6 +133,60 @@ module.exports = {
         })
       }
   },
+  createClientePedido: async (req, res) => {
+    console.log("req.body", req.params.username);
+    var usuario = await Usuario.findOne({
+      where: { username: req.params.username},
+    });
+    console.log("CLIENTE",usuario.clienteId)
+    const id = req.body.id
+    const clienteIdP = usuario.clienteId;
+    const observaciones = req.body.observaciones;
+    const entregado = false;
+    const fecha = req.body.fecha;
+    const hora = req.body.hora;
+    const modalidad="Delivery";
+
+    const pedido = {
+      id: id,
+      clienteId: clienteIdP,
+      observaciones: observaciones,
+      entregado: entregado,
+      fecha: fecha,
+      hora: hora,
+      modalidad:modalidad,
+      ItemsPedido: [],
+    };
+    return await Pedido.create(pedido)
+      .then(function (pedido) {
+
+        pedido.save();
+        let id = pedido.id;
+        let clienteId = pedido.clienteId;
+        let observaciones = pedido.observaciones;
+        let entregado = pedido.entregado;
+        let fecha = pedido.fecha;
+        let hora = pedido.hora;
+        let modalidad = pedido.modalidad;
+        console.log("pedido cliente id+++", pedido.clienteId,usuario.clienteId);
+        return res.status(200).json({
+          message: "se guardo el pedido del Cliente/delivery",
+          id,
+          clienteId,
+          observaciones,
+          entregado,
+          fecha,
+          hora,
+          modalidad
+
+        });
+      })
+      .catch(function (error) {
+        console.log("pedido del cliente -error", error);
+      });
+  },
+
+  
   createPedidoCliente: async (req, res) => {
     // console.log("req.body", req.params.id_responsable);
     // var cliente = await Cliente.findOne({
@@ -207,6 +271,7 @@ module.exports = {
                 // fecha:req.body.fecha,
                 // hora:req.body.hora,
                 // ItemsPedido: req.body.ItemsPedido || pedido.ItemsPedido,
+                modalidad:req.body.modalidad,
               }
             )
             .then(() => res.status(200).send(pedido))
@@ -579,6 +644,7 @@ module.exports = {
               entregado: req.body.entregado || pedido.entregado,
               fecha: req.body.fecha || pedido.fecha,
               hora: req.body.hora || pedido.hora,
+              modalidad:req.body.modalidad || pedido.modalidad,
               ItemsPedido: req.body.ItemsPedido || pedido.ItemsPedido,
             },
             {
@@ -701,7 +767,7 @@ module.exports = {
   //falta actualizar hora y fecha
   update: async (req, res) => {
     const pedido = await Pedido.findByPk(req.params.id);
-    const { id, codigoPedido, seccion, observaciones, entregado, fecha, hora } = await pedido.update(req.body);
+    const { id, codigoPedido, seccion, observaciones, entregado, fecha, hora,modalidad } = await pedido.update(req.body);
 
     return res
       .json({
@@ -711,7 +777,8 @@ module.exports = {
         observaciones,
         entregado,
         fecha,
-        hora
+        hora,
+        modalidad,
       })
       .res.send(200, "pedido editado");
   },

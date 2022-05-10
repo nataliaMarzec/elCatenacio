@@ -5,7 +5,6 @@ class Cliente extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      // usuario:this.props.usuario,
       editar: false,
       toogle: this.props.toggle,
     };

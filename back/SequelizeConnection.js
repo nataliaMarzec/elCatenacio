@@ -11,6 +11,7 @@ const ItemsPedidoModel = require("./HomePedidosCliente/ItemsPedido");
 const PagoModel = require("./HomePedidosCliente/Pago")
 const ResponsableDeMesaModel = require("./HomePedidosCliente/ResponsableDeMesa")
 const ClienteModel = require("./HomeClientes/Cliente");
+const MesaModel = require("./HomePedidosCliente/Mesa")
 const ImagenModel = require("./HomePedidosCliente/Imagen")
 const UsuarioModel = require("./HomeUsuario/Usuario")
 const RolModel = require("./HomeUsuario/Roles")
@@ -47,6 +48,7 @@ models.ItemsPedido = ItemsPedidoModel(sequelize, Sequelize);
 models.Pedido = PedidoModel(sequelize, Sequelize);
 models.Cliente = ClienteModel(sequelize, Sequelize);
 models.Pago = PagoModel(sequelize, Sequelize)
+models.Mesa = MesaModel(sequelize, Sequelize)
 models.Imagen = ImagenModel(sequelize, Sequelize)
 models.Usuario = UsuarioModel(sequelize, Sequelize)
 models.Rol = RolModel(sequelize, Sequelize)
@@ -133,6 +135,7 @@ models.Producto.belongsTo(models.Imagen, {
   constraints: false,
 });
 
+
 // models.Rol.hasMany(models.ResponsableDeMesa, {
 //   as: "ResponsableDeMesa",
 //   foreignKey: "rolResponsableId",
@@ -163,6 +166,21 @@ models.Producto.belongsTo(models.Imagen, {
 //   targetKey: "id_rol",
 //   constraints: false,
 // });
+models.ResponsableDeMesa.hasMany(models.Mesa, {
+  as: "Mesas",
+  foreignKey: "responsableId",
+  sourceKey: "id_responsable",
+  constraints: false,
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE"
+
+});
+models.Mesa.belongsTo(models.ResponsableDeMesa, {
+  as: "ResponsableDeMesa",
+  foreignKey: "responsableId",
+  targetKey: "id_responsable",
+  constraints: false,
+});
 
 models.Cliente.hasOne(models.Usuario, {
   foreignKey: "clienteId",

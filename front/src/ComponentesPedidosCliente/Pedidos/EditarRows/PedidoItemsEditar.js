@@ -101,7 +101,7 @@ class PedidoItems extends React.Component {
             id={this.props.item.id}
             style={{ backgroundColor: "#eee363" }}
             type="number"
-            id="cantidad"
+            // id="cantidad"
             name="cantidad"
             min={1}
             // max={999}

@@ -24,8 +24,6 @@ class CargarCliente extends React.Component {
       usuarios: props.usuarios || [],
       modal: false,
     };
-    this.listadoClientes=this.listadoClientes.bind(this)
-    this.listadoUsuarios=this.listadoUsuarios.bind(this)
   }
 
   estadoInicial = () => {
@@ -34,37 +32,20 @@ class CargarCliente extends React.Component {
         nombre: "",
         direccion: "",
         telefono: "",
-        rol: "CLIENTE",
-        registrado: false,
       },
       usuario: {
         username: "",
         email: "",
-        password:"",
+        password: "",
+        rol: "CLIENTE",
       }
     });
   };
-  componentWillMount() {
-    this.listadoClientes();
-    this.listadoUsuarios();
-  }
-  listadoClientes = () => {
-    fetch(`http://localhost:8383/clientes`)
-      .then((res) => res.json())
-      .then(
-        (cltes) => this.setState({ clientes: cltes, cliente: {} }),
-        console.log("ClientaEnviado", this.state.clientes)
-      );
-  };
 
-  listadoUsuarios = () => {
-    fetch(`http://localhost:8383/usuarios`)
-      .then((res) => res.json())
-      .then(
-        (res) => this.setState({usuarios:res}),
-        console.log("Usuarios", this.state.usuarios)
-      )
-      .then(this.setState({ usuario: {} }))
+  componentDidMount() {
+    this.props.listadoClientes();
+    this.props.listadoUsuarios();
+
   }
 
   handleSubmit = (event) => {
@@ -84,12 +65,13 @@ class CargarCliente extends React.Component {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.state.cliente,this.state.usuario),
+      body: JSON.stringify(this.state.cliente, this.state.usuario),
     })
       // .then(this.setState({usuarios:this.props.context.usuarios}))
-      .then(this.listadoClientes)
-      .then(this.listadoUsuarios)
-      .then(this.estadoInicial());
+      .then(this.props.listadoClientes)
+      .then(this.props.listadoUsuarios)
+      .then(this.estadoInicial())
+      .catch(err => console.log("error", err), this.estadoInicial())
   };
 
 
@@ -100,13 +82,14 @@ class CargarCliente extends React.Component {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.state.usuario,this.state.cliente),
+      body: JSON.stringify(this.state.usuario, this.state.cliente),
     })
-      .then(this.props.listadoClientes,this.props.listadoUsuarios)
+      .then(this.props.listadoUsuarios)
+      .then(this.props.listadoClientes)
       .then(this.estadoInicial())
       .catch(err => console.log("error", err), this.estadoInicial())
   };
-  
+
 
   render() {
     console.log("USUARIOcargar", this.state.usuario)
@@ -234,7 +217,10 @@ class CargarCliente extends React.Component {
     var nuevoCliente = Object.assign({}, this.state.cliente);
     nuevoUsuario[e.target.name] = e.target.value;
     nuevoCliente[e.target.name] = e.target.value;
-    this.setState({ usuario: nuevoUsuario, cliente: nuevoCliente });
+    this.setState({
+      usuario: nuevoUsuario, cliente: nuevoCliente,
+      usuarios: this.state.usuarios, clientes: this.state.clientes
+    });
   };
 
 

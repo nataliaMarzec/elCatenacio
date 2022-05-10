@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch, Redirect, NavLink as Link } fro
 import VistaDeProductosParaClientes from './ComponentesPedidosCliente/Productos/VistaDeProductosParaClientes'
 import WrapperConsumer ,{ContextUsuario} from './componentesSesion/Context/ContextUsuario'
 import Responsables from './ComponentesPedidosCliente/Pedidos/Responsables/Responsables'
+import Mesas from './ComponentesPedidosCliente/Mesas/Mesas'
 import socket from './Socket/Socket'
 import Chat from './Socket/Chat'
 // import NotFound from './'
@@ -23,7 +24,7 @@ class RoutesContainer extends Component {
 
   render() {
     const { context: { usuario,auth,rol} } = this.props;
-    console.log("ROUTESrender",rol)
+    console.log("ROUTESrender",rol,usuario.rol)
     return (
       <div className="routes">
     
@@ -38,7 +39,7 @@ class RoutesContainer extends Component {
           {/* <Route path="/chat" name="Chat" nombre={rol} render={props=> <Chat nombre={rol} {...props}/>}/> */}
           {/* <Route component={NotFound}/> */}
           {auth === true && rol === "CLIENTE" ? (
-            <Route exact path="/vistaDeProductosParaClientes" name="Productos-cliente" render={props => <VistaDeProductosParaClientes {...props} />} />
+            <Route exact path="/vistaDeProductosParaClientes" name="Productos-cliente" render={props => <VistaDeProductosParaClientes {...props} usuario={usuario} />} />
           ) : (
             ""
           )}
@@ -49,7 +50,7 @@ class RoutesContainer extends Component {
             ""
           )}
           <Route path="/responsables" name="Responsables" render={props=><Responsables {...props}/>}></Route>
-
+          <Route path="/mesas" name="Mesas" render={props=><Mesas {...props} usuario={usuario}/>}></Route>
         </Switch>
         <Switch>
           {auth === true && rol === "ADMIN" || auth === true && rol === "RESPONSABLE" ? (

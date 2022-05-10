@@ -48,8 +48,8 @@ class TablaPedidoEditarRow extends React.Component {
       this.setState({ responsablesDeMesa: nextProps.responsablesDeMesa });
     }
     if (nextProps.responsable !== this.props.responsable) {
-      this.setState({ responsable: nextProps.responsable })
-        // , () => console.log("RESPONSABLE-ROW", nextProps.responsable));
+      this.setState({ responsable: nextProps.responsable }
+        , () => console.log("RESPONSABLE-ROW", nextProps.responsable))
     }
 
   }
@@ -58,7 +58,7 @@ class TablaPedidoEditarRow extends React.Component {
     var nuevoResponsable = Object.assign({}, this.state.responsable);
     nuevoResponsable[e.target.name] = e.target.value;
     this.setState({ responsable: nuevoResponsable },
-      // () => console.log("RESPONSABLE--", nuevoResponsable.nombre)
+      () => console.log("RESPONSABLE--", nuevoResponsable.nombre)
     );
     this.props.envioDeEstadoResponsableEditar(nuevoResponsable.nombre)
   };
@@ -139,6 +139,9 @@ class TablaPedidoEditarRow extends React.Component {
               );
             })}
           </datalist>
+        </td>
+        <td>
+        {this.state.pedido.modalidad}
         </td>
         <td><input
           key="observaciones"

@@ -27,7 +27,7 @@ class Login extends React.Component {
 
   verificarUsuario(usuario) {
     try {
-      fetch(`http://localhost:8383/usuario/${usuario.username}/${usuario.email}`, {
+      fetch(`http://localhost:8383/usuario/${usuario.usernameOrEmail}`, {
         method: "get",
         headers: {
           Accept: "application/json",
@@ -115,7 +115,7 @@ class Login extends React.Component {
   }
 
   render() {
-    const { context: { usuario, rol, onChangeLogin } } = this.props;
+    const { context: { usuario,onChangeLogin } } = this.props;
     return (
       <div className="app flex-row align-items-center">
         <Container>
@@ -134,30 +134,12 @@ class Login extends React.Component {
                           </InputGroupText>
                         </InputGroupAddon>
                         <Input
-                          type="text"
-                          id="username"
-                          name="username"
-                          placeholder="Username"
-                          autoComplete="username"
-                          required={true}
-                          value={usuario.username}
-                          onChange={onChangeLogin}
-                        />
-                      </InputGroup>
-                      <InputGroup className="mb-3">
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <i className="icon-user"></i>
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input
-                          type="text"
-                          id="email"
-                          name="email"
-                          placeholder="Email"
-                          autoComplete="email"
-                          required={true}
-                          value={usuario.email}
+                          type="email"
+                          id="usernameOrEmail"
+                          name="usernameOrEmail"
+                          placeholder="Username o Email"
+                          required
+                          value={usuario.usernameOrEmail}
                           onChange={onChangeLogin}
                         />
                       </InputGroup>

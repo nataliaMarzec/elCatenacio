@@ -19,11 +19,12 @@ class ContextUsuario extends Component {
                 email: "",
                 password: "",
                 rol: "",
-                auth:false,
+                auth: false,
                 LoggedIn: false,
-                error: ""
+                error: "",
+                usernameOrEmail: ""
             },
-            rol:""
+            rol: ""
         });
     }
 
@@ -39,12 +40,16 @@ class ContextUsuario extends Component {
         console.log("SETROL", rol)
         this.setState({ rol: rol })
     }
+    setStateUsernameOrEmail = (usernameOrEmail) => {
+        console.log("SETUsernameOrEmail", usernameOrEmail)
+        this.setState({ usernameOrEmail: usernameOrEmail })
+    }
     setStateUsuarios = (usuarios) => {
         // console.log("Usuarios",usuarios)
-        this.setState({usuarios:usuarios})
+        this.setState({ usuarios: usuarios })
     }
-    setStateVerPassword=()=>{
-        this.setState({verPassword:!this.state.verPassword})
+    setStateVerPassword = () => {
+        this.setState({ verPassword: !this.state.verPassword })
     }
 
     onChangeRegistrar = (e) => {
@@ -53,10 +58,10 @@ class ContextUsuario extends Component {
         nuevoUsuario[e.target.name] = e.target.value;
         this.setState({ usuario: nuevoUsuario }
             , () => console.log("signupCliente", this.state.usuario)
-            );
-         
+        );
+
     }
-    onChangeRegistrarResponsable=(e)=>{
+    onChangeRegistrarResponsable = (e) => {
         var nuevoUsuario = Object.assign({}, this.state.usuario);
         nuevoUsuario.rol = "RESPONSABLE"
         nuevoUsuario[e.target.name] = e.target.value;
@@ -67,8 +72,15 @@ class ContextUsuario extends Component {
         var nuevoUsuario = Object.assign({}, this.state.usuario);
         nuevoUsuario[e.target.name] = e.target.value;
         this.setState({ usuario: nuevoUsuario },
-             () => console.log("signin++++",nuevoUsuario)
-             );
+            () => console.log("signin++++", nuevoUsuario)
+        );
+    }
+    onChangeLoginUsernameOrEmail = (e) => {
+    //     var nuevoUsuario = Object.assign({}, this.state.usernameOrEmail);
+    //     nuevoUsuario[e.target.name] = e.target.value;
+    //     this.setState({ usernameOrEmail: usernameOrEmail },
+    //         () => console.log("signin++++", nuevoUsuario.usernameOrEmail)
+    //     );
     }
 
     logueado = (auth) => {
@@ -78,20 +90,23 @@ class ContextUsuario extends Component {
 
     state = {
         usuarios: [],
-        usuario: {},
+        usuario: { usernameOrEmail: '' },
         LoggedIn: false,
         error: '',
         auth: false,
         rol: '',
-        verPassword:false,
+        verPassword: false,
+        usernameOrEmail: '',
         estadoInicial: this.estadoInicial,
-        setStateUsuarios:this.setStateUsuarios,
+        setStateUsuarios: this.setStateUsuarios,
         setStateUsuario: this.setStateUsuario,
         setStateAuth: this.setStateAuth,
         setStateRol: this.setStateRol,
+        setStateUsernameOrEmail: this.setStateUsernameOrEmail,
         onChangeLogin: this.onChangeLogin,
+        onChangeLoginUsernameOrEmail: this.onChangeLoginUsernameOrEmail,
         onChangeRegistrar: this.onChangeRegistrar,
-        onChangeRegistrarResponsable:this.onChangeRegistrarResponsable,
+        onChangeRegistrarResponsable: this.onChangeRegistrarResponsable,
         logueado: this.logueado,
     }
 

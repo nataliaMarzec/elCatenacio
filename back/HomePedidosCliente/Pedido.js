@@ -51,7 +51,12 @@ module.exports = function (sequelize, DataTypes) {
         get() {
           return moment(this.getDataValue('hora')).format('HH:mm');
         }
+      },
+      modalidad: {
+        type: DataTypes.STRING,
+        defaultValue: "Mesa"
       }
+
 
     },
 

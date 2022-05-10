@@ -1,4 +1,5 @@
 const { models } = require("../SequelizeConnection");
+var { Op } = require("sequelize");
 const Usuario = models.Usuario;
 const ResponsableDeMesa = models.ResponsableDeMesa
 const Cliente = models.Cliente
@@ -9,18 +10,49 @@ const authConfig = require('../auth');
 module.exports = {
     //login para todos
     login(req, res) {
+
         let { username, email, password } = req.body;
         Usuario.findOne({
             where: {
-                email: email,
-                username: username,
-            }
+                username:username
+                // [Op.or]: [
+                //     { username:username ,
+                //     email:email}
+                //   ]
+            } 
         }).then(usuario => {
-            if (!usuario || usuario.email == undefined
-                || usuario.username == undefined) {
-                res.status(404).json({ msg: "Usuario con este username no encontrado" });
+            if (username == null || ![req.body.values]) {
+                Usuario.findOne({
+                    where: {
+                        email:email
+                     
+                    }
+                }).then(usuario => {
+                    if (!usuario.email || ![req.body.values]) {
+                        res.status(404).json({ msg: "Usuario con este email no encontrado" });
+        
+                    } else {
+                        if (bcrypt.compareSync(password, usuario.password)) {
+                            console.log("++++us+++",usuario)
+                            let token = jwt.sign({ usuario: usuario }, authConfig.secret, {
+                                expiresIn: authConfig.expires
+                            });
+                            res.status(200).json({
+                                usuario: usuario,
+                                token: token
+                            })
+                        } else {
+                            // Unauthorized Access
+                            res.status(401).json({ msg: "Contraseña incorrecta" })
+                        }
+                    }
+                }).catch(err => {
+                    res.status(500).json(err);
+                })
+
             } else {
                 if (bcrypt.compareSync(password, usuario.password)) {
+                    console.log("++++us+++",usuario)
                     let token = jwt.sign({ usuario: usuario }, authConfig.secret, {
                         expiresIn: authConfig.expires
                     });
@@ -29,13 +61,42 @@ module.exports = {
                         token: token
                     })
                 } else {
-                    res.status(401).json({ msg: "Acceso no autorizado" })
+                    // Unauthorized Access
+                    res.status(401).json({ msg: "Contraseña incorrecta" })
                 }
             }
-        }).catch(err => {
-            res.status(500).json(err);
         })
+
+
     },
+
+    // login(req, res) {
+    //     let { username, email, password } = req.body;
+    //     Usuario.findOne({
+    //         where: { username: username }
+    //     } || {
+    //         where: { email: email }
+    //     }).then(usuario => {
+    //         if (!usuario || usuario.email == undefined
+    //             || usuario.username == undefined) {
+    //             res.status(404).json({ msg: "Usuario con este username no encontrado" });
+    //         } else {
+    //             if (bcrypt.compareSync(password, usuario.password)) {
+    //                 let token = jwt.sign({ usuario: usuario }, authConfig.secret, {
+    //                     expiresIn: authConfig.expires
+    //                 });
+    //                 res.status(200).json({
+    //                     usuario: usuario,
+    //                     token: token
+    //                 })
+    //             } else {
+    //                 res.status(401).json({ msg: "Acceso no autorizado" })
+    //             }
+    //         }
+    //     }).catch(err => {
+    //         res.status(500).json(err);
+    //     })
+    // },
 
     // Registro solo para Admin
     signUp(req, res) {
@@ -153,14 +214,22 @@ module.exports = {
     },
 
     verificarUsuario: async (req, res) => {
-        var usuario = await Usuario.findOne({
-            where: { username: req.params.username, email: req.params.email },
+        var usernameOrEmail = req.params.usernameOrEmail
+        var usuarioUsername = await Usuario.findOne({
+            where: { username: usernameOrEmail },
         });
-        if (![req.body.values]) {
-            res.status(400).json({ err: "usuario no encontrado" });
-        } else {
-            return res.status(200).json(usuario);
+        if (![req.body.values] || usuarioUsername == null) {
+            var usuarioEmail = await Usuario.findOne({
+                where: { email: usernameOrEmail }
+            });
+            return res.status(200).json(usuarioEmail);
         }
+        else {
+            if (![req.body.values]) {
+                res.status(400).json({ err: " email no encontrado" });
+            }
+        }
+        return res.status(200).json(usuarioUsername);
     },
 
 

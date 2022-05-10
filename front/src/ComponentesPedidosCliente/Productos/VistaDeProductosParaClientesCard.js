@@ -1,5 +1,6 @@
-import { calendarFormat } from "moment";
-import React from "react";
+import React, { createContext } from "react";
+import WrapperConsumer, { ContextUsuario } from "../../componentesSesion/Context/ContextUsuario";
+
 import {
   Button,
   Card,
@@ -14,45 +15,14 @@ import {
   Container,
   Label,
   Row,
-  
+
 } from "reactstrap";
 import logo from "../../assets/img/brand/logo.svg";
 
-// const CardContainer = styled.div`
-//   position: relative;
-//   flex: 0 0 9%;
-//   display: flex;
-//   justify-content: space-around;
-//   margin: 1.55vw 1vw;
-//   border-radius: 10px 10px 0 0;
-//   transition: transform;
-//   transition-duration: 0.25s;
-//   color: white;
-//   :hover {
-//     cursor: pointer;
-//     transform: scale(1.08);
-//   }
-//   @media screen and (max-width: 3000px) {
-//     flex: 0 0 10%;
-//   }
-//   @media screen and (max-width: 2000px) {
-//     flex: 0 0 13%;
-//   }
-//   @media screen and (max-width: 1440px) {
-//     flex: 1 0 15%;
-//   }
-//   @media screen and (max-width: 1025px) {
-//     flex: 1 0 25%;
-//   }
-//   @media screen and (max-width: 640px) {
-//     flex: 1 0 25%;
-//   }
-//   @media screen and (max-width: 361px) {
-//     flex: 1 0 33%;
-//   }
-// `;
 
 class VistaDeProductosParaClientesRow extends React.Component {
+  static contextType = createContext(ContextUsuario)
+
   constructor(props) {
     super(props);
     this.state = {
@@ -60,7 +30,7 @@ class VistaDeProductosParaClientesRow extends React.Component {
       toogle: props.toggle,
       producto: props.producto,
       modal: false,
-      selector:props.selector
+      selector: props.selector
     };
     this.eliminarProducto = this.eliminarProducto.bind(this);
     this.elegirProducto = this.elegirProducto.bind(this);
@@ -79,35 +49,7 @@ class VistaDeProductosParaClientesRow extends React.Component {
     }).then(this.props.actualizarAlEliminar(this.props.producto));
   };
 
-
-
   comprar() { }
-
-  // handleMovieClick() {
-  //   dispatch({ type: "MOVIE_CLICKED", payload: props.movie });
-  //   navigate(`/fullmoviepage/`, { myMovie: props.movie });
-  // }
-
-  //   const imageURL = `https://image.tmdb.org/t/p/w780${poster_path}`;
-
-  //   const StyledRuntime = styled.div`
-  //   position: absolute;
-  //   top: 0;
-  //   right: 0;
-  //   margin: 0.25rem;
-  //   padding: 0.3rem;
-  //   border-radius: 10%;
-  //   background-color: rgba(0, 0, 0, 0.808);
-  // // `;
-
-  //   {/* <StyledImg
-  //         src={poster_path ? imageURL : AltPoster}
-  //         onClick={handleMovieClick}
-  //         alt={`${title} poster`}
-  //       />
-  //       {showRuntime()}
-  //       {showRating()}
-  //       {props.removeMode && <RemoveFavoriteButton movie={props.movie} />} */}
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.productos !== this.props.productos) {
@@ -130,23 +72,71 @@ class VistaDeProductosParaClientesRow extends React.Component {
   }
 
   render = () => {
+    const { context: { usuario, onChangeLogin } } = this.props;
     return (
       <div>
-       
-        <Card className="border-warning" style={{ color: "info" }} onClick={this.elegirProducto}>
-          <CardImg top src={'http://localhost:8383/'+'Uploads/b202aba7-69cb-4f2b-b3cb-fddf229b2148.png'}
- style={{ border: "1px solid red" }} />
+
+        {/* <Card className="border-warning" style={{ color: "info" }} onClick={this.elegirProducto}>
+          <CardImg top 
+          src={logo}
+          // src={'http://localhost:8383/' + 'Uploads/b202aba7-69cb-4f2b-b3cb-fddf229b2148.png'}
+            style={{ border: "1px solid red" }} />
           <CardTitle><b className="ml-2">{this.props.producto.id} / {this.props.producto.descripcion}</b>
           </CardTitle>
           <Label className="ml-1"></Label>
           <Label className="ml-1"><b>${this.props.producto.precioUnitario}</b></Label>
           <CardFooter>
           </CardFooter>
-        </Card>
+        </Card> */}
+        {/* <Card className="border-info" style={{ color: "info" }} onClick={this.elegirProducto}> */}
+          <div class="card p-3 mt-5" onClick={this.elegirProducto}>
+
+            <div class="d-flex justify-content-between align-items-center ">
+              <div class="mt-2">
+                <h4 class="text-uppercase"> {this.props.producto.id}</h4>
+                <div class="mt-5">
+                  <h5 class="text-uppercase mb-0">{this.props.producto.categoria}</h5>
+                  <h1 class="main-heading mt-0">{this.props.producto.descripcion}</h1>
+                  <div class="d-flex flex-row user-ratings">
+                    {/* <div class="ratings">
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                  </div> */}
+                    {/* <h6 class="text-muted ml-1">4/5</h6> */}
+                  </div>
+                </div>
+              </div>
+              <div class="image">
+              <CardImg src={logo} width="200" style={{ color: "info" }} />
+                {/* <CardImg top src={logo}
+                  style={{ border: "1px solid red" }} /> */}
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-2 mb-2">
+              {/* <span>Available colors</span>
+              <div class="colors">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div> */}
+
+            </div>
+
+
+            <p>El Catenacio te ofrece la mejor atención. </p>
+
+            <button class="btn btn-danger">Elegir producto</button>
+          </div>
+          {/* </Card> */}
       </div>
 
     );
   };
 }
 
-export default VistaDeProductosParaClientesRow;
+// export default VistaDeProductosParaClientesRow;
+export default WrapperConsumer(VistaDeProductosParaClientesRow)

@@ -25,9 +25,27 @@ class Password extends React.Component {
   }
 
 
+  // verificarUsuario(usuario) {
+  //   var usernameOrEmail = usuario.usernameOrEmail
+  //   if (usernameOrEmail === this.props.context.usuario.email ||
+  //     usernameOrEmail === this.props.context.usuario.username) {
+  //     fetch(`http://localhost:8383/usuario/${usernameOrEmail}`, {
+  //       method: "get",
+  //       headers: {
+  //         Accept: "application/json",
+  //         "Content-Type": "application/json",
+  //       },
+  //     })
+  //       .then(res => res.json())
+  //       .then(res => this.rol(res))
+  //   } else {
+  //       console.log("error al verificar usuario");
+  //   }
+  // }
   verificarUsuario(usuario) {
+    console.log("verificar usuario",usuario)
     try {
-      fetch(`http://localhost:8383/usuario/${usuario.username}/${usuario.email}`, {
+      fetch(`http://localhost:8383/usuario/${usuario.usernameOrEmail}`, {
         method: "get",
         headers: {
           Accept: "application/json",
@@ -37,24 +55,9 @@ class Password extends React.Component {
         .then(res => res.json())
         .then(res => this.rol(res))
     } catch (error) {
-      console.log(error);
+      console.log("error al verificar usuario",error);
     }
   }
-  // verificarPassword(usuario) {
-  //   try {
-  //     fetch(`http://localhost:8383/usuario/${usuario.username}/${usuario.password}`, {
-  //       method: "get",
-  //       headers: {
-  //         Accept: "application/json",
-  //         "Content-Type": "application/json",
-  //       },
-  //     })
-  //       .then(res => res.json())
-  //       .then(res => this.rol(res))
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
 
   rol(usuario) {
     if (!usuario) {
@@ -62,16 +65,20 @@ class Password extends React.Component {
       this.props.history.push("/password")
     }
     if (usuario) {
+     
       if (usuario.rol === "RESPONSABLE") {
+     
         this.login()
         this.props.context.logueado(true)
         this.props.context.setStateRol(usuario.rol)
         this.props.history.push("/");
       }
       if (usuario.rol === "ADMIN") {
+        console.log("ROL",usuario)
         this.login()
         this.props.context.logueado(true)
         this.props.context.setStateRol(usuario.rol)
+
         this.props.history.push("/");
       }
     }
@@ -95,7 +102,7 @@ class Password extends React.Component {
   }
 
   resStatusError = (res) => {
-    console.log("resLoginPASSWORD+++", res)
+    console.log("resLoginPASSWORD+++", res.status)
     if (!res) {
       this.props.history.push(`/password`);
       console.log("ingrese el password", res)
@@ -125,8 +132,21 @@ class Password extends React.Component {
     this.verificarUsuario(this.props.context.usuario)
   }
 
+  // handlesubmit = (e) => {
+  //   e.preventDefault();
+
+  //   if (UnameOrEmail === this.props.context.usuario.email || UnameOrEmail === this.props.context.usuario.username) {
+  //     if (password === user.password) {
+  //       console.log("User Loged In");
+  //     } else {
+  //       console.log("wrong password");
+  //     }
+  //   } else {
+  //     console.log("please check you username or Email");
+  //   }
+  // };
   render() {
-    const { context: { usuario, rol, onChangeLogin } } = this.props;
+    const { context: { usuario, rol, usernameOrEmail, onChangeLogin, onChangeLoginUsernameOrEmail } } = this.props;
     return (
       <div className="app flex-row align-items-center">
         <Container>
@@ -162,17 +182,17 @@ class Password extends React.Component {
                           </InputGroupText>
                         </InputGroupAddon>
                         <Input
-                          type="text"
-                          id="username"
-                          name="username"
-                          placeholder="Username"
-                          autoComplete="username"
-                          required={true}
-                          value={usuario.username}
+                          type="email"
+                          id="usernameOrEmail"
+                          name="usernameOrEmail"
+                          placeholder="Username o Email"
+                          // autoComplete={"username" || "email"}
+                          required
+                          value={usuario.usernameOrEmail}
                           onChange={onChangeLogin}
                         />
                       </InputGroup>
-                      <InputGroup className="mb-3">
+                      {/* <InputGroup className="mb-3">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
                             <i className="icon-user"></i>
@@ -188,8 +208,8 @@ class Password extends React.Component {
                           value={usuario.email}
                           onChange={onChangeLogin}
                         />
-                      </InputGroup>
-                    
+                      </InputGroup> */}
+
                       <InputGroup className="mb-4">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
@@ -207,7 +227,7 @@ class Password extends React.Component {
                           onChange={onChangeLogin}
                         />
                       </InputGroup>
-                     
+
                       <Row>
                         <Col xs="6">
 

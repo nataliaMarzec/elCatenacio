@@ -1,4 +1,4 @@
-import React ,{useContext,createContext} from "react";
+import React, { useContext, createContext } from "react";
 import WrapperConsumer, { ContextUsuario } from "../../../componentesSesion/Context/ContextUsuario";
 
 import {
@@ -20,8 +20,8 @@ class CargarResponsable extends React.Component {
     this.state = {
       responsable: props.responsable || {},
       responsables: props.responsables || [],
-      usuario:props.usuario || {},
-      usuarios:props.usuarios || [],
+      usuario: props.usuario || {},
+      usuarios: props.usuarios || [],
       modal: false,
 
     };
@@ -33,13 +33,13 @@ class CargarResponsable extends React.Component {
         nombre: "",
         direccion: "",
         telefono: "",
-       
+
       },
-      usuario:{
+      usuario: {
         username: "",
         email: "",
         password: "",
-        rol: "",
+        rol: "RESPONSABLE",
       }
     });
   };
@@ -47,31 +47,36 @@ class CargarResponsable extends React.Component {
   componentDidMount() {
     this.props.listadoResponsables();
     this.props.listadoUsuarios()
-    this.setState({usuarios:this.state.usuarios,usuario:this.state.usuario})
-    console.log("RESPONS", this.state.responsables,this.state.usuarios)
   }
 
-  listadoUsuarios = () => {
-    fetch(`http://localhost:8383/usuarios`)
-        .then((res) => res.json())
-        .then(
-            (res) => this.props.context.setStateUsuarios(res),
-            console.log("Usuarios", this.props.context.usuarios)
-        );
-}
+  handleSubmit = (event) => {
+    const id = this.state.responsable.id_responsable;
+    if (id) {
+      console.log("onSubmit-id", id)
+      this.editarResponsable(id);
+    } else {
+      this.crearResponsable();
+    }
+    event.preventDefault(event);
+  };
+
 
   crearResponsable = () => {
-    fetch("http://localhost:8383/responsable/signup", {
+    fetch("http://localhost:8383/responsable/nuevo", {
       method: "post",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.state.responsable,this.state.usuario),
+      body: JSON.stringify(this.state.responsable, this.state.usuario),
     })
-      .then(this.props.listadoResponsables(),this.props.listadoUsuarios())
-      .then(this.estadoInicial());
+      .then(this.props.listadoResponsables)
+      .then(this.props.listadoUsuarios)
+      .then(this.estadoInicial())
+      .catch(err => console.log("error", err), this.estadoInicial())
+
   };
+
 
   editarResponsable = (id) => {
     fetch("http://localhost:8383/responsable/" + id, {
@@ -80,26 +85,20 @@ class CargarResponsable extends React.Component {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(this.state.responsable),
+      body: JSON.stringify(this.state.usuario, this.state.responsable),
     })
+      .then(this.props.listadoUsuarios)
       .then(this.props.listadoResponsables)
-      .then(this.estadoInicial());
+      .then(this.estadoInicial())
+      .catch(err => console.log("error", err), this.estadoInicial())
+
   };
 
-  onSubmit = (event) => {
-    const id = this.state.responsable.id_responsable;
-    if (id) {
-      console.log("onSubmit-id",id)
-      this.editarResponsable(id);
-    } else {
-      this.crearResponsable();
-    }
-    event.preventDefault(event);
-  };
+
+
 
   render() {
-    const { context: { usuario}} = this.props;
-    console.log("CARGAR RESPONSABLE", usuario,this.state.usuario,this.state.responsable)
+    console.log("USUARIOcargarRESP", this.state.usuario)
     return (
       <Col xs="12" md="12">
         <ModalBody>
@@ -204,7 +203,7 @@ class CargarResponsable extends React.Component {
               type="submit"
               color="success"
               outline
-              onClick={this.onSubmit}
+              onClick={this.handleSubmit}
             >
               <i className="fa fa-dot-circle-o"></i> Guardar responsable
             </Button>
@@ -215,13 +214,17 @@ class CargarResponsable extends React.Component {
     );
   }
 
-  handleChange=(e)=>{
-  var nuevoUsuario = Object.assign({}, this.state.usuario);
-  var nuevoResponsable = Object.assign({}, this.state.responsable);
-  nuevoUsuario[e.target.name] = e.target.value;
-  nuevoResponsable[e.target.name] = e.target.value;
-  this.setState({ usuario: nuevoUsuario,responsable: nuevoResponsable });
-};
+  handleChange = (e) => {
+    var nuevoUsuario = Object.assign({}, this.state.usuario);
+    var nuevoResponsable = Object.assign({}, this.state.responsable);
+    nuevoUsuario[e.target.name] = e.target.value;
+    nuevoResponsable[e.target.name] = e.target.value;
+    this.setState({
+      usuario: nuevoUsuario, responsable: nuevoResponsable,
+      usuarios: this.state.usuarios, responsables: this.state.responsables
+    });
+  };
+
 
 
 }

@@ -1,5 +1,5 @@
-import { calendarFormat } from "moment";
-import React from "react";
+import React, { createContext } from "react";
+import WrapperConsumer, { ContextUsuario } from "../../componentesSesion/Context/ContextUsuario";
 import {
   Button,
   Card,
@@ -23,6 +23,8 @@ import InputGroup from "reactstrap/lib/InputGroup";
 import logo from "../../assets/img/brand/logo.svg";
 
 class CardSeleccionadoModalRow extends React.Component {
+  static contextType = createContext(ContextUsuario)
+
   constructor(props) {
     super(props);
     this.state = {
@@ -80,6 +82,8 @@ class CardSeleccionadoModalRow extends React.Component {
     // this.props.calcular(unItem)
   };
   render = () => {
+    const { context: { usuario,onChangeLogin } } = this.props;
+
     console.log("itemCLIENTErENDER",this.props.itemCliente,this.state.itemCliente)
     return (
       <div>
@@ -88,7 +92,7 @@ class CardSeleccionadoModalRow extends React.Component {
           <CardImg top src={this.state.vista} style={{ border: "1px solid green" }} />
           <Card className="border-info"><b>{this.props.producto.descripcion}</b>
 
-            <CardSubtitle>Producto con picante </CardSubtitle>
+            {/* <CardSubtitle>Producto </CardSubtitle> */}
             <Label className="ml-1"></Label>
             <Label className="ml-1"><b>${this.props.producto.precioUnitario}</b></Label>
           </Card>
@@ -143,4 +147,4 @@ class CardSeleccionadoModalRow extends React.Component {
   };
 }
 
-export default CardSeleccionadoModalRow;
+export default WrapperConsumer(CardSeleccionadoModalRow)

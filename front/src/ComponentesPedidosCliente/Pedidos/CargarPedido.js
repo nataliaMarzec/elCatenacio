@@ -80,6 +80,7 @@ class CargarPedido extends React.Component {
     this.props.listadoPedidos();
     this.props.listadoItemsPedido();
     this.props.listadoProductos();
+    // this.props.listadoMesas();
     // this.props.seleccionar;
   }
 

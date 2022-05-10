@@ -24,7 +24,7 @@ import PedidoItemsDos from "./PedidoItemsDos";
 import PedidoItemsEditar from "./EditarRows/PedidoItemsEditar";
 import PedidoItemsDosEditar from "./EditarRows/PedidoItemsDosEditar";
 import TablaPedido from "./TablaPedido";
-import PlantillaPedido from "./PlantillaPedido";
+import VistaPreviaPedido from "./VistaPreviaPedido";
 // import './styles.css'
 var moment = require('moment');
 class Pedidos extends React.Component {
@@ -61,7 +61,7 @@ class Pedidos extends React.Component {
         cantidad: null, importe: null
       },
       itemsPedido: [],
-      unPedido: { seccion: "", observaciones: "" },
+      unPedido: { seccion: "", observaciones: "",tipo: "",modalidad:"" },
       productoId: props.productoId,
       selector: {},
       mostrarTabla: false,
@@ -101,6 +101,7 @@ class Pedidos extends React.Component {
       nuevaListaItems: [],
       confirmar: false,
       refSeccion: React.createRef(),
+      refModalidad: React.createRef(),
       limpiar: props.limpiar,
       verPlantilla: false,
       itemsSeleccionado: 0,
@@ -109,10 +110,14 @@ class Pedidos extends React.Component {
       hasError: false,
       itemsDePedidoElegido: [],
       limpiarPedidoEditar: false,
-      observacionesItemEditar:"",
-      nuevaLista:[],
-
-
+      observacionesItemEditar: "",
+      nuevaLista: [],
+      mesa: {},
+      mesas: [],
+      modalidad:"",
+      modalidadEditable:"",
+      modalidades:[{id:1,name:"Mesa"},{id:2,name:"TakeAway"},{id:3,name:"Delivery"}],
+     
 
 
     };
@@ -120,15 +125,18 @@ class Pedidos extends React.Component {
     this.listadoItemsPedido = this.listadoItemsPedido.bind(this);
     this.listadoResponsables = this.listadoResponsables.bind(this)
     this.listaProductosEnPedido = this.listaProductosEnPedido.bind(this);
-    this.listadoItemsDePedidoElegido=this.listadoItemsDePedidoElegido.bind(this)
-    this.nuevaLista=this.nuevaLista.bind(this)
+    this.listadoItemsDePedidoElegido = this.listadoItemsDePedidoElegido.bind(this)
+    this.listadoMesas = this.listadoMesas.bind(this)
+    this.nuevaLista = this.nuevaLista.bind(this)
     this.envioDePedido = this.envioDePedido.bind(this);
+    this.envioDePedidoModalidad=this.envioDePedidoModalidad.bind(this)
     this.envioDeSeccionEditar = this.envioDeSeccionEditar.bind(this)
+    this.envioDeModalidadEditar=this.envioDeModalidadEditar.bind(this)
     this.envioDeEstadoObservaciones = this.envioDeEstadoObservaciones.bind(this);
     this.envioDeObservacionesEditar = this.envioDeObservacionesEditar.bind(this)
     this.envioDeEstadoResponsable = this.envioDeEstadoResponsable.bind(this)
     this.envioDeEstadoResponsableEditar = this.envioDeEstadoResponsableEditar.bind(this)
-    this.envioDeEstadoObservacionesEditar=this.envioDeEstadoObservacionesEditar.bind(this)
+    this.envioDeEstadoObservacionesEditar = this.envioDeEstadoObservacionesEditar.bind(this)
     this.crearPedido = this.crearPedido.bind(this);
     this.settearPedidoYProductoAItem = this.settearPedidoYProductoAItem.bind(this);
     this.handleRemoveRow = this.handleRemoveRow.bind(this);
@@ -147,7 +155,7 @@ class Pedidos extends React.Component {
     this.guardarVistaPrevia = this.guardarVistaPrevia.bind(this)
     this.elegirId = this.elegirId.bind(this)
     this.calcularEditar = this.calcularEditar.bind(this)
-    this.restaurarProductoEditar=this.restaurarProductoEditar.bind(this)
+    this.restaurarProductoEditar = this.restaurarProductoEditar.bind(this)
     this.limpiarItemsDePedidoElegidoDeTabla = this.limpiarItemsDePedidoElegidoDeTabla.bind(this)
     this.limpiarIdTabla = this.limpiarIdTabla = this.limpiarIdTabla.bind(this)
     this.actualizarAlEliminar = this.actualizarAlEliminar.bind(this)
@@ -170,6 +178,7 @@ class Pedidos extends React.Component {
     this.setState({
       // cantidad:1,
       seccion: "",
+      modalidad:"",
       observaciones: null,
       Productos: {
         descripcion: "",
@@ -200,7 +209,7 @@ class Pedidos extends React.Component {
     if (modal == false && boolean.value == true) {
       this.setState({
         editable: true
-        , limpiarPedidoEditar: false,pedido:{} 
+        , limpiarPedidoEditar: false, pedido: {}
       }
         , () => console.log("getCollapse", this.state.itemsDePedidoElegido, this.state.pedido)
       )
@@ -216,10 +225,12 @@ class Pedidos extends React.Component {
     this.listadoProductos();
     this.listadoItemsPedido();
     this.listaProductosEnPedido();
-    this.nuevaLista()
+    this.listadoMesas();
+    this.nuevaLista();
     this.setState((currentState) => ({ cantidad: currentState.cantidad }));
     this.setState({
-      secciones: this.state.secciones, idPedido: this.state.idPedido
+      secciones: this.state.secciones,modalidades:this.state.modalidades,
+      tipos:this.state.tipos,idPedido: this.state.idPedido
       , SelectedItem: {}, selectedValues: [], listaItems: [], unPedido: {},
     })
     this.setState({
@@ -279,6 +290,9 @@ class Pedidos extends React.Component {
     if (nextProps.id !== this.props.id) {
       this.setState({ id: nextProps.id });
     }
+    // if (nextProps.modalidad !== this.props.modalidad) {
+    //   this.setState({ modalidad: nextProps.modalidad });
+    // }
   }
 
   listadoPedidos = () => {
@@ -312,6 +326,14 @@ class Pedidos extends React.Component {
         })
       );
   };
+  listadoMesas = () => {
+    fetch(`http://localhost:8383/mesas`)
+      .then((res) => res.json())
+      .then(
+        (res) => this.setState({ mesas: res, mesa: {} }),
+        console.log("Usuarios", this.state.mesas)
+      );
+  }
   listadoItemsPedido = () => {
     fetch(`http://localhost:8383/itemsTodos`)
       .then((res) => res.json())
@@ -327,12 +349,13 @@ class Pedidos extends React.Component {
       .then((res) => res.json())
       .then((pedido) =>
         this.setState({
-          pedido:pedido,
-          itemsDePedidoElegido:pedido.ItemsPedido,
+          pedido: pedido,
+          itemsDePedidoElegido: pedido.ItemsPedido,
           itemDePedidoElegido: {},
-        },()=>console.log("listadoIPE",this.state.pedido,this.state.itemsDePedidoElegido))
+        }, () => console.log("listadoIPE", this.state.itemsDePedidoElegido))
       );
   };
+
 
   listaProductosEnPedido() {
     let listaProductosEnPedido =
@@ -349,6 +372,7 @@ class Pedidos extends React.Component {
 
     return listaProductosEnPedido
   }
+
   nuevaLista() {
     let data1 = this.state.itemsDePedidoElegido
     let data2 = this.listaProductosEnPedido()
@@ -407,8 +431,8 @@ class Pedidos extends React.Component {
           descripcion: SelectedItem.descripcion, cantidad: 1,
           importe: SelectedItem.precioUnitario, observaciones: "", listoCocina: true,
         };
-        return { unItem: row, listaItems: [...this.state.listaItems, row]};
-      },console.log("listaItemsHAR",this.state.listaItems));
+        return { unItem: row, listaItems: [...this.state.listaItems, row] };
+      }, console.log("listaItemsHAR", this.state.listaItems));
     } else {
       this.setState((prevState, props) => {
         const row = {
@@ -457,14 +481,14 @@ class Pedidos extends React.Component {
       () => console.log("IPE_SETTINGdESCRIP", this.state.itemsDePedidoElegido)
     );
   }
-
+  //DISTINGUE ENTRE COCINA Y PARRILLA
   handleAddRowEditar = (SelectedItemEditar) => {
     console.log("cocinaADD", SelectedItemEditar.categoria)
     if (SelectedItemEditar.categoria == "Cocina") {
       let item = {
         pedidoId: this.state.pedido.id, productoId: SelectedItemEditar.id,
         cantidad: 1,
-        importe: SelectedItemEditar.precioUnitario, observacionesItemEditar:"", listoCocina: true
+        importe: SelectedItemEditar.precioUnitario, observacionesItemEditar: "", listoCocina: true
       }
       fetch("http://localhost:8383/itemsPedido/nuevo", {
         method: "post",
@@ -515,7 +539,7 @@ class Pedidos extends React.Component {
   }
 
   onRemoveEditar = (selectedValuesEditar, SelectedItemEditar) => {
-   console.log("onRemoveEditar",selectedValuesEditar)
+    console.log("onRemoveEditar", selectedValuesEditar)
     let itemsDePedidoElegido = this.state.itemsDePedidoElegido
     // this.setState({ SelectedItemEditar: SelectedItemEditar, selectedValuesEditar: selectedValuesEditar });
     var item = itemsDePedidoElegido.find((item) => SelectedItemEditar.id === item.productoId)
@@ -527,7 +551,7 @@ class Pedidos extends React.Component {
         "Content-Type": "application/json",
       },
     }).then(
-      this.actualizarListasEliminadas(selectedValuesEditar, SelectedItemEditar,itemsDePedidoElegido)
+      this.actualizarListasEliminadas(selectedValuesEditar, SelectedItemEditar, itemsDePedidoElegido)
     )
     // .then(() => this.nuevaLista())
     // .then(this.setState({itemsDePedidoElegido:this.state.itemsDePedidoElegido,item:{}}))
@@ -541,7 +565,7 @@ class Pedidos extends React.Component {
 
   actualizarListasEliminadas(selectedValuesEditar, SelectedItemEditar, itemsDePedidoElegido) {
     this.selectedItemsEditar()
-    this.setState({ itemsDePedidoElegido:itemsDePedidoElegido })
+    this.setState({ itemsDePedidoElegido: itemsDePedidoElegido })
     let listaActualizada = itemsDePedidoElegido.filter((i) => SelectedItemEditar.id !== i.productoId)
     let selectedValuesActualizados = selectedValuesEditar.filter((s) => s.id !== SelectedItemEditar.id)
     this.setState({ selectedValuesEditar: selectedValuesActualizados, SelectedItemEditar: {} })
@@ -681,19 +705,20 @@ class Pedidos extends React.Component {
     let idPedido = this.state.idPedido
     let nombre = this.state.nombre
     let seccion = this.state.unPedido.seccion;
+    let modalidad=this.state.unPedido.modalidad
     let observaciones = this.state.unPedido.observaciones;
     let fecha = this.state.fecha;
     let hora = this.state.hora
     let horaFormato = moment(hora).format('HH-mm');
     let listaItems = this.state.listaItems
-    console.log("nombreResponsable",fecha,this.state.pedidos.map(function(p){return p.fecha}))
+    console.log("nombreResponsable",modalidad, fecha, this.state.pedidos.map(function (p) { return p.fecha }))
     fetch(`http://localhost:8383/pedidos/nuevo/${nombre}`, {
       method: "put",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ seccion, observaciones, fecha, hora }),
+      body: JSON.stringify({ seccion, observaciones, fecha, hora,modalidad }),
     })
       .then((res) => res.json())
       .then((res) => this.setState({ idPedido: res.id, unPedido: res }, console.log("listaitems", listaItems)))
@@ -728,33 +753,35 @@ class Pedidos extends React.Component {
   };
   //falta fecha y hora cocina y parrilla
   editarPedido(id) {
+    console.log("ItemsDePedidoElegido", this.state.itemsDePedidoElegido)
     let nombre = this.state.responsable.nombre
     let seccion = this.state.seccionEditable || this.state.pedido.seccion;
+    let modalidad=this.state.modalidadEditable || this.state.pedido.modalidad
     let observaciones = this.state.observacionesEditable || this.state.pedido.observaciones;
     let fecha = this.state.fecha;
     let hora = this.state.hora
     let horaFormato = moment(hora).format('HH/mm');
-    console.log("nombreResponsable", id, nombre, seccion, observaciones)
+    console.log("observacionesEditableDEPedido",modalidad, observaciones, this.state.observacionesEditable, this.state.observacionesItemEditar)
     fetch(`http://localhost:8383/pedidos/editar/${id}/${nombre}`, {
       method: "put",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ seccion, observaciones }),
+      body: JSON.stringify({ seccion, observaciones,modalidad }),
     })
-      .then(this.state.itemsDePedidoElegido.map(i => this.editarItemConProductoDePedido(id,i.codigo,
-        i.productoId, i.cantidad, i.importe, i.observaciones, i.listoCocina, i.listoParrilla)))
+      .then(this.state.itemsDePedidoElegido.map(i => this.editarItemConProductoDePedido(id, i.codigo,
+        i.productoId, i.cantidad, i.importe, i.observacionesItemEditar, i.listoCocina, i.listoParrilla)))
       .catch(function (error) {
         console.log(error);
       });
   }
-//falta cargar observaciones de items
-  editarItemConProductoDePedido = (id,codigo, productoId, cantidad, importe, observaciones, listoCocina, listoParrilla) => {
+  //falta cargar observaciones de items
+  editarItemConProductoDePedido = (id, codigo, productoId, cantidad, importe, observaciones, listoCocina, listoParrilla) => {
     let producto = this.state.productos.find(p => p.id === productoId)
     console.log("editarDescripcion", producto.descripcion, "+++", cantidad, importe, observaciones)
     fetch(
-      `http://localhost:8383/pedidos/editar/${id}/${codigo}/${producto.descripcion}`,
+      `http://localhost:8383/pedidos/editable/${id}/${codigo}/${producto.descripcion}`,
       {
         method: "put",
         headers: {
@@ -764,7 +791,7 @@ class Pedidos extends React.Component {
         body: JSON.stringify({ cantidad, importe, observaciones, listoCocina, listoParrilla }),
       }
     )
-    // .then(res=>this.listadoItemsPedido)
+      // .then(res=>this.listadoItemsPedido)
       .catch(function (error) {
         console.log(error, "error......", id);
       });
@@ -862,13 +889,16 @@ class Pedidos extends React.Component {
               {/* {this.state.modal == false &&
                 this.state.pedido != undefined && this.state.pedidoId != undefined && */}
               {listaItems.length > 0 && this.state.vistaPrevia == true &&
-                <PlantillaPedido
+                <VistaPreviaPedido
                   encontrarItemsIdPedido={this.encontrarItemsIdPedido}
                   unPedido={this.state.unPedido}
                   verPlantilla={this.state.verPlantilla}
                   listaItems={this.state.listaItems}
                   fecha={this.state.fecha}
                   hora={this.state.hora}
+                  tipo={this.state.tipo}
+                  tipos={this.state.tipos}
+                  mesa={this.state.mesa}
                   nombre={this.state.nombre}
                   nuevaListaDescripciones={this.state.nuevaListaDescripciones}
                   vistaPrevia={this.vistaPrevia}
@@ -879,7 +909,7 @@ class Pedidos extends React.Component {
                   selectedValues={this.state.selectedValues}
                   ref={this.multiselectRef}
                 >
-                </PlantillaPedido>}
+                </VistaPreviaPedido>}
             </React.Fragment>
           </Col>
         </Row>
@@ -916,14 +946,17 @@ class Pedidos extends React.Component {
                     handleRef={this.handleRef}
                     editable={this.state.editable}
                     envioDePedido={this.envioDePedido}
+                    envioDePedidoModalidad={this.envioDePedidoModalidad}
                     envioDeEstadoResponsable={this.envioDeEstadoResponsable}
                     envioDeEstadoResponsableEditar={this.envioDeEstadoResponsableEditar}
                     envioDeSeccionEditar={this.envioDeSeccionEditar}
+                    envioDeModalidadEditar={this.envioDeModalidadEditar}
                     envioDeObservacionesEditar={this.envioDeObservacionesEditar}
                     limpiarItemsDePedidoElegidoDeTabla={this.limpiarItemsDePedidoElegidoDeTabla}
                     pedidos={this.state.pedidos}
                     pedido={this.state.pedido}
                     unPedido={this.state.unPedido}
+                    mesa={this.state.mesa}
                     responsablesDeMesa={this.state.responsablesDeMesa}
                     responsable={this.state.responsable}
                     nombre={this.state.nombre}
@@ -947,6 +980,9 @@ class Pedidos extends React.Component {
                     elegirId={this.elegirId}
                     limpiarPedidoEditar={this.state.limpiarPedidoEditar}
                     confirmarPedidoEditado={this.confirmarPedidoEditado}
+                    modalidad={this.state.modalidad}
+                    modalidadEditable={this.state.modalidadEditable}
+                    modalidades={this.state.modalidades}
                   ></TablaPedido>
                   <React.Fragment>{editable == false && (
                     <CardBody>
@@ -1279,29 +1315,31 @@ class Pedidos extends React.Component {
     // this.setState({pedido:{},itemsDePedidoElegido:[],responsablesDeMesa:[],selectedValuesEditar:[]})
     var pedido = this.state.pedidos.find(
       (pedido) => pedido.id == id);
-    console.log("pedido",this.state.itemsDePedidoElegido)
+    console.log("pedido", this.state.itemsDePedidoElegido)
     let responsable = this.state.responsablesDeMesa.find(r => r.id_responsable === pedido.responsableId)
     this.setState({
-       responsable: responsable
+      responsable: responsable
       , responsablesDeMesa: this.state.responsablesDeMesa, secciones: this.state.secciones,
+      modalidades:this.state.modalidades,
       selectedValuesEditar: this.state.selectedValuesEditar,
     }
       , () => console.log("pedidoelegidoIPE", this.state.itemsDePedidoElegido)
     );
   }
-//itemsdepedidoelegido :
+  //itemsdepedidoelegido :
   envioDeEstadoObservacionesEditar(nuevoItem) {
+    console.log("envioEstadoObservEditarEnPedidos", nuevoItem.observaciones)
     this.setState(function (state, props) {
       return {
 
         itemsDePedidoElegido: state.itemsDePedidoElegido.forEach(function (i) {
           if (i.descripcion === nuevoItem.descripcion) {
-            i.observacionesItemEditar = nuevoItem.observacionesItemEditar;
+            i.observacionesItemEditar = nuevoItem.observaciones;
           }
         }),
         itemsDePedidoElegido: state.itemsDePedidoElegido,
         unItem: {
-          observacionesItemEditar: state.unItem.observacionesItemEditar,
+          observacionesItemEditar: state.unItem.observaciones,
         },
       };
     })
@@ -1313,12 +1351,12 @@ class Pedidos extends React.Component {
       itemsDePedidoElegido: [], selectedValuesEditar: []
       , SelectedItemEditar: {}, pedido: {}
     })
-    
+
   }
   confirmarPedidoEditado(id) {
     this.editarPedido(id);
     this.getLimpiarTabla()
-  
+
   }
 
   envioDePedido(estadoSeccion) {
@@ -1326,8 +1364,16 @@ class Pedidos extends React.Component {
       // () => console.log("envioSeccion", estadoSeccion, this.state.seccion)
     );
   }
+  envioDePedidoModalidad(estadoModalidad) {
+    this.setState({ unPedido: { modalidad: estadoModalidad} },
+      () => console.log("envioModalidad", estadoModalidad, this.state.modalidad)
+    );
+  }
   envioDeSeccionEditar(estadoSeccion) {
     this.setState({ seccionEditable: estadoSeccion }, () => console.log("envioSeccion", this.state.seccionEditable))
+  }
+  envioDeModalidadEditar(estadoModalidad) {
+    this.setState({ modalidadEditable: estadoModalidad }, () => console.log("envioModalidad", this.state.modalidadEditable))
   }
   //pedido
   envioDeObservacionesEditar(estadoObservaciones) {
@@ -1394,10 +1440,10 @@ class Pedidos extends React.Component {
   calcularEditar = (nuevoItem, producto) => {
     this.setState(function (state, props) {
       var total = 0;
-      var productoI=state.productos.find(p=>p.descripcion == producto.descripcion)
-     let nuevoItemRestaurado=nuevoItem.pedidoId
-      nuevoItemRestaurado=""
-      console.log("productoCalcular",producto,this.state.producto,nuevoItemRestaurado)
+      var productoI = state.productos.find(p => p.descripcion == producto.descripcion)
+      let nuevoItemRestaurado = nuevoItem.pedidoId
+      nuevoItemRestaurado = ""
+      console.log("productoCalcular", producto, this.state.producto, nuevoItemRestaurado)
       return {
         itemsDePedidoElegido: state.itemsDePedidoElegido.forEach(function (i) {
           if (producto.id == i.productoId) {
@@ -1416,18 +1462,18 @@ class Pedidos extends React.Component {
         item: {
           importe: total,
         },
-        
+
       };
     })
   }
 
-   restaurarProductoEditar =(nuevoProducto)=>{
-     let producto= this.state.productos.find(p=>p.descripcion == nuevoProducto.descripcion)
-     console.log("Restaurar-nuevoProducto",nuevoProducto,producto)
-     this.setState({producto:producto},()=>console.log("REST-state-prod",nuevoProducto,
-     this.state.producto))
+  restaurarProductoEditar = (nuevoProducto) => {
+    let producto = this.state.productos.find(p => p.descripcion == nuevoProducto.descripcion)
+    console.log("Restaurar-nuevoProducto", nuevoProducto, producto)
+    this.setState({ producto: producto }, () => console.log("REST-state-prod", nuevoProducto,
+      this.state.producto))
 
-   }
+  }
 
 
   actualizarAlEliminar = (unItem) => {
@@ -1446,6 +1492,7 @@ class Pedidos extends React.Component {
           <PedidoItems
             nuevaListaDescripciones={this.state.nuevaListaDescripciones}
             envioDePedido={this.envioDePedido}
+            envioDePedidoModalidad={this.envioDePedidoModalidad}
             envioDeEstadoCantidad={this.envioDeEstadoCantidad}
             envioDeEstadoImporte={this.envioDeEstadoImporte}
             settearPedidoYProductoAItem={this.settearPedidoYProductoAItem}

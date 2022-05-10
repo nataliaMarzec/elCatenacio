@@ -6,8 +6,11 @@ const controllerProducto = require("../ControllersPedidosCliente/ProductoControl
 const controllerItemsPedido = require("../ControllersPedidosCliente/ItemsPedidoController");
 const controllerPago = require("../ControllersPedidosCliente/PagoController");
 const controllerResponsableDeMesa = require("../ControllersPedidosCliente/ResponsableDeMesaController");
+const controllerMesa = require("../ControllersPedidosCliente/MesasController");
 
 router.put("/pedidos/nuevo/:nombre", controllerPedido.create);
+router.put("/pedidos/nuevo/cliente/:username", controllerPedido.createClientePedido);
+
 router.put("/pedidos/cliente/", controllerPedido.createPedidoCliente);
 router.get("/pedido/busqueda/:id", controllerPedido.busquedaPedidoPorId)
 router.put("/pedidos/items/pedido/:id/producto/:descripcion", controllerPedido.settearPedidoYProductoAItem)
@@ -19,7 +22,7 @@ router.get("/pedidos/preparadoCocina/:id/", controllerPedido.todoListoPedidoPrep
 router.get("/pedidos/preparadoParrilla/:id/", controllerPedido.todoListoPedidoPreparadoDeParrilla);
 router.put("/pedidos/editar/:id/:nombre", controllerPedido.editarPedido);
 //este
-router.put("/pedidos/editar/:id/:codigo/:descripcion", controllerPedido.editarItemConProductoDePedido)
+router.put("/pedidos/editable/:id/:codigo/:descripcion", controllerPedido.editarItemConProductoDePedido)
 router.delete("/pedido/delete/:id", controllerPedido.eliminarPedidoConItems);
 
 router.get("/pedidos", controllerPedido.getPedidos);
@@ -71,13 +74,22 @@ router.get("/itemsPedidos/importe/:importe/:productoId", controllerItemsPedido.u
 
 router.post("/pago/nuevo", controllerPago.create);
 
-router.post("/responsable/signup",controllerResponsableDeMesa.signupResponsable)
+router.post("/responsable/nuevo", controllerResponsableDeMesa.create)
 router.route("/responsable/:id_responsable")
     .delete(controllerResponsableDeMesa.delete)
     .put(controllerResponsableDeMesa.update)
 router.get("/responsables", controllerResponsableDeMesa.getResponsables);
-router.get("/responsables/busqueda/:nombre", controllerResponsableDeMesa.encontrarResponsablePorNombre);
+router.get("/responsables/busqueda/:username", controllerResponsableDeMesa.encontrarResponsablePorUsername);
 
+router.route("/mesa/:id_mesa")
+    .get(controllerMesa.getMesaId)
+    .delete(controllerMesa.delete)
+    .put(controllerMesa.update)
+router.post("/mesa/nueva", controllerMesa.create);
+router.post("/mesas/:responsableId", controllerMesa.createConResponsableId);
+router.get("/mesas", controllerMesa.getMesas);
+router.get("/mesas/habilitadas", controllerMesa.getMesasHabilitados);
+router.get("/mesas/busqueda/:id_mesa", controllerMesa.encontrarMesaPorId);
 
 
 

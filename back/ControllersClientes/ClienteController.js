@@ -77,6 +77,24 @@ module.exports = {
     }
   },
 
+
+  updateDireccion: async (req, res) => {
+    const clienteEncontrado = await Cliente.findByPk(req.params.id_cliente);
+    const cliente = await clienteEncontrado.update({
+      nombre: req.body.nombre,
+      direccion: req.body.direccion,
+      telefono: req.body.telefono,
+    });
+    if (cliente) {
+      return res.status(200)
+        .json({
+          cliente,
+        })
+    } else {
+      return res.status(404).json()
+    }
+  },
+
   delete: async (req, res) => {
     const cliente = await Cliente.findByPk(req.params.id_cliente);
     const usuario = await Usuario.findOne({ where: { clienteId: req.params.id_cliente}})
@@ -120,14 +138,6 @@ module.exports = {
     }
   },
 
-  // encontrarClientePorUserName: async (req, res) => {
-  //   var cliente = await Cliente.findOne({ where: { userName: req.params.userName } });
-  //   if (![req.body.values]) {
-  //     res.status(400).json({ err: "No hay cliente con userName" });
-  //   } else {
-  //     return res.status(200).json(cliente);
-  //   }
-  // },
   encontrarClientePorUsername: async (req, res) => {
     var usuario = await Usuario.findOne({ where: { username: req.params.username, rol: "CLIENTE" } });
     if (!usuario || usuario == null) {
